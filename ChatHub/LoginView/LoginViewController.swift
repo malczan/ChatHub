@@ -41,7 +41,8 @@ class LoginViewController: UIViewController {
     private func setupStyle() {
         view.backgroundColor = Style.backgroundColor
         
-        logoImageView.image = UIImage(named: Style.logoImage)
+        logoImageView.image = Style.logoImage
+        logoImageView.contentMode = .scaleAspectFit
     
         loginUnderline.backgroundColor = Style.fontColor
         
