@@ -26,7 +26,7 @@ enum LoginStyle {
     static let passwordIcon = "lock"
     
     // Images
-    static let logoImage = "LOGO"
+    static let logoImage = UIImage(named: "LOGO")
     
     private static func attributeStringCreateAccount() -> NSMutableAttributedString {
         let text = texts.createAccount

@@ -41,17 +41,23 @@ class LoginViewController: UIViewController {
     private func setupStyle() {
         view.backgroundColor = Style.backgroundColor
         
-        logoImageView.image = UIImage(named: Style.logoImage)
+        logoImageView.image = Style.logoImage
+        logoImageView.contentMode = .scaleAspectFit
+    
         loginUnderline.backgroundColor = Style.fontColor
+        
         passwordUnderline.backgroundColor = Style.fontColor
+        
         loginButton.backgroundColor = Style.buttonColorEnabled
         loginButton.setTitle(Constants.login.uppercased(),
                              for: .normal)
         loginButton.setTitleColor(Style.backgroundColor,
                                   for: .normal)
+        
         forgotPasswordLabel.text = Constants.forgotPassword
         forgotPasswordLabel.textColor = Style.fontColor
         forgotPasswordLabel.attributedText = Style.forgotPasswordAttributeString
+        
         createAccountLabel.text = Constants.createAccount
         createAccountLabel.textColor = Style.fontColor
         createAccountLabel.attributedText = Style.createAccountAttributeString
