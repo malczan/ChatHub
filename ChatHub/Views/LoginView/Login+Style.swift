@@ -16,7 +16,7 @@ enum LoginStyle {
     static let forgotPasswordAttributeString = attributeStringForgotPassword()
     
     // Colors
-    static let backgroundColor = UIColor(named: "backgroundColor")?.withAlphaComponent(0.8)
+    static let backgroundColor = UIColor(named: "backgroundColor")
     static let buttonColorDisabled = UIColor(named: "purpleLight")
     static let buttonColorEnabled = UIColor(named: "purple")
     static let fontColor = UIColor.white

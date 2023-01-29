@@ -12,16 +12,19 @@ class CustomTextField: UITextField {
     private let icon: String
     private let iconImageView = UIImageView()
     private let placeholderText: String
+    private let password: Bool
     private let themeColor: UIColor
     
     
     init(frame: CGRect = CGRect(),
          icon: String,
          placeholderText: String,
+         password: Bool? = false,
          themeColor: UIColor? = .white) {
         self.placeholderText = placeholderText
         self.icon = icon
         self.themeColor = themeColor!
+        self.password = password!
         super.init(frame: frame)
         setup()
     }
@@ -40,6 +43,7 @@ class CustomTextField: UITextField {
 
     private func setup() {
         self.addSubview(iconImageView)
+        self.isSecureTextEntry = password
         self.borderStyle = .none
         self.textColor = themeColor
         self.attributedPlaceholder = NSAttributedString(string: placeholderText, attributes: [NSAttributedString.Key.foregroundColor: themeColor])

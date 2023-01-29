@@ -18,7 +18,8 @@ class LoginViewController: UIViewController {
                                                  placeholderText: Constants.login)
     private let loginUnderline = UIView()
     private let passwordTextField = CustomTextField(icon: Style.passwordIcon,
-                                                    placeholderText: Constants.password)
+                                                    placeholderText: Constants.password,
+                                                    password: true)
     private let passwordUnderline = UIView()
     private let loginButton = UIButton()
     private let forgotPasswordLabel = UILabel()
