@@ -1,5 +1,5 @@
 //
-//  LoginViewController.swift
+//  SignInViewController.swift
 //  ChatHub
 //
 //  Created by Jakub Malczyk on 28/01/2023.
@@ -9,13 +9,15 @@ import UIKit
 import RxCocoa
 import RxSwift
 
-class LoginViewController: UIViewController {
+
+class SignInViewController: UIViewController {
     
-    private typealias Style = LoginStyle
-    private typealias Constants = LoginConstants
+    private typealias Style = SignInStyle
+    private typealias Constants = SignInConstants
     
-    private var viewModel = LoginViewModel()
+    var viewModel: SignInViewModel!
     private let disposeBag = DisposeBag()
+    private let tapGesture = UITapGestureRecognizer()
     
     private let logoImageView = UIImageView()
     
@@ -142,6 +144,7 @@ class LoginViewController: UIViewController {
     
     private func installForgotPasswordLabel() {
         view.addSubview(forgotPasswordLabel)
+        forgotPasswordLabel.addGestureRecognizer(tapGesture)
         
         forgotPasswordLabel.translatesAutoresizingMaskIntoConstraints = false
         

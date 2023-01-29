@@ -1,5 +1,5 @@
 //
-//  Login+Style.swift
+//  SignIn+Style.swift
 //  ChatHub
 //
 //  Created by Jakub Malczyk on 28/01/2023.
@@ -7,13 +7,16 @@
 
 import UIKit
 
-enum LoginStyle {
+enum SignInStyle {
     
-    private typealias texts = LoginConstants
+    private typealias texts = SignInConstants
     
     // AttString
     static let createAccountAttributeString = attributeStringCreateAccount()
     static let forgotPasswordAttributeString = attributeStringForgotPassword()
+    
+    static let createAccountRange = (texts.createAccount as NSString).range(of: texts.createAccountClickable)
+    static let forgotPasswordRange = (texts.forgotPassword as NSString).range(of: texts.forgotPasswordClickable)
     
     // Colors
     static let backgroundColor = UIColor(named: "backgroundColor")

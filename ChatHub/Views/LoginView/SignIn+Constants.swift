@@ -1,5 +1,5 @@
 //
-//  Login+Constants.swift
+//  SignIn+Constants.swift
 //  ChatHub
 //
 //  Created by Jakub Malczyk on 28/01/2023.
@@ -7,7 +7,7 @@
 
 import Foundation
 
-enum LoginConstants {
+enum SignInConstants {
     
     static let login = "Username"
     static let password = "Password"

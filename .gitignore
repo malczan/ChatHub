@@ -3,6 +3,7 @@
 
  # xcodegen 
 *.xcodeproj/
+*.xcworkspace/
 DerivedData/
 ChatHub.xcodeproj/
 ChatHub.xcworkspace/contents.xcworkspacedata
