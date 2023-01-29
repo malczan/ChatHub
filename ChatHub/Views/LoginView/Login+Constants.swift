@@ -9,7 +9,7 @@ import Foundation
 
 enum LoginConstants {
     
-    static let login = "Login"
+    static let login = "Username"
     static let password = "Password"
     static let createAccount = "Don't have account yet? Click here to signup"
     static let createAccountClickable = "Click here to signup"

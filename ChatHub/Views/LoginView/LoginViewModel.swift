@@ -6,19 +6,19 @@
 //
 
 import Foundation
-import RxSwift
 import RxRelay
+import RxSwift
 
 final class LoginViewModel {
     
     let usernameRelay = BehaviorSubject<String>(value: "")
     let passwordRelay = BehaviorSubject<String>(value: "")
-    let buttonSubject = PublishRelay<Bool>()
+
     private let diposeBag = DisposeBag()
     
     func isValid() -> Observable<Bool> {
         return Observable
-            .combineLatest(isUsernameValid(), isEmailValid())
+            .combineLatest(isUsernameValid(), isPasswordValid())
             .map { $0 && $1 }
     }
     
@@ -26,7 +26,7 @@ final class LoginViewModel {
         return usernameRelay.map { $0.count > 5 }
     }
     
-    private func isEmailValid() -> Observable<Bool> {
+    private func isPasswordValid() -> Observable<Bool> {
         return passwordRelay.map { $0.count > 5 }
     }
 }
