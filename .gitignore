@@ -4,3 +4,8 @@
  # xcodegen 
 *.xcodeproj/
 DerivedData/
+ChatHub.xcodeproj/
+ChatHub.xcworkspace/contents.xcworkspacedata
+ChatHub.xcworkspace/xcshareddata/IDEWorkspaceChecks.plist
+ChatHub.xcworkspace/xcuserdata/jakubmalczyk.xcuserdatad/UserInterfaceState.xcuserstate
+ChatHub/Views/RegisterView/RegisterConstants.swift

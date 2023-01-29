@@ -6,14 +6,19 @@
 //
 
 import UIKit
+import RxCocoa
+import RxSwift
 
 class RegisterViewController: UIViewController {
     
     private typealias Style = RegisterStyle
     private typealias Constants = RegisterConstants
     
+    private let viewModel = RegisterViewModel()
+    private let disposeBag = DisposeBag()
+    
     private let logoImageView = UIImageView()
-    private let loginTextField = CustomTextField(icon: Style.loginIcon, placeholderText: Constants.username)
+    private let usernameTextField = CustomTextField(icon: Style.loginIcon, placeholderText: Constants.username)
     private let emailTextField = CustomTextField(icon: Style.emailIcon, placeholderText: Constants.email)
     private let passwordTextField = CustomTextField(icon: Style.passwordIcon,
                                                     placeholderText: Constants.password,
@@ -28,6 +33,7 @@ class RegisterViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        bind()
         setupStyle()
         setupLogoImageView()
         installLoginTextField()
@@ -39,13 +45,53 @@ class RegisterViewController: UIViewController {
 
     }
     
+    private func bind() {
+        usernameTextField
+            .rx
+            .text
+            .map { $0 ?? "" }
+            .bind(to: viewModel.usernameRelay)
+            .disposed(by: disposeBag)
+        
+        emailTextField
+            .rx
+            .text
+            .map { $0 ?? "" }
+            .bind(to: viewModel.emailRelay)
+            .disposed(by: disposeBag)
+        
+        passwordTextField
+            .rx
+            .text
+            .map { $0 ?? "" }
+            .bind(to: viewModel.passwordRelay)
+            .disposed(by: disposeBag)
+        
+        confirmPasswordTextField
+            .rx
+            .text
+            .map { $0 ?? "" }
+            .bind(to: viewModel.confirmPasswordRelay)
+            .disposed(by: disposeBag)
+        
+        viewModel
+            .isValid()
+            .map { $0 ? Style.buttonColorEnabled : Style.buttonColorDisabled }
+            .bind(to: loginButton.rx.backgroundColor)
+            .disposed(by: disposeBag)
+        
+        viewModel
+            .isValid()
+            .bind(to: loginButton.rx.isEnabled)
+            .disposed(by: disposeBag)
+    }
+    
     private func setupStyle() {
         view.backgroundColor = Style.backgroundColor
         
         logoImageView.image = Style.logoImage
         logoImageView.contentMode = .scaleAspectFit
 
-        loginButton.backgroundColor = Style.buttonColorEnabled
         loginButton.setTitle(Constants.register,
                              for: .normal)
         loginButton.setTitleColor(Style.backgroundColor,
@@ -70,15 +116,15 @@ class RegisterViewController: UIViewController {
     }
     
     private func installLoginTextField() {
-        view.addSubview(loginTextField)
+        view.addSubview(usernameTextField)
         
-        loginTextField.translatesAutoresizingMaskIntoConstraints = false
+        usernameTextField.translatesAutoresizingMaskIntoConstraints = false
         
         NSLayoutConstraint.activate([
-            loginTextField.topAnchor.constraint(equalTo: view.topAnchor, constant: 300),
-            loginTextField.leadingAnchor.constraint(equalTo: view.layoutMarginsGuide.leadingAnchor),
-            loginTextField.trailingAnchor.constraint(equalTo: view.layoutMarginsGuide.trailingAnchor),
-            loginTextField.heightAnchor.constraint(equalToConstant: 40)
+            usernameTextField.topAnchor.constraint(equalTo: view.topAnchor, constant: 300),
+            usernameTextField.leadingAnchor.constraint(equalTo: view.layoutMarginsGuide.leadingAnchor),
+            usernameTextField.trailingAnchor.constraint(equalTo: view.layoutMarginsGuide.trailingAnchor),
+            usernameTextField.heightAnchor.constraint(equalToConstant: 40)
         ])
     }
     
@@ -88,7 +134,7 @@ class RegisterViewController: UIViewController {
         emailTextField.translatesAutoresizingMaskIntoConstraints = false
         
         NSLayoutConstraint.activate([
-            emailTextField.topAnchor.constraint(equalTo: loginTextField.topAnchor, constant: 80),
+            emailTextField.topAnchor.constraint(equalTo: usernameTextField.topAnchor, constant: 80),
             emailTextField.leadingAnchor.constraint(equalTo: view.layoutMarginsGuide.leadingAnchor),
             emailTextField.trailingAnchor.constraint(equalTo: view.layoutMarginsGuide.trailingAnchor),
             emailTextField.heightAnchor.constraint(equalToConstant: 40)
@@ -131,7 +177,6 @@ class RegisterViewController: UIViewController {
             loginButton.leadingAnchor.constraint(equalTo: view.layoutMarginsGuide.leadingAnchor, constant: 10),
             loginButton.trailingAnchor.constraint(equalTo: view.layoutMarginsGuide.trailingAnchor, constant: -10),
             loginButton.heightAnchor.constraint(equalToConstant: 40),
-            
         ])
     }
     

@@ -6,15 +6,20 @@
 //
 
 import UIKit
+import RxCocoa
+import RxSwift
 
 class LoginViewController: UIViewController {
     
     private typealias Style = LoginStyle
     private typealias Constants = LoginConstants
     
+    private var viewModel = LoginViewModel()
+    private let disposeBag = DisposeBag()
+    
     private let logoImageView = UIImageView()
     
-    private let loginTextField = CustomTextField(icon: Style.loginIcon,
+    private let usernameTextField = CustomTextField(icon: Style.loginIcon,
                                                  placeholderText: Constants.login)
     private let passwordTextField = CustomTextField(icon: Style.passwordIcon,
                                                     placeholderText: Constants.password,
@@ -26,6 +31,7 @@ class LoginViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        bind()
         setupStyle()
         installLogoImageView()
         installLoginTextField()
@@ -35,13 +41,39 @@ class LoginViewController: UIViewController {
         installCreateAccountLabel()
     }
     
+    private func bind() {
+        usernameTextField
+            .rx
+            .text
+            .map { $0 ?? "" }
+            .bind(to: viewModel.usernameRelay)
+            .disposed(by: disposeBag)
+        
+        passwordTextField
+            .rx
+            .text
+            .map { $0 ?? "" }
+            .bind(to: viewModel.passwordRelay)
+            .disposed(by: disposeBag)
+        
+        viewModel
+            .isValid()
+            .map { $0 ? Style.buttonColorEnabled : Style.buttonColorDisabled }
+            .bind(to: loginButton.rx.backgroundColor)
+            .disposed(by: disposeBag)
+    
+        viewModel
+            .isValid()
+            .bind(to: loginButton.rx.isEnabled)
+            .disposed(by: disposeBag)
+    }
+    
     private func setupStyle() {
         view.backgroundColor = Style.backgroundColor
         
         logoImageView.image = Style.logoImage
         logoImageView.contentMode = .scaleAspectFit
     
-        loginButton.backgroundColor = Style.buttonColorEnabled
         loginButton.setTitle(Constants.login.uppercased(),
                              for: .normal)
         loginButton.setTitleColor(Style.backgroundColor,
@@ -69,15 +101,15 @@ class LoginViewController: UIViewController {
     }
     
     private func installLoginTextField() {
-        view.addSubview(loginTextField)
+        view.addSubview(usernameTextField)
         
-        loginTextField.translatesAutoresizingMaskIntoConstraints = false
+        usernameTextField.translatesAutoresizingMaskIntoConstraints = false
         
         NSLayoutConstraint.activate([
-            loginTextField.topAnchor.constraint(equalTo: view.topAnchor, constant: 300),
-            loginTextField.leadingAnchor.constraint(equalTo: view.layoutMarginsGuide.leadingAnchor),
-            loginTextField.trailingAnchor.constraint(equalTo: view.layoutMarginsGuide.trailingAnchor),
-            loginTextField.heightAnchor.constraint(equalToConstant: 40)
+            usernameTextField.topAnchor.constraint(equalTo: view.topAnchor, constant: 300),
+            usernameTextField.leadingAnchor.constraint(equalTo: view.layoutMarginsGuide.leadingAnchor),
+            usernameTextField.trailingAnchor.constraint(equalTo: view.layoutMarginsGuide.trailingAnchor),
+            usernameTextField.heightAnchor.constraint(equalToConstant: 40)
         ])
     }
     
@@ -87,7 +119,7 @@ class LoginViewController: UIViewController {
         passwordTextField.translatesAutoresizingMaskIntoConstraints = false
         
         NSLayoutConstraint.activate([
-            passwordTextField.topAnchor.constraint(equalTo: loginTextField.topAnchor, constant: 80),
+            passwordTextField.topAnchor.constraint(equalTo: usernameTextField.topAnchor, constant: 80),
             passwordTextField.leadingAnchor.constraint(equalTo: view.layoutMarginsGuide.leadingAnchor),
             passwordTextField.trailingAnchor.constraint(equalTo: view.layoutMarginsGuide.trailingAnchor),
             passwordTextField.heightAnchor.constraint(equalToConstant: 40)
