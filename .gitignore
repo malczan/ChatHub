@@ -2,5 +2,5 @@
 .DS_Store
 
 # xcodegen 
-*.xcodeproj/
+ChatHub.xcodeproj/
 DerivedData/

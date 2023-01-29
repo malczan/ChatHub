@@ -1,7 +1,8 @@
 name: ChatHub
 options:
-  deploymentTarget:
-    iOS: 14.0
+    deploymentTarget:
+        iOS: 14.0
+    bundleIdPrefix: com.ChatHub
 targets:
   ChatHub:
     type: application
