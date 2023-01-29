@@ -16,11 +16,9 @@ class LoginViewController: UIViewController {
     
     private let loginTextField = CustomTextField(icon: Style.loginIcon,
                                                  placeholderText: Constants.login)
-    private let loginUnderline = UIView()
     private let passwordTextField = CustomTextField(icon: Style.passwordIcon,
                                                     placeholderText: Constants.password,
                                                     password: true)
-    private let passwordUnderline = UIView()
     private let loginButton = UIButton()
     private let forgotPasswordLabel = UILabel()
     private let createAccountLabel = UILabel()
@@ -31,9 +29,7 @@ class LoginViewController: UIViewController {
         setupStyle()
         installLogoImageView()
         installLoginTextField()
-        installLoginUnderline()
         installPasswordTextField()
-        installPasswordUnderLine()
         installLoginButton()
         installForgotPasswordLabel()
         installCreateAccountLabel()
@@ -45,10 +41,6 @@ class LoginViewController: UIViewController {
         logoImageView.image = Style.logoImage
         logoImageView.contentMode = .scaleAspectFit
     
-        loginUnderline.backgroundColor = Style.fontColor
-        
-        passwordUnderline.backgroundColor = Style.fontColor
-        
         loginButton.backgroundColor = Style.buttonColorEnabled
         loginButton.setTitle(Constants.login.uppercased(),
                              for: .normal)
@@ -89,20 +81,6 @@ class LoginViewController: UIViewController {
         ])
     }
     
-    private func installLoginUnderline() {
-        view.addSubview(loginUnderline)
-        
-        loginUnderline.translatesAutoresizingMaskIntoConstraints = false
-        
-        NSLayoutConstraint.activate([
-            loginUnderline.topAnchor.constraint(equalTo: loginTextField.bottomAnchor),
-            loginUnderline.leadingAnchor.constraint(equalTo: view.layoutMarginsGuide.leadingAnchor, constant: 10),
-            loginUnderline.trailingAnchor.constraint(equalTo: view.layoutMarginsGuide.trailingAnchor, constant: -10),
-            loginUnderline.heightAnchor.constraint(equalToConstant: 1),
-            
-        ])
-    }
-    
     private func installPasswordTextField() {
         view.addSubview(passwordTextField)
         
@@ -113,20 +91,6 @@ class LoginViewController: UIViewController {
             passwordTextField.leadingAnchor.constraint(equalTo: view.layoutMarginsGuide.leadingAnchor),
             passwordTextField.trailingAnchor.constraint(equalTo: view.layoutMarginsGuide.trailingAnchor),
             passwordTextField.heightAnchor.constraint(equalToConstant: 40)
-        ])
-    }
-    
-    private func installPasswordUnderLine() {
-        view.addSubview(passwordUnderline)
-        
-        passwordUnderline.translatesAutoresizingMaskIntoConstraints = false
-        
-        NSLayoutConstraint.activate([
-            passwordUnderline.topAnchor.constraint(equalTo: passwordTextField.bottomAnchor),
-            passwordUnderline.leadingAnchor.constraint(equalTo: view.layoutMarginsGuide.leadingAnchor, constant: 10),
-            passwordUnderline.trailingAnchor.constraint(equalTo: view.layoutMarginsGuide.trailingAnchor, constant: -10),
-            passwordUnderline.heightAnchor.constraint(equalToConstant: 1),
-            
         ])
     }
     
@@ -156,7 +120,6 @@ class LoginViewController: UIViewController {
         ])
     }
         
-    
     private func installCreateAccountLabel() {
         view.addSubview(createAccountLabel)
         

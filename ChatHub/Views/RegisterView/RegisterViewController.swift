@@ -14,17 +14,13 @@ class RegisterViewController: UIViewController {
     
     private let logoImageView = UIImageView()
     private let loginTextField = CustomTextField(icon: Style.loginIcon, placeholderText: Constants.username)
-    private let loginUnderline = UIView()
     private let emailTextField = CustomTextField(icon: Style.emailIcon, placeholderText: Constants.email)
-    private let emailUnderline = UIView()
     private let passwordTextField = CustomTextField(icon: Style.passwordIcon,
                                                     placeholderText: Constants.password,
                                                     password: true)
-    private let passwordUnderline = UIView()
     private let confirmPasswordTextField = CustomTextField(icon: Style.passwordIcon,
                                                            placeholderText: Constants.confirmPassword,
                                                            password: true)
-    private let confirmPasswordUnderline = UIView()
     private let loginButton = UIButton()
     private let forgotPasswordLabel = UILabel()
     private let createAccountLabel = UILabel()
@@ -35,18 +31,12 @@ class RegisterViewController: UIViewController {
         setupStyle()
         setupLogoImageView()
         installLoginTextField()
-        installLoginUnderline()
         installEmailTextField()
-        installEmailUnderline()
         installPasswordTextField()
-        installPasswordUnderline()
         installConfirmPasswordTextField()
-        installConfirmPasswordUnderline()
         installLoginButton()
         installAlreadyHaveAccountLabel()
 
-
-        // Do any additional setup after loading the view.
     }
     
     private func setupStyle() {
@@ -54,15 +44,7 @@ class RegisterViewController: UIViewController {
         
         logoImageView.image = Style.logoImage
         logoImageView.contentMode = .scaleAspectFit
-    
-        loginUnderline.backgroundColor = Style.fontColor
-        
-        emailUnderline.backgroundColor = Style.fontColor
-        
-        passwordUnderline.backgroundColor = Style.fontColor
-        
-        confirmPasswordUnderline.backgroundColor = Style.fontColor
-        
+
         loginButton.backgroundColor = Style.buttonColorEnabled
         loginButton.setTitle(Constants.register,
                              for: .normal)
@@ -100,20 +82,6 @@ class RegisterViewController: UIViewController {
         ])
     }
     
-    private func installLoginUnderline() {
-        view.addSubview(loginUnderline)
-        
-        loginUnderline.translatesAutoresizingMaskIntoConstraints = false
-        
-        NSLayoutConstraint.activate([
-            loginUnderline.topAnchor.constraint(equalTo: loginTextField.bottomAnchor),
-            loginUnderline.leadingAnchor.constraint(equalTo: view.layoutMarginsGuide.leadingAnchor, constant: 10),
-            loginUnderline.trailingAnchor.constraint(equalTo: view.layoutMarginsGuide.trailingAnchor, constant: -10),
-            loginUnderline.heightAnchor.constraint(equalToConstant: 1),
-            
-        ])
-    }
-    
     private func installEmailTextField() {
         view.addSubview(emailTextField)
         
@@ -124,20 +92,6 @@ class RegisterViewController: UIViewController {
             emailTextField.leadingAnchor.constraint(equalTo: view.layoutMarginsGuide.leadingAnchor),
             emailTextField.trailingAnchor.constraint(equalTo: view.layoutMarginsGuide.trailingAnchor),
             emailTextField.heightAnchor.constraint(equalToConstant: 40)
-        ])
-    }
-    
-    private func installEmailUnderline() {
-        view.addSubview(emailUnderline)
-        
-        emailUnderline.translatesAutoresizingMaskIntoConstraints = false
-        
-        NSLayoutConstraint.activate([
-            emailUnderline.topAnchor.constraint(equalTo: emailTextField.bottomAnchor),
-            emailUnderline.leadingAnchor.constraint(equalTo: view.layoutMarginsGuide.leadingAnchor, constant: 10),
-            emailUnderline.trailingAnchor.constraint(equalTo: view.layoutMarginsGuide.trailingAnchor, constant: -10),
-            emailUnderline.heightAnchor.constraint(equalToConstant: 1),
-            
         ])
     }
     
@@ -154,20 +108,6 @@ class RegisterViewController: UIViewController {
         ])
     }
     
-    private func installPasswordUnderline() {
-        view.addSubview(passwordUnderline)
-        
-        passwordUnderline.translatesAutoresizingMaskIntoConstraints = false
-        
-        NSLayoutConstraint.activate([
-            passwordUnderline.topAnchor.constraint(equalTo: passwordTextField.bottomAnchor),
-            passwordUnderline.leadingAnchor.constraint(equalTo: view.layoutMarginsGuide.leadingAnchor, constant: 10),
-            passwordUnderline.trailingAnchor.constraint(equalTo: view.layoutMarginsGuide.trailingAnchor, constant: -10),
-            passwordUnderline.heightAnchor.constraint(equalToConstant: 1),
-            
-        ])
-    }
-    
     private func installConfirmPasswordTextField() {
         view.addSubview(confirmPasswordTextField)
         
@@ -181,27 +121,13 @@ class RegisterViewController: UIViewController {
         ])
     }
     
-    private func installConfirmPasswordUnderline() {
-        view.addSubview(confirmPasswordUnderline)
-        
-        confirmPasswordUnderline.translatesAutoresizingMaskIntoConstraints = false
-        
-        NSLayoutConstraint.activate([
-            confirmPasswordUnderline.topAnchor.constraint(equalTo: confirmPasswordTextField.bottomAnchor),
-            confirmPasswordUnderline.leadingAnchor.constraint(equalTo: view.layoutMarginsGuide.leadingAnchor, constant: 10),
-            confirmPasswordUnderline.trailingAnchor.constraint(equalTo: view.layoutMarginsGuide.trailingAnchor, constant: -10),
-            confirmPasswordUnderline.heightAnchor.constraint(equalToConstant: 1),
-            
-        ])
-    }
-    
     private func installLoginButton() {
         view.addSubview(loginButton)
         
         loginButton.translatesAutoresizingMaskIntoConstraints = false
         
         NSLayoutConstraint.activate([
-            loginButton.topAnchor.constraint(equalTo: confirmPasswordUnderline.bottomAnchor, constant: 30),
+            loginButton.topAnchor.constraint(equalTo: confirmPasswordTextField.bottomAnchor, constant: 30),
             loginButton.leadingAnchor.constraint(equalTo: view.layoutMarginsGuide.leadingAnchor, constant: 10),
             loginButton.trailingAnchor.constraint(equalTo: view.layoutMarginsGuide.trailingAnchor, constant: -10),
             loginButton.heightAnchor.constraint(equalToConstant: 40),
@@ -219,7 +145,5 @@ class RegisterViewController: UIViewController {
             alreadyHaveAccountLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor)
         ])
     }
-
     
-
 }
