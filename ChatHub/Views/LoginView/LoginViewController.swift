@@ -6,11 +6,16 @@
 //
 
 import UIKit
+import RxCocoa
+import RxSwift
 
 class LoginViewController: UIViewController {
     
     private typealias Style = LoginStyle
     private typealias Constants = LoginConstants
+    
+    private var viewModel = LoginViewModel()
+    private let disposeBag = DisposeBag()
     
     private let logoImageView = UIImageView()
     
@@ -26,6 +31,7 @@ class LoginViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        bind()
         setupStyle()
         installLogoImageView()
         installLoginTextField()
@@ -35,13 +41,39 @@ class LoginViewController: UIViewController {
         installCreateAccountLabel()
     }
     
+    private func bind() {
+        loginTextField
+            .rx
+            .text
+            .map { $0 ?? "" }
+            .bind(to: viewModel.usernameRelay)
+            .disposed(by: disposeBag)
+        
+        passwordTextField
+            .rx
+            .text
+            .map { $0 ?? "" }
+            .bind(to: viewModel.passwordRelay)
+            .disposed(by: disposeBag)
+        
+        viewModel
+            .isValid()
+            .map { $0 ? Style.buttonColorEnabled : Style.buttonColorDisabled }
+            .bind(to: loginButton.rx.backgroundColor)
+            .disposed(by: disposeBag)
+    
+        viewModel
+            .isValid()
+            .bind(to: loginButton.rx.isEnabled)
+            .disposed(by: disposeBag)
+    }
+    
     private func setupStyle() {
         view.backgroundColor = Style.backgroundColor
         
         logoImageView.image = Style.logoImage
         logoImageView.contentMode = .scaleAspectFit
     
-        loginButton.backgroundColor = Style.buttonColorEnabled
         loginButton.setTitle(Constants.login.uppercased(),
                              for: .normal)
         loginButton.setTitleColor(Style.backgroundColor,

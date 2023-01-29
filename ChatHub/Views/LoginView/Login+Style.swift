@@ -17,7 +17,7 @@ enum LoginStyle {
     
     // Colors
     static let backgroundColor = UIColor(named: "backgroundColor")
-    static let buttonColorDisabled = UIColor(named: "purpleLight")
+    static let buttonColorDisabled = UIColor(named: "lightPurple")
     static let buttonColorEnabled = UIColor(named: "purple")
     static let fontColor = UIColor.white
     
