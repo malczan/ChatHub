@@ -52,7 +52,7 @@ final class WelcomeViewCoordinator: Coordinator {
     }
     
     private func signUpSelected() {
-        let signUpCoordinator = RegisterViewCoordinator(navigationController: navigationController)
+        let signUpCoordinator = SignUpViewCoordinator(navigationController: navigationController)
         
         childCoordinators.append(signUpCoordinator)
         

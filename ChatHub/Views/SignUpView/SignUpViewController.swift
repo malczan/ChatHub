@@ -1,46 +1,46 @@
 //
-//  SignInViewController.swift
+//  SignUpViewController.swift
 //  ChatHub
 //
-//  Created by Jakub Malczyk on 28/01/2023.
+//  Created by Jakub Malczyk on 29/01/2023.
 //
 
 import UIKit
 import RxCocoa
 import RxSwift
 
-
-class SignInViewController: UIViewController {
+class SignUpViewController: UIViewController {
     
-    private typealias Style = SignInStyle
-    private typealias Constants = SignInConstants
+    private typealias Style = SignUpStyle
+    private typealias Constants = SignUpConstants
     
-    var viewModel: SignInViewModel!
+    var viewModel: SignUpViewModel!
     private let disposeBag = DisposeBag()
-    private let tapGesture = UITapGestureRecognizer()
     
     private let logoImageView = UIImageView()
-    
-    private let usernameTextField = CustomTextField(icon: Style.loginIcon,
-                                                 placeholderText: Constants.login)
+    private let usernameTextField = CustomTextField(icon: Style.loginIcon, placeholderText: Constants.username)
+    private let emailTextField = CustomTextField(icon: Style.emailIcon, placeholderText: Constants.email)
     private let passwordTextField = CustomTextField(icon: Style.passwordIcon,
                                                     placeholderText: Constants.password,
                                                     password: true)
+    private let confirmPasswordTextField = CustomTextField(icon: Style.passwordIcon,
+                                                           placeholderText: Constants.confirmPassword,
+                                                           password: true)
     private let loginButton = UIButton()
-    private let forgotPasswordLabel = UILabel()
-    private let createAccountLabel = UILabel()
-    
-    
+    private let alreadyHaveAccountLabel = UILabel()
+
     override func viewDidLoad() {
         super.viewDidLoad()
         bind()
         setupStyle()
-        installLogoImageView()
+        setupLogoImageView()
         installLoginTextField()
+        installEmailTextField()
         installPasswordTextField()
+        installConfirmPasswordTextField()
         installLoginButton()
-        installForgotPasswordLabel()
-        installCreateAccountLabel()
+        installAlreadyHaveAccountLabel()
+
     }
     
     private func bind() {
@@ -51,6 +51,13 @@ class SignInViewController: UIViewController {
             .bind(to: viewModel.usernameRelay)
             .disposed(by: disposeBag)
         
+        emailTextField
+            .rx
+            .text
+            .map { $0 ?? "" }
+            .bind(to: viewModel.emailRelay)
+            .disposed(by: disposeBag)
+        
         passwordTextField
             .rx
             .text
@@ -58,12 +65,19 @@ class SignInViewController: UIViewController {
             .bind(to: viewModel.passwordRelay)
             .disposed(by: disposeBag)
         
+        confirmPasswordTextField
+            .rx
+            .text
+            .map { $0 ?? "" }
+            .bind(to: viewModel.confirmPasswordRelay)
+            .disposed(by: disposeBag)
+        
         viewModel
             .isValid()
             .map { $0 ? Style.buttonColorEnabled : Style.buttonColorDisabled }
             .bind(to: loginButton.rx.backgroundColor)
             .disposed(by: disposeBag)
-    
+        
         viewModel
             .isValid()
             .bind(to: loginButton.rx.isEnabled)
@@ -75,22 +89,19 @@ class SignInViewController: UIViewController {
         
         logoImageView.image = Style.logoImage
         logoImageView.contentMode = .scaleAspectFit
-    
-        loginButton.setTitle(Constants.login.uppercased(),
+
+        loginButton.setTitle(Constants.register,
                              for: .normal)
         loginButton.setTitleColor(Style.backgroundColor,
                                   for: .normal)
         
-        forgotPasswordLabel.text = Constants.forgotPassword
-        forgotPasswordLabel.textColor = Style.fontColor
-        forgotPasswordLabel.attributedText = Style.forgotPasswordAttributeString
+        alreadyHaveAccountLabel.text = Constants.alreadyHaveAccount
+        alreadyHaveAccountLabel.textColor = Style.fontColor
+        alreadyHaveAccountLabel.attributedText = Style.alreadyHaveAccountAttributeString
         
-        createAccountLabel.text = Constants.createAccount
-        createAccountLabel.textColor = Style.fontColor
-        createAccountLabel.attributedText = Style.createAccountAttributeString
     }
     
-    private func installLogoImageView() {
+    private func setupLogoImageView() {
         view.addSubview(logoImageView)
         
         logoImageView.translatesAutoresizingMaskIntoConstraints = false
@@ -115,16 +126,42 @@ class SignInViewController: UIViewController {
         ])
     }
     
+    private func installEmailTextField() {
+        view.addSubview(emailTextField)
+        
+        emailTextField.translatesAutoresizingMaskIntoConstraints = false
+        
+        NSLayoutConstraint.activate([
+            emailTextField.topAnchor.constraint(equalTo: usernameTextField.topAnchor, constant: 80),
+            emailTextField.leadingAnchor.constraint(equalTo: view.layoutMarginsGuide.leadingAnchor),
+            emailTextField.trailingAnchor.constraint(equalTo: view.layoutMarginsGuide.trailingAnchor),
+            emailTextField.heightAnchor.constraint(equalToConstant: 40)
+        ])
+    }
+    
     private func installPasswordTextField() {
         view.addSubview(passwordTextField)
         
         passwordTextField.translatesAutoresizingMaskIntoConstraints = false
         
         NSLayoutConstraint.activate([
-            passwordTextField.topAnchor.constraint(equalTo: usernameTextField.topAnchor, constant: 80),
+            passwordTextField.topAnchor.constraint(equalTo: emailTextField.topAnchor, constant: 80),
             passwordTextField.leadingAnchor.constraint(equalTo: view.layoutMarginsGuide.leadingAnchor),
             passwordTextField.trailingAnchor.constraint(equalTo: view.layoutMarginsGuide.trailingAnchor),
             passwordTextField.heightAnchor.constraint(equalToConstant: 40)
+        ])
+    }
+    
+    private func installConfirmPasswordTextField() {
+        view.addSubview(confirmPasswordTextField)
+        
+        confirmPasswordTextField.translatesAutoresizingMaskIntoConstraints = false
+        
+        NSLayoutConstraint.activate([
+            confirmPasswordTextField.topAnchor.constraint(equalTo: passwordTextField.topAnchor, constant: 80),
+            confirmPasswordTextField.leadingAnchor.constraint(equalTo: view.layoutMarginsGuide.leadingAnchor),
+            confirmPasswordTextField.trailingAnchor.constraint(equalTo: view.layoutMarginsGuide.trailingAnchor),
+            confirmPasswordTextField.heightAnchor.constraint(equalToConstant: 40)
         ])
     }
     
@@ -134,37 +171,30 @@ class SignInViewController: UIViewController {
         loginButton.translatesAutoresizingMaskIntoConstraints = false
         
         NSLayoutConstraint.activate([
-            loginButton.topAnchor.constraint(equalTo: passwordTextField.bottomAnchor, constant: 30),
+            loginButton.topAnchor.constraint(equalTo: confirmPasswordTextField.bottomAnchor, constant: 30),
             loginButton.leadingAnchor.constraint(equalTo: view.layoutMarginsGuide.leadingAnchor, constant: 10),
             loginButton.trailingAnchor.constraint(equalTo: view.layoutMarginsGuide.trailingAnchor, constant: -10),
             loginButton.heightAnchor.constraint(equalToConstant: 40),
-            
         ])
     }
     
-    private func installForgotPasswordLabel() {
-        view.addSubview(forgotPasswordLabel)
-        forgotPasswordLabel.addGestureRecognizer(tapGesture)
+    private func installAlreadyHaveAccountLabel() {
+        view.addSubview(alreadyHaveAccountLabel)
+        alreadyHaveAccountLabel.isUserInteractionEnabled = true
+        alreadyHaveAccountLabel.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(alreadyHaveAccountTapped)))
         
-        forgotPasswordLabel.translatesAutoresizingMaskIntoConstraints = false
-        
-        NSLayoutConstraint.activate([
-            forgotPasswordLabel.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -60),
-            forgotPasswordLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor)
-
-        ])
-    }
-        
-    private func installCreateAccountLabel() {
-        view.addSubview(createAccountLabel)
-        
-        createAccountLabel.translatesAutoresizingMaskIntoConstraints = false
+        alreadyHaveAccountLabel.translatesAutoresizingMaskIntoConstraints = false
         
         NSLayoutConstraint.activate([
-            createAccountLabel.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -30),
-            createAccountLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor)
-
+            alreadyHaveAccountLabel.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -30),
+            alreadyHaveAccountLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor)
         ])
     }
+    
+    @objc private func alreadyHaveAccountTapped(gesture: UITapGestureRecognizer) {
+        if gesture.didTapAttributedTextInLabel(label: alreadyHaveAccountLabel, inRange: Style.alreadyHaveAccounttRange) {
+            viewModel.alreadyHaveAccountTapped()
+        }
+    }
+    
 }
-

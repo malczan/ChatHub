@@ -12,7 +12,7 @@ import RxSwift
 public enum SignInViewModelOutput {
     case alreadyHaveAccount
     case forgotPassword
-    case signIn
+    case signedIn
 }
 
 final class SignInViewModel {
@@ -22,8 +22,6 @@ final class SignInViewModel {
     let passwordRelay = BehaviorSubject<String>(value: "")
     let usernameRelay = BehaviorSubject<String>(value: "")
     
-    let alreadyHaveAccountSubject = PublishSubject<Void>()
-    let forgotPasswordSubject = PublishSubject<Void>()
     let signInSubject = PublishSubject<Void>()
     
     private let outputRelay: PublishRelay<Output>
@@ -40,6 +38,14 @@ final class SignInViewModel {
             .map { $0 && $1 }
     }
     
+    func forgotPasswordTapped() {
+        outputRelay.accept(.forgotPassword)
+    }
+    
+    func createAccountTapped() {
+        outputRelay.accept(.alreadyHaveAccount)
+    }
+    
     private func isUsernameValid() -> Observable<Bool> {
         return usernameRelay.map { $0.count > 5 }
     }
@@ -49,17 +55,8 @@ final class SignInViewModel {
     }
     
     private func bind() {
-        alreadyHaveAccountSubject.subscribe(onNext: {[weak self] _ in
-            self?.outputRelay.accept(.alreadyHaveAccount)
-        }).disposed(by: disposeBag)
-        
-        forgotPasswordSubject.subscribe(onNext: { [weak self] _ in
-            self?.outputRelay.accept(.forgotPassword)
-            print("@@@@@")
-        }).disposed(by: disposeBag)
-        
         signInSubject.subscribe(onNext: {[weak self] _ in
-            self?.outputRelay.accept(.signIn)
+            self?.outputRelay.accept(.signedIn)
         }).disposed(by: disposeBag)
         
     }
