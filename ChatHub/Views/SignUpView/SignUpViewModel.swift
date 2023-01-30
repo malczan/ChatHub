@@ -1,5 +1,5 @@
 //
-//  RegisterViewModel.swift
+//  SignUpViewModel.swift
 //  ChatHub
 //
 //  Created by Jakub Malczyk on 29/01/2023.
@@ -9,14 +9,28 @@ import Foundation
 import RxRelay
 import RxSwift
 
-final class RegisterViewModel {
+enum SignUpViewModelOutput {
+    case alreadyHaveAccount
+    case signedUp
+}
+
+final class SignUpViewModel {
+    
+    typealias Output = SignUpViewModelOutput
     
     let usernameRelay = BehaviorSubject<String>(value: "")
     let emailRelay = BehaviorSubject<String>(value: "")
     let passwordRelay = BehaviorSubject<String>(value: "")
     let confirmPasswordRelay = BehaviorSubject<String>(value: "")
     
+    private let outputRelay: PublishRelay<Output>
+    private let disposeBag = DisposeBag()
+    
     private let diposeBag = DisposeBag()
+    
+    init(outputRelay: PublishRelay<Output>) {
+        self.outputRelay = outputRelay
+    }
     
     func isValid() -> Observable<Bool> {
         return Observable
@@ -26,6 +40,10 @@ final class RegisterViewModel {
                 isPasswordValid(),
                 isConfirmPasswordValid())
             .map { $0 && $1 && $2 && $3}
+    }
+    
+    func alreadyHaveAccountTapped() {
+        outputRelay.accept(.alreadyHaveAccount)
     }
     
     private func isUsernameValid() -> Observable<Bool> {

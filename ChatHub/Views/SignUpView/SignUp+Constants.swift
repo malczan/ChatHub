@@ -1,5 +1,5 @@
 //
-//  RegisterConstants.swift
+//  SignUpConstants.swift
 //  ChatHub
 //
 //  Created by Jakub Malczyk on 29/01/2023.
@@ -7,7 +7,7 @@
 
 import Foundation
 
-enum RegisterConstants {
+enum SignUpConstants {
     
     static let username = "Username"
     static let email = "E-mail"

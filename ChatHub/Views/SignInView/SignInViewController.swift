@@ -1,5 +1,5 @@
 //
-//  LoginViewController.swift
+//  SignInViewController.swift
 //  ChatHub
 //
 //  Created by Jakub Malczyk on 28/01/2023.
@@ -9,13 +9,14 @@ import UIKit
 import RxCocoa
 import RxSwift
 
-class LoginViewController: UIViewController {
+class SignInViewController: UIViewController {
     
-    private typealias Style = LoginStyle
-    private typealias Constants = LoginConstants
+    private typealias Style = SignInStyle
+    private typealias Constants = SignInConstants
     
-    private var viewModel = LoginViewModel()
+    var viewModel: SignInViewModel!
     private let disposeBag = DisposeBag()
+    private let tapGesture = UITapGestureRecognizer()
     
     private let logoImageView = UIImageView()
     
@@ -142,6 +143,11 @@ class LoginViewController: UIViewController {
     
     private func installForgotPasswordLabel() {
         view.addSubview(forgotPasswordLabel)
+        forgotPasswordLabel.isUserInteractionEnabled = true
+        forgotPasswordLabel.addGestureRecognizer(
+            UITapGestureRecognizer(
+                target:self,
+                action: #selector(forgotPasswordTapped)))
         
         forgotPasswordLabel.translatesAutoresizingMaskIntoConstraints = false
         
@@ -154,6 +160,11 @@ class LoginViewController: UIViewController {
         
     private func installCreateAccountLabel() {
         view.addSubview(createAccountLabel)
+        createAccountLabel.isUserInteractionEnabled = true
+        createAccountLabel.addGestureRecognizer(
+            UITapGestureRecognizer(
+                target:self,
+                action: #selector(createAccountTapped)))
         
         createAccountLabel.translatesAutoresizingMaskIntoConstraints = false
         
@@ -163,5 +174,16 @@ class LoginViewController: UIViewController {
 
         ])
     }
+    
+    @objc private func createAccountTapped(gesture: UITapGestureRecognizer) {
+        if gesture.didTapAttributedTextInLabel(label: createAccountLabel, inRange: Style.createAccountRange) {
+            viewModel.createAccountTapped()
+            }
+    }
+    
+    @objc private func forgotPasswordTapped(gesture: UITapGestureRecognizer) {
+        if gesture.didTapAttributedTextInLabel(label: forgotPasswordLabel, inRange: Style.forgotPasswordRange) {
+            viewModel.forgotPasswordTapped()
+        }
+    }
 }
-

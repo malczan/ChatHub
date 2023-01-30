@@ -1,5 +1,5 @@
 //
-//  RegisterViewController.swift
+//  SignUpViewController.swift
 //  ChatHub
 //
 //  Created by Jakub Malczyk on 29/01/2023.
@@ -9,12 +9,12 @@ import UIKit
 import RxCocoa
 import RxSwift
 
-class RegisterViewController: UIViewController {
+class SignUpViewController: UIViewController {
     
-    private typealias Style = RegisterStyle
-    private typealias Constants = RegisterConstants
+    private typealias Style = SignUpStyle
+    private typealias Constants = SignUpConstants
     
-    private let viewModel = RegisterViewModel()
+    var viewModel: SignUpViewModel!
     private let disposeBag = DisposeBag()
     
     private let logoImageView = UIImageView()
@@ -27,8 +27,6 @@ class RegisterViewController: UIViewController {
                                                            placeholderText: Constants.confirmPassword,
                                                            password: true)
     private let loginButton = UIButton()
-    private let forgotPasswordLabel = UILabel()
-    private let createAccountLabel = UILabel()
     private let alreadyHaveAccountLabel = UILabel()
 
     override func viewDidLoad() {
@@ -99,7 +97,7 @@ class RegisterViewController: UIViewController {
         
         alreadyHaveAccountLabel.text = Constants.alreadyHaveAccount
         alreadyHaveAccountLabel.textColor = Style.fontColor
-        alreadyHaveAccountLabel.attributedText = Style.createAccountAttributeString
+        alreadyHaveAccountLabel.attributedText = Style.alreadyHaveAccountAttributeString
         
     }
     
@@ -182,6 +180,8 @@ class RegisterViewController: UIViewController {
     
     private func installAlreadyHaveAccountLabel() {
         view.addSubview(alreadyHaveAccountLabel)
+        alreadyHaveAccountLabel.isUserInteractionEnabled = true
+        alreadyHaveAccountLabel.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(alreadyHaveAccountTapped)))
         
         alreadyHaveAccountLabel.translatesAutoresizingMaskIntoConstraints = false
         
@@ -189,6 +189,12 @@ class RegisterViewController: UIViewController {
             alreadyHaveAccountLabel.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -30),
             alreadyHaveAccountLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor)
         ])
+    }
+    
+    @objc private func alreadyHaveAccountTapped(gesture: UITapGestureRecognizer) {
+        if gesture.didTapAttributedTextInLabel(label: alreadyHaveAccountLabel, inRange: Style.alreadyHaveAccounttRange) {
+            viewModel.alreadyHaveAccountTapped()
+        }
     }
     
 }

@@ -1,5 +1,5 @@
 //
-//  Register+Style.swift
+//  SignUp+Style.swift
 //  ChatHub
 //
 //  Created by Jakub Malczyk on 29/01/2023.
@@ -7,12 +7,15 @@
 
 import UIKit
 
-enum RegisterStyle {
+enum SignUpStyle {
     
-    private typealias texts = RegisterConstants
+    private typealias texts = SignUpConstants
   
     // AttString
-    static let createAccountAttributeString = attributeStringAlreadyHaveAccount()
+    static let alreadyHaveAccountAttributeString = attributeStringAlreadyHaveAccount()
+    
+    static let alreadyHaveAccounttRange = (texts.alreadyHaveAccount as NSString).range(of: texts.alreadyHaveAccountClickable)
+
     
     // Colors
     static let backgroundColor = UIColor(named: "backgroundColor")

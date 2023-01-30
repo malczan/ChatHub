@@ -6,11 +6,16 @@
 //
 
 import UIKit
+import RxCocoa
+import RxSwift
 
 class WelcomeViewController: UIViewController {
     
     private typealias Style = WelcomeStyle
     private typealias Constants = WelcomeConstants
+    
+    var viewModel: WelcomeViewModel!
+    private let diposeBag = DisposeBag()
     
     private let logoImageView = UIImageView()
     private let chatImageView = UIImageView()
@@ -19,11 +24,26 @@ class WelcomeViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        bind()
         setupStyle()
         installLogoImageView()
         installchatImageView()
         installSignInButton()
         installSignUpButton()
+    }
+    
+    private func bind() {
+        signInButton
+            .rx
+            .tap
+            .bind(to: viewModel.signInSubject)
+            .disposed(by: diposeBag)
+        
+        signUpButton
+            .rx
+            .tap
+            .bind(to: viewModel.signUpSubject)
+            .disposed(by: diposeBag)
     }
     
     private func setupStyle() {
