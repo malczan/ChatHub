@@ -11,49 +11,22 @@ import RxRelay
 
 final class SignInViewCoordinator: Coordinator {
     
+    typealias Output = SignInViewModelOutput
     private typealias Factory = SignInViewControllerFactory
-    private typealias Output = SignInViewModelOutput
     
     private(set) var childCoordinators: [Coordinator] = []
     private let navigationController: UINavigationController
-    private let outputRelay = PublishRelay<Output>()
-    private let disposeBag = DisposeBag()
+    private let outputRelay: PublishRelay<Output>
     
-    init(navigationController: UINavigationController) {
+    init(navigationController: UINavigationController,
+         outputRelay: PublishRelay<Output>) {
         self.navigationController = navigationController
-        
+        self.outputRelay = outputRelay
     }
     
     func start() {
-        bind()
         let viewModel = SignInViewModel(outputRelay: outputRelay)
         let loginViewController = Factory.createSignInViewController(viewModel: viewModel)
         navigationController.setViewControllers([loginViewController], animated: true)
     }
-    
-    private func bind() {
-        outputRelay
-            .subscribe(onNext: { [weak self] in
-                switch $0 {
-                case .alreadyHaveAccount:
-                    self?.showSignUpViewController()
-                case .forgotPassword:
-                    print("@@@  forgot password")
-                case .signedIn:
-                    print("@@@ signed in")
-                }
-            }).disposed(by: disposeBag)
-    }
-    
-    private func showSignUpViewController() {
-        dismiss()
-        let signUpCoordinator = SignUpViewCoordinator(navigationController: navigationController)
-        signUpCoordinator.start()
-    }
-    
-    private func dismiss() {
-        navigationController.dismiss(animated: false)
-    }
-    
-    
 }

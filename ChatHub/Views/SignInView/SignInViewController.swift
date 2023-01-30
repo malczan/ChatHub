@@ -174,7 +174,6 @@ class SignInViewController: UIViewController {
     @objc private func createAccountTapped(gesture: UITapGestureRecognizer) {
         if gesture.didTapAttributedTextInLabel(label: createAccountLabel, inRange: Style.createAccountRange) {
             viewModel.createAccountTapped()
-            print("@@@@")
         }
     }
     
