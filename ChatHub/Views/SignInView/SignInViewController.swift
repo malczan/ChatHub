@@ -9,7 +9,6 @@ import UIKit
 import RxCocoa
 import RxSwift
 
-
 class SignInViewController: UIViewController {
     
     private typealias Style = SignInStyle
@@ -145,8 +144,10 @@ class SignInViewController: UIViewController {
     private func installForgotPasswordLabel() {
         view.addSubview(forgotPasswordLabel)
         forgotPasswordLabel.isUserInteractionEnabled = true
-        forgotPasswordLabel.addGestureRecognizer(UITapGestureRecognizer(target:self, action: #selector(forgotPasswordTapped)))
-        
+        forgotPasswordLabel.addGestureRecognizer(
+            UITapGestureRecognizer(
+                target:self,
+                action: #selector(forgotPasswordTapped)))
         
         forgotPasswordLabel.translatesAutoresizingMaskIntoConstraints = false
         
@@ -160,7 +161,10 @@ class SignInViewController: UIViewController {
     private func installCreateAccountLabel() {
         view.addSubview(createAccountLabel)
         createAccountLabel.isUserInteractionEnabled = true
-        createAccountLabel.addGestureRecognizer(UITapGestureRecognizer(target:self, action: #selector(createAccountTapped)))
+        createAccountLabel.addGestureRecognizer(
+            UITapGestureRecognizer(
+                target:self,
+                action: #selector(createAccountTapped)))
         
         createAccountLabel.translatesAutoresizingMaskIntoConstraints = false
         
@@ -174,7 +178,7 @@ class SignInViewController: UIViewController {
     @objc private func createAccountTapped(gesture: UITapGestureRecognizer) {
         if gesture.didTapAttributedTextInLabel(label: createAccountLabel, inRange: Style.createAccountRange) {
             viewModel.createAccountTapped()
-        }
+            }
     }
     
     @objc private func forgotPasswordTapped(gesture: UITapGestureRecognizer) {
@@ -182,5 +186,4 @@ class SignInViewController: UIViewController {
             viewModel.forgotPasswordTapped()
         }
     }
-
 }
