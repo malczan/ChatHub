@@ -16,12 +16,11 @@ class SignInViewController: UIViewController {
     
     var viewModel: SignInViewModel!
     private let disposeBag = DisposeBag()
-    private let tapGesture = UITapGestureRecognizer()
     
     private let logoImageView = UIImageView()
     
     private let usernameTextField = CustomTextField(icon: Style.loginIcon,
-                                                 placeholderText: Constants.login)
+                                                 placeholderText: Constants.username)
     private let passwordTextField = CustomTextField(icon: Style.passwordIcon,
                                                     placeholderText: Constants.password,
                                                     password: true)
@@ -75,16 +74,14 @@ class SignInViewController: UIViewController {
         logoImageView.image = Style.logoImage
         logoImageView.contentMode = .scaleAspectFit
     
-        loginButton.setTitle(Constants.login.uppercased(),
+        loginButton.setTitle(Constants.login,
                              for: .normal)
         loginButton.setTitleColor(Style.backgroundColor,
                                   for: .normal)
         
-        forgotPasswordLabel.text = Constants.forgotPassword
         forgotPasswordLabel.textColor = Style.fontColor
         forgotPasswordLabel.attributedText = Style.forgotPasswordAttributeString
         
-        createAccountLabel.text = Constants.createAccount
         createAccountLabel.textColor = Style.fontColor
         createAccountLabel.attributedText = Style.createAccountAttributeString
     }
