@@ -6,5 +6,4 @@ target 'ChatHub' do
 	pod 'RxSwift', '6.5.0'
    	pod 'RxCocoa', '6.5.0'
   # Pods for ChatHub
-
 end
