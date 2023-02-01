@@ -58,10 +58,12 @@ class WelcomeViewController: UIViewController {
         signInButton.backgroundColor = Style.signInButtonColor
         signInButton.setTitle(Constants.signIn.uppercased(), for: .normal)
         signInButton.setTitleColor(Style.whiteColor, for: .normal)
+        signInButton.make3dButton()
         
         signUpButton.backgroundColor = Style.signUpButtonColor
         signUpButton.setTitle(Constants.signUp.uppercased(), for: .normal)
         signUpButton.setTitleColor(Style.whiteColor, for: .normal)
+        signUpButton.make3dButton()
         
     }
     

@@ -80,6 +80,7 @@ class ForgotPasswordViewController: UIViewController {
                              for: .normal)
         confirmButton.setTitleColor(Style.backgroundColor,
                                   for: .normal)
+        confirmButton.make3dButton()
         
         goBackLabel.textColor = Style.fontColor
         goBackLabel.attributedText = Style.goBackAttributeString

@@ -94,6 +94,7 @@ class SignUpViewController: UIViewController {
                              for: .normal)
         loginButton.setTitleColor(Style.backgroundColor,
                                   for: .normal)
+        loginButton.make3dButton()
         
         alreadyHaveAccountLabel.textColor = Style.fontColor
         alreadyHaveAccountLabel.attributedText = Style.alreadyHaveAccountAttributeString

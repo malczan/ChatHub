@@ -78,6 +78,7 @@ class SignInViewController: UIViewController {
                              for: .normal)
         loginButton.setTitleColor(Style.backgroundColor,
                                   for: .normal)
+        loginButton.make3dButton()
         
         forgotPasswordLabel.textColor = Style.fontColor
         forgotPasswordLabel.attributedText = Style.forgotPasswordAttributeString
