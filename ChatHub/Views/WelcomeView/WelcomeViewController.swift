@@ -15,7 +15,7 @@ class WelcomeViewController: UIViewController {
     private typealias Constants = WelcomeConstants
     
     var viewModel: WelcomeViewModel!
-    private let diposeBag = DisposeBag()
+    private let disposeBag = DisposeBag()
     
     private let logoImageView = UIImageView()
     private let chatImageView = UIImageView()
@@ -37,13 +37,13 @@ class WelcomeViewController: UIViewController {
             .rx
             .tap
             .bind(to: viewModel.signInSubject)
-            .disposed(by: diposeBag)
+            .disposed(by: disposeBag)
         
         signUpButton
             .rx
             .tap
             .bind(to: viewModel.signUpSubject)
-            .disposed(by: diposeBag)
+            .disposed(by: disposeBag)
     }
     
     private func setupStyle() {

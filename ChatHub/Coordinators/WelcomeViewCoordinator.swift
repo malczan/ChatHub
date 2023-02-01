@@ -16,18 +16,18 @@ final class WelcomeViewCoordinator: Coordinator {
     
     private(set) var childCoordinators: [Coordinator] = []
     private let navigationController: UINavigationController
-    private let welcomeRelay: PublishRelay<Output>
+    private let outputRelay: PublishRelay<Output>
     
     private let disposeBag = DisposeBag()
     
     init(navigationController: UINavigationController,
-         welcomeRelay: PublishRelay<Output>) {
+         outputRelay: PublishRelay<Output>) {
         self.navigationController = navigationController
-        self.welcomeRelay = welcomeRelay
+        self.outputRelay = outputRelay
     }
     
     func start() {
-        let viewModel = WelcomeViewModel(outputScreenSelected: welcomeRelay)
+        let viewModel = WelcomeViewModel(outputScreenSelected: outputRelay)
         let welcomeViewController =  Factory.createWelcomeViewController(viewModel: viewModel)
         
         navigationController.setViewControllers([welcomeViewController], animated: false)

@@ -23,6 +23,7 @@ final class AppCoordinator: Coordinator {
     private let welcomeRelay = PublishRelay<WelcomeViewModelOutput>()
     private let signInRelay = PublishRelay<SignInViewModelOutput>()
     private let signUpRelay = PublishRelay<SignUpViewModelOutput>()
+    private let forgotPasswordRelay = PublishRelay<ForgotPasswordViewModelOutput>()
     private let disposeBag = DisposeBag()
 
     
@@ -36,7 +37,7 @@ final class AppCoordinator: Coordinator {
     func start() {
         let welcomeViewCoordinator = WelcomeViewCoordinator(
             navigationController: navigationController,
-            welcomeRelay: welcomeRelay)
+            outputRelay: welcomeRelay)
         
         childCoordinators.append(welcomeViewCoordinator)
 
@@ -63,7 +64,7 @@ final class AppCoordinator: Coordinator {
                 case .alreadyHaveAccount:
                     self?.showSignUpView()
                 case .forgotPassword:
-                    print("@@@  forgot password")
+                    self?.showForgotPasswordView()
                 case .signedIn:
                     print("@@@ signed in")
                 }
@@ -79,12 +80,22 @@ final class AppCoordinator: Coordinator {
                 }
             })
             .disposed(by: disposeBag)
+        
+        forgotPasswordRelay
+            .subscribe(onNext: { [weak self] in
+                switch $0 {
+                case .cofirm:
+                    self?.showSignInView()
+                case .goBack:
+                    self?.showSignInView()
+                }
+            }).disposed(by: disposeBag)
     }
     
     private func showWelcomeView() {
         let welcomeViewCoordinator = WelcomeViewCoordinator(
             navigationController: navigationController,
-            welcomeRelay: welcomeRelay)
+            outputRelay: welcomeRelay)
         welcomeViewCoordinator.start()
     }
     
@@ -100,6 +111,12 @@ final class AppCoordinator: Coordinator {
             navigationController: navigationController,
             outputRelay: signUpRelay)
         signUpViewCoordinator.start()
-        
+    }
+    
+    private func showForgotPasswordView() {
+        let forgotPasswordViewCoordinator = ForgotPasswordViewCoordinator(
+            navigationController: navigationController,
+            outplutRelay: forgotPasswordRelay)
+        forgotPasswordViewCoordinator.start()
     }
 }
