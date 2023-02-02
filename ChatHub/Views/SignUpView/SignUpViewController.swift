@@ -72,6 +72,12 @@ class SignUpViewController: UIViewController {
             .bind(to: viewModel.confirmPasswordRelay)
             .disposed(by: disposeBag)
         
+        loginButton
+            .rx
+            .tap
+            .bind(to: viewModel.signUnSubject)
+            .disposed(by: disposeBag)
+        
         viewModel
             .isValid()
             .map { $0 ? Style.buttonColorEnabled : Style.buttonColorDisabled }

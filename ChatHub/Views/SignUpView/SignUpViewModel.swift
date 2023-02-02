@@ -23,6 +23,10 @@ final class SignUpViewModel {
     let passwordRelay = BehaviorSubject<String>(value: "")
     let confirmPasswordRelay = BehaviorSubject<String>(value: "")
     
+    let signUnSubject = PublishSubject<Void>()
+    
+    private let authorizationService = ConcreteAuthorizationService()
+    
     private let outputRelay: PublishRelay<Output>
     private let disposeBag = DisposeBag()
     
@@ -30,6 +34,7 @@ final class SignUpViewModel {
     
     init(outputRelay: PublishRelay<Output>) {
         self.outputRelay = outputRelay
+        bind()
     }
     
     func isValid() -> Observable<Bool> {
@@ -44,6 +49,20 @@ final class SignUpViewModel {
     
     func alreadyHaveAccountTapped() {
         outputRelay.accept(.alreadyHaveAccount)
+    }
+    
+    private func bind() {
+        signUnSubject
+            .subscribe(onNext: { [weak self] in
+                self?.signUpTapped()
+            })
+            .disposed(by: disposeBag)
+    }
+    
+    private func arePasswordTheSame() -> Observable<Bool>{
+        return Observable
+            .zip(passwordRelay, confirmPasswordRelay)
+            .map { $0 == $1}
     }
     
     private func isUsernameValid() -> Observable<Bool> {
@@ -61,5 +80,41 @@ final class SignUpViewModel {
     private func isConfirmPasswordValid() -> Observable<Bool> {
         return confirmPasswordRelay.map { $0.count > 5 }
     }
-
+    
+    private func signUpTapped() {
+        arePasswordTheSame()
+            .subscribe(onNext: { [weak self] in
+                switch $0 {
+                case true:
+                    self?.tryToSignUpUser()
+                case false:
+                print("password are not the same")
+                }
+            })
+            .disposed(by: disposeBag)
+    }
+    
+    private func tryToSignUpUser() {
+        Observable
+            .zip(emailRelay, passwordRelay)
+            .subscribe(onNext: { [weak self] in
+                print("@ try to sign up user")
+                self?.authorizationService.signUpUser(with: $0, password: $1, completion: { [weak self] in
+                    self?.handleSigUpResult(with: $0)
+                })
+            })
+            .disposed(by: disposeBag)
+    }
+    
+    private func handleSigUpResult(with result: Result<Void, Error>) {
+        switch result {
+        case .success:
+            print("Sucessfully signed up")
+        case .failure(let error):
+            print("Error!: \(error)")
+        }
+    }
+    
+    
+    
 }
