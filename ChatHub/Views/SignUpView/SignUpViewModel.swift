@@ -18,7 +18,6 @@ final class SignUpViewModel {
     
     typealias Output = SignUpViewModelOutput
     
-    let usernameRelay = BehaviorSubject<String>(value: "")
     let emailRelay = BehaviorSubject<String>(value: "")
     let passwordRelay = BehaviorSubject<String>(value: "")
     let confirmPasswordRelay = BehaviorSubject<String>(value: "")
@@ -40,11 +39,10 @@ final class SignUpViewModel {
     func isValid() -> Observable<Bool> {
         return Observable
             .combineLatest(
-                isUsernameValid(),
                 isEmailValid(),
                 isPasswordValid(),
                 isConfirmPasswordValid())
-            .map { $0 && $1 && $2 && $3}
+            .map { $0 && $1 && $2 }
     }
     
     func alreadyHaveAccountTapped() {
@@ -65,10 +63,7 @@ final class SignUpViewModel {
             .map { $0 == $1}
     }
     
-    private func isUsernameValid() -> Observable<Bool> {
-        return usernameRelay.map { $0.count > 5 }
-    }
-    
+
     private func isEmailValid() -> Observable<Bool> {
         return emailRelay.map { $0.count > 5 }
     }

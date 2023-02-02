@@ -18,7 +18,6 @@ class SignUpViewController: UIViewController {
     private let disposeBag = DisposeBag()
     
     private let logoImageView = UIImageView()
-    private let usernameTextField = CustomTextField(icon: Style.loginIcon, placeholderText: Constants.username)
     private let emailTextField = CustomTextField(icon: Style.emailIcon, placeholderText: Constants.email)
     private let passwordTextField = CustomTextField(icon: Style.passwordIcon,
                                                     placeholderText: Constants.password,
@@ -26,7 +25,7 @@ class SignUpViewController: UIViewController {
     private let confirmPasswordTextField = CustomTextField(icon: Style.passwordIcon,
                                                            placeholderText: Constants.confirmPassword,
                                                            password: true)
-    private let loginButton = UIButton()
+    private let registerButton = UIButton()
     private let alreadyHaveAccountLabel = UILabel()
 
     override func viewDidLoad() {
@@ -34,23 +33,14 @@ class SignUpViewController: UIViewController {
         bind()
         setupStyle()
         setupLogoImageView()
-        installLoginTextField()
         installEmailTextField()
         installPasswordTextField()
         installConfirmPasswordTextField()
-        installLoginButton()
+        installRegisterButton()
         installAlreadyHaveAccountLabel()
-
     }
     
     private func bind() {
-        usernameTextField
-            .rx
-            .text
-            .map { $0 ?? "" }
-            .bind(to: viewModel.usernameRelay)
-            .disposed(by: disposeBag)
-        
         emailTextField
             .rx
             .text
@@ -72,7 +62,7 @@ class SignUpViewController: UIViewController {
             .bind(to: viewModel.confirmPasswordRelay)
             .disposed(by: disposeBag)
         
-        loginButton
+        registerButton
             .rx
             .tap
             .bind(to: viewModel.signUnSubject)
@@ -81,12 +71,12 @@ class SignUpViewController: UIViewController {
         viewModel
             .isValid()
             .map { $0 ? Style.buttonColorEnabled : Style.buttonColorDisabled }
-            .bind(to: loginButton.rx.backgroundColor)
+            .bind(to: registerButton.rx.backgroundColor)
             .disposed(by: disposeBag)
         
         viewModel
             .isValid()
-            .bind(to: loginButton.rx.isEnabled)
+            .bind(to: registerButton.rx.isEnabled)
             .disposed(by: disposeBag)
     }
     
@@ -96,11 +86,11 @@ class SignUpViewController: UIViewController {
         logoImageView.image = Style.logoImage
         logoImageView.contentMode = .scaleAspectFit
 
-        loginButton.setTitle(Constants.register,
+        registerButton.setTitle(Constants.register,
                              for: .normal)
-        loginButton.setTitleColor(Style.backgroundColor,
+        registerButton.setTitleColor(Style.backgroundColor,
                                   for: .normal)
-        loginButton.make3dButton()
+        registerButton.make3dButton()
         
         alreadyHaveAccountLabel.textColor = Style.fontColor
         alreadyHaveAccountLabel.attributedText = Style.alreadyHaveAccountAttributeString
@@ -119,26 +109,13 @@ class SignUpViewController: UIViewController {
         ])
     }
     
-    private func installLoginTextField() {
-        view.addSubview(usernameTextField)
-        
-        usernameTextField.translatesAutoresizingMaskIntoConstraints = false
-        
-        NSLayoutConstraint.activate([
-            usernameTextField.topAnchor.constraint(equalTo: view.topAnchor, constant: 300),
-            usernameTextField.leadingAnchor.constraint(equalTo: view.layoutMarginsGuide.leadingAnchor),
-            usernameTextField.trailingAnchor.constraint(equalTo: view.layoutMarginsGuide.trailingAnchor),
-            usernameTextField.heightAnchor.constraint(equalToConstant: 40)
-        ])
-    }
-    
     private func installEmailTextField() {
         view.addSubview(emailTextField)
         
         emailTextField.translatesAutoresizingMaskIntoConstraints = false
         
         NSLayoutConstraint.activate([
-            emailTextField.topAnchor.constraint(equalTo: usernameTextField.topAnchor, constant: 80),
+            emailTextField.topAnchor.constraint(equalTo: view.topAnchor, constant: 300),
             emailTextField.leadingAnchor.constraint(equalTo: view.layoutMarginsGuide.leadingAnchor),
             emailTextField.trailingAnchor.constraint(equalTo: view.layoutMarginsGuide.trailingAnchor),
             emailTextField.heightAnchor.constraint(equalToConstant: 40)
@@ -171,16 +148,16 @@ class SignUpViewController: UIViewController {
         ])
     }
     
-    private func installLoginButton() {
-        view.addSubview(loginButton)
+    private func installRegisterButton() {
+        view.addSubview(registerButton)
         
-        loginButton.translatesAutoresizingMaskIntoConstraints = false
+        registerButton.translatesAutoresizingMaskIntoConstraints = false
         
         NSLayoutConstraint.activate([
-            loginButton.topAnchor.constraint(equalTo: confirmPasswordTextField.bottomAnchor, constant: 30),
-            loginButton.leadingAnchor.constraint(equalTo: view.layoutMarginsGuide.leadingAnchor, constant: 10),
-            loginButton.trailingAnchor.constraint(equalTo: view.layoutMarginsGuide.trailingAnchor, constant: -10),
-            loginButton.heightAnchor.constraint(equalToConstant: 40),
+            registerButton.topAnchor.constraint(equalTo: confirmPasswordTextField.bottomAnchor, constant: 30),
+            registerButton.leadingAnchor.constraint(equalTo: view.layoutMarginsGuide.leadingAnchor, constant: 10),
+            registerButton.trailingAnchor.constraint(equalTo: view.layoutMarginsGuide.trailingAnchor, constant: -10),
+            registerButton.heightAnchor.constraint(equalToConstant: 40),
         ])
     }
     
@@ -202,5 +179,4 @@ class SignUpViewController: UIViewController {
             viewModel.alreadyHaveAccountTapped()
         }
     }
-    
 }
