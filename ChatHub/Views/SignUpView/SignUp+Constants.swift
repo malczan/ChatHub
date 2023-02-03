@@ -16,6 +16,8 @@ enum SignUpConstants {
     
     static let register = "REGISTER"
     
+    static let passwordsAreNotTheSame = "Passwords are not the same!"
+    
     static let alreadyHaveAccount = "Already have account? Click here to signin"
     static let alreadyHaveAccountClickable = "Click here to signin"
     

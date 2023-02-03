@@ -26,6 +26,7 @@ class SignUpViewController: UIViewController {
                                                            placeholderText: Constants.confirmPassword,
                                                            password: true)
     private let registerButton = UIButton()
+    private let messageLabel = UILabel()
     private let alreadyHaveAccountLabel = UILabel()
 
     override func viewDidLoad() {
@@ -37,6 +38,7 @@ class SignUpViewController: UIViewController {
         installPasswordTextField()
         installConfirmPasswordTextField()
         installRegisterButton()
+        installMessageLabel()
         installAlreadyHaveAccountLabel()
     }
     
@@ -78,6 +80,11 @@ class SignUpViewController: UIViewController {
             .isValid()
             .bind(to: registerButton.rx.isEnabled)
             .disposed(by: disposeBag)
+        
+        viewModel
+            .arePasswordTheSame()
+            .bind(to: messageLabel.rx.isHidden)
+            .disposed(by: disposeBag)
     }
     
     private func setupStyle() {
@@ -92,9 +99,11 @@ class SignUpViewController: UIViewController {
                                   for: .normal)
         registerButton.make3dButton()
         
+        messageLabel.text = Constants.passwordsAreNotTheSame
+        messageLabel.textColor = Style.errorColor
+        
         alreadyHaveAccountLabel.textColor = Style.fontColor
         alreadyHaveAccountLabel.attributedText = Style.alreadyHaveAccountAttributeString
-        
     }
     
     private func setupLogoImageView() {
@@ -158,6 +167,17 @@ class SignUpViewController: UIViewController {
             registerButton.leadingAnchor.constraint(equalTo: view.layoutMarginsGuide.leadingAnchor, constant: 10),
             registerButton.trailingAnchor.constraint(equalTo: view.layoutMarginsGuide.trailingAnchor, constant: -10),
             registerButton.heightAnchor.constraint(equalToConstant: 40),
+        ])
+    }
+    
+    private func installMessageLabel() {
+        view.addSubview(messageLabel)
+        
+        messageLabel.translatesAutoresizingMaskIntoConstraints = false
+        
+        NSLayoutConstraint.activate([
+            messageLabel.topAnchor.constraint(equalTo: registerButton.bottomAnchor, constant: 10),
+            messageLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor)
         ])
     }
     

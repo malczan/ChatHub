@@ -44,8 +44,9 @@ final class SignUpViewModel {
             .combineLatest(
                 isEmailValid(),
                 isPasswordValid(),
-                isConfirmPasswordValid())
-            .map { $0 && $1 && $2 }
+                isConfirmPasswordValid(),
+                arePasswordTheSame())
+            .map { $0 && $1 && $2 && $3}
     }
     
     func alreadyHaveAccountTapped() {
@@ -60,9 +61,9 @@ final class SignUpViewModel {
             .disposed(by: disposeBag)
     }
     
-    private func arePasswordTheSame() -> Observable<Bool>{
+    func arePasswordTheSame() -> Observable<Bool>{
         return Observable
-            .zip(passwordRelay, confirmPasswordRelay)
+            .combineLatest(passwordRelay, confirmPasswordRelay)
             .map { $0 == $1}
     }
     
@@ -80,27 +81,14 @@ final class SignUpViewModel {
     }
     
     private func signUpTapped() {
-        arePasswordTheSame()
-            .subscribe(onNext: { [weak self] in
-                switch $0 {
-                case true:
-                    self?.tryToSignUpUser()
-                case false:
-                print("password are not the same")
-                }
-            })
-            .disposed(by: disposeBag)
-    }
-    
-    
-    //to fix!!! react even
-    private func tryToSignUpUser() {
         Observable
-            .zip(emailRelay, passwordRelay)
+            .combineLatest(emailRelay, passwordRelay)
             .subscribe(onNext: { [weak self] in
-                print("@ try to sign up user")
-                self?.authorizationService.signUpUser(with: $0, password: $1, completion: { [weak self] in
-                    self?.handleSigUpResult(with: $0)
+                self?.authorizationService.signUpUser(
+                    with: $0,
+                    password: $1,
+                    completion: { [weak self] in
+                        self?.handleSigUpResult(with: $0)
                 })
             })
             .disposed(by: disposeBag)

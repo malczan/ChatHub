@@ -21,6 +21,7 @@ enum SignUpStyle {
     static let backgroundColor = UIColor(named: "backgroundColor")
     static let buttonColorDisabled = UIColor(named: "lightPurple")
     static let buttonColorEnabled = UIColor(named: "purple")
+    static let errorColor = UIColor.systemRed
     static let fontColor = UIColor.white
     
     // Icons
