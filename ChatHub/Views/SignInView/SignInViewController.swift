@@ -67,7 +67,7 @@ class SignInViewController: UIViewController {
             .bind(to: loginButton.rx.isEnabled)
             .disposed(by: disposeBag)
     }
-    
+
     private func setupStyle() {
         view.backgroundColor = Style.backgroundColor
         

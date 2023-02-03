@@ -9,7 +9,7 @@ import Foundation
 import RxRelay
 import RxSwift
 
-enum SignUpViewModelOutput {
+enum SignUpViewModelOutput: String {
     case alreadyHaveAccount
     case signedUp
 }
@@ -26,13 +26,16 @@ final class SignUpViewModel {
     
     private let authorizationService = ConcreteAuthorizationService()
     
+    private let outputErrorRelay: PublishRelay<Error>
     private let outputRelay: PublishRelay<Output>
     private let disposeBag = DisposeBag()
     
     private let diposeBag = DisposeBag()
     
-    init(outputRelay: PublishRelay<Output>) {
+    init(outputRelay: PublishRelay<Output>,
+         outputErrorRelay: PublishRelay<Error>) {
         self.outputRelay = outputRelay
+        self.outputErrorRelay = outputErrorRelay
         bind()
     }
     
@@ -89,6 +92,8 @@ final class SignUpViewModel {
             .disposed(by: disposeBag)
     }
     
+    
+    //to fix!!! react even
     private func tryToSignUpUser() {
         Observable
             .zip(emailRelay, passwordRelay)
@@ -106,7 +111,7 @@ final class SignUpViewModel {
         case .success:
             print("Sucessfully signed up")
         case .failure(let error):
-            print("Error!: \(error)")
+            outputErrorRelay.accept(error)
         }
     }
     

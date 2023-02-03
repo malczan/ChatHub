@@ -23,7 +23,9 @@ final class AppCoordinator: Coordinator {
     private let welcomeRelay = PublishRelay<WelcomeViewModelOutput>()
     private let signInRelay = PublishRelay<SignInViewModelOutput>()
     private let signUpRelay = PublishRelay<SignUpViewModelOutput>()
+    private let signUpErrorRelay = PublishRelay<Error>()
     private let forgotPasswordRelay = PublishRelay<ForgotPasswordViewModelOutput>()
+    private let popUpRelay = PublishRelay<Void>()
     private let disposeBag = DisposeBag()
 
     
@@ -81,6 +83,12 @@ final class AppCoordinator: Coordinator {
             })
             .disposed(by: disposeBag)
         
+        signUpErrorRelay
+            .subscribe(onNext: { [weak self] in
+                self?.showPopUpView(with: $0)
+            })
+            .disposed(by: disposeBag)
+        
         forgotPasswordRelay
             .subscribe(onNext: { [weak self] in
                 switch $0 {
@@ -90,6 +98,12 @@ final class AppCoordinator: Coordinator {
                     self?.showSignInView()
                 }
             }).disposed(by: disposeBag)
+        
+        popUpRelay
+            .subscribe(onNext: { [weak self] in
+                self?.hidePopUpView()
+            })
+            .disposed(by: disposeBag)
     }
     
     private func showWelcomeView() {
@@ -109,7 +123,8 @@ final class AppCoordinator: Coordinator {
     private func showSignUpView() {
         let signUpViewCoordinator = SignUpViewCoordinator(
             navigationController: navigationController,
-            outputRelay: signUpRelay)
+            outputRelay: signUpRelay,
+            outputErrorRelay: signUpErrorRelay)
         signUpViewCoordinator.start()
     }
     
@@ -118,5 +133,17 @@ final class AppCoordinator: Coordinator {
             navigationController: navigationController,
             outplutRelay: forgotPasswordRelay)
         forgotPasswordViewCoordinator.start()
+    }
+    
+    private func showPopUpView(with error: Error) {
+        let viewModel = PopUpViewModel(error: error, outputRelay: popUpRelay)
+        let popUpViewController = PopUpViewControllerFactory.createPopUpViewController(viewModel: viewModel)
+        popUpViewController.modalPresentationStyle = .custom
+        window.rootViewController?.present(popUpViewController, animated: false)
+        window.makeKeyAndVisible()
+    }
+    
+    private func hidePopUpView() {
+        window.rootViewController?.dismiss(animated: false)
     }
 }
