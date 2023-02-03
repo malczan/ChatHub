@@ -13,14 +13,14 @@ targets:
      - path: ChatHub
      dependencies:
      - package: FirebaseAuth
-     - package: FirebaseFirestore
+     - package: FirebaseFirestoreSwift
      - package: FirebaseFunctions
      - package: FirebaseStorage
 packages:
     FirebaseAuth:
         url: https://github.com/firebase/firebase-ios-sdk.git
         branch: master
-    FirebaseFirestore:
+    FirebaseFirestoreSwift:
         url: https://github.com/firebase/firebase-ios-sdk.git
         branch: master
     FirebaseFunctions:
