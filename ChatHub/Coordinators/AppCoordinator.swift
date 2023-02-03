@@ -19,104 +19,31 @@ final class AppCoordinator: Coordinator {
     private let window: UIWindow
     
     let navigationController = UINavigationController()
-    
-    private let welcomeRelay = PublishRelay<WelcomeViewModelOutput>()
-    private let signInRelay = PublishRelay<SignInViewModelOutput>()
-    private let signUpRelay = PublishRelay<SignUpViewModelOutput>()
-    private let forgotPasswordRelay = PublishRelay<ForgotPasswordViewModelOutput>()
-    private let disposeBag = DisposeBag()
-
+    private let isUserLogged = true // hardcoded for now
     
     init(window: UIWindow) {
         navigationController.isNavigationBarHidden = true
-        self.window = window
-        bind()
-        
+        self.window = window        
     }
     
     func start() {
-        let welcomeViewCoordinator = WelcomeViewCoordinator(
-            navigationController: navigationController,
-            outputRelay: welcomeRelay)
-        
-        childCoordinators.append(welcomeViewCoordinator)
-
-        welcomeViewCoordinator.start()
+        if isUserLogged {
+            showWelcomeView()
+        } else {
+            //
+        }
         
         window.rootViewController = navigationController
         window.makeKeyAndVisible()
     }
     
-    private func bind() {
-        welcomeRelay
-            .subscribe(onNext: { [weak self] in
-                switch $0 {
-                    case .signIn:
-                        self?.showSignInView()
-                    case .singUp:
-                        self?.showSignUpView()
-            }
-        }).disposed(by: disposeBag)
-        
-        signInRelay
-            .subscribe(onNext: { [weak self] in
-                switch $0 {
-                case .alreadyHaveAccount:
-                    self?.showSignUpView()
-                case .forgotPassword:
-                    self?.showForgotPasswordView()
-                case .signedIn:
-                    print("@@@ signed in")
-                }
-            }).disposed(by: disposeBag)
-        
-        signUpRelay
-            .subscribe(onNext: { [weak self] in
-                switch $0 {
-                case .alreadyHaveAccount:
-                    self?.showSignInView()
-                case .signedUp:
-                    print("@")
-                }
-            })
-            .disposed(by: disposeBag)
-        
-        forgotPasswordRelay
-            .subscribe(onNext: { [weak self] in
-                switch $0 {
-                case .cofirm:
-                    self?.showSignInView()
-                case .goBack:
-                    self?.showSignInView()
-                }
-            }).disposed(by: disposeBag)
-    }
-    
     private func showWelcomeView() {
         let welcomeViewCoordinator = WelcomeViewCoordinator(
             navigationController: navigationController,
-            outputRelay: welcomeRelay)
+            window: window)
+        
+        childCoordinators.append(welcomeViewCoordinator)
+
         welcomeViewCoordinator.start()
-    }
-    
-    private func showSignInView() {
-        let signInViewCoordinator = SignInViewCoordinator(
-            navigationController: navigationController,
-            outputRelay: signInRelay)
-        signInViewCoordinator.start()
-    }
-    
-    private func showSignUpView() {
-        let signUpViewCoordinator = SignUpViewCoordinator(
-            navigationController: navigationController,
-            outputRelay: signUpRelay)
-        signUpViewCoordinator.start()
-    }
-    
-    private func showForgotPasswordView() {
-        let forgotPasswordViewCoordinator = ForgotPasswordViewCoordinator(
-            navigationController: navigationController,
-            outplutRelay: forgotPasswordRelay)
-        forgotPasswordViewCoordinator.start()
     }
 }

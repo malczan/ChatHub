@@ -1,11 +1,32 @@
 name: ChatHub
+include:
+- GoogleService-Info.plist
 options:
      deploymentTarget:
          iOS: 14.0
-     bundleIdPrefix: com.ChatHub
+     bundleIdPrefix: com.jakubmalczyk
 targets:
     ChatHub:
      type: application
      platform: iOS
      sources:
      - path: ChatHub
+     dependencies:
+     - package: FirebaseAuth
+     - package: FirebaseFirestore
+     - package: FirebaseFunctions
+     - package: FirebaseStorage
+packages:
+    FirebaseAuth:
+        url: https://github.com/firebase/firebase-ios-sdk.git
+        branch: master
+    FirebaseFirestore:
+        url: https://github.com/firebase/firebase-ios-sdk.git
+        branch: master
+    FirebaseFunctions:
+        url: https://github.com/firebase/firebase-ios-sdk.git
+        branch: master
+    FirebaseStorage:
+        url: https://github.com/firebase/firebase-ios-sdk.git
+        branch: master
+        

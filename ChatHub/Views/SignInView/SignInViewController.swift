@@ -19,8 +19,8 @@ class SignInViewController: UIViewController {
     
     private let logoImageView = UIImageView()
     
-    private let usernameTextField = CustomTextField(icon: Style.loginIcon,
-                                                 placeholderText: Constants.username)
+    private let emailTextField = CustomTextField(icon: Style.emailIcon,
+                                                 placeholderText: Constants.email)
     private let passwordTextField = CustomTextField(icon: Style.passwordIcon,
                                                     placeholderText: Constants.password,
                                                     password: true)
@@ -34,7 +34,7 @@ class SignInViewController: UIViewController {
         bind()
         setupStyle()
         installLogoImageView()
-        installLoginTextField()
+        installEmailTextField()
         installPasswordTextField()
         installLoginButton()
         installForgotPasswordLabel()
@@ -42,7 +42,7 @@ class SignInViewController: UIViewController {
     }
     
     private func bind() {
-        usernameTextField
+        emailTextField
             .rx
             .text
             .map { $0 ?? "" }
@@ -56,6 +56,12 @@ class SignInViewController: UIViewController {
             .bind(to: viewModel.passwordRelay)
             .disposed(by: disposeBag)
         
+        loginButton
+            .rx
+            .tap
+            .bind(to: viewModel.signInSubject)
+            .disposed(by: disposeBag)
+        
         viewModel
             .isValid()
             .map { $0 ? Style.buttonColorEnabled : Style.buttonColorDisabled }
@@ -67,7 +73,7 @@ class SignInViewController: UIViewController {
             .bind(to: loginButton.rx.isEnabled)
             .disposed(by: disposeBag)
     }
-    
+
     private func setupStyle() {
         view.backgroundColor = Style.backgroundColor
         
@@ -99,16 +105,16 @@ class SignInViewController: UIViewController {
         ])
     }
     
-    private func installLoginTextField() {
-        view.addSubview(usernameTextField)
+    private func installEmailTextField() {
+        view.addSubview(emailTextField)
         
-        usernameTextField.translatesAutoresizingMaskIntoConstraints = false
+        emailTextField.translatesAutoresizingMaskIntoConstraints = false
         
         NSLayoutConstraint.activate([
-            usernameTextField.topAnchor.constraint(equalTo: view.topAnchor, constant: 300),
-            usernameTextField.leadingAnchor.constraint(equalTo: view.layoutMarginsGuide.leadingAnchor),
-            usernameTextField.trailingAnchor.constraint(equalTo: view.layoutMarginsGuide.trailingAnchor),
-            usernameTextField.heightAnchor.constraint(equalToConstant: 40)
+            emailTextField.topAnchor.constraint(equalTo: view.topAnchor, constant: 300),
+            emailTextField.leadingAnchor.constraint(equalTo: view.layoutMarginsGuide.leadingAnchor),
+            emailTextField.trailingAnchor.constraint(equalTo: view.layoutMarginsGuide.trailingAnchor),
+            emailTextField.heightAnchor.constraint(equalToConstant: 40)
         ])
     }
     
@@ -118,7 +124,7 @@ class SignInViewController: UIViewController {
         passwordTextField.translatesAutoresizingMaskIntoConstraints = false
         
         NSLayoutConstraint.activate([
-            passwordTextField.topAnchor.constraint(equalTo: usernameTextField.topAnchor, constant: 80),
+            passwordTextField.topAnchor.constraint(equalTo: emailTextField.topAnchor, constant: 80),
             passwordTextField.leadingAnchor.constraint(equalTo: view.layoutMarginsGuide.leadingAnchor),
             passwordTextField.trailingAnchor.constraint(equalTo: view.layoutMarginsGuide.trailingAnchor),
             passwordTextField.heightAnchor.constraint(equalToConstant: 40)

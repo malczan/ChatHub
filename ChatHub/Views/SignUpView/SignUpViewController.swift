@@ -26,7 +26,8 @@ class SignUpViewController: UIViewController {
     private let confirmPasswordTextField = CustomTextField(icon: Style.passwordIcon,
                                                            placeholderText: Constants.confirmPassword,
                                                            password: true)
-    private let loginButton = UIButton()
+    private let registerButton = UIButton()
+    private let messageLabel = UILabel()
     private let alreadyHaveAccountLabel = UILabel()
 
     override func viewDidLoad() {
@@ -34,13 +35,13 @@ class SignUpViewController: UIViewController {
         bind()
         setupStyle()
         setupLogoImageView()
-        installLoginTextField()
+        installUsernameTextField()
         installEmailTextField()
         installPasswordTextField()
         installConfirmPasswordTextField()
-        installLoginButton()
+        installRegisterButton()
+        installMessageLabel()
         installAlreadyHaveAccountLabel()
-
     }
     
     private func bind() {
@@ -72,15 +73,26 @@ class SignUpViewController: UIViewController {
             .bind(to: viewModel.confirmPasswordRelay)
             .disposed(by: disposeBag)
         
-        viewModel
-            .isValid()
-            .map { $0 ? Style.buttonColorEnabled : Style.buttonColorDisabled }
-            .bind(to: loginButton.rx.backgroundColor)
+        registerButton
+            .rx
+            .tap
+            .bind(to: viewModel.signUpSubject)
             .disposed(by: disposeBag)
         
         viewModel
             .isValid()
-            .bind(to: loginButton.rx.isEnabled)
+            .map { $0 ? Style.buttonColorEnabled : Style.buttonColorDisabled }
+            .bind(to: registerButton.rx.backgroundColor)
+            .disposed(by: disposeBag)
+        
+        viewModel
+            .isValid()
+            .bind(to: registerButton.rx.isEnabled)
+            .disposed(by: disposeBag)
+        
+        viewModel
+            .arePasswordTheSame()
+            .bind(to: messageLabel.rx.isHidden)
             .disposed(by: disposeBag)
     }
     
@@ -90,15 +102,17 @@ class SignUpViewController: UIViewController {
         logoImageView.image = Style.logoImage
         logoImageView.contentMode = .scaleAspectFit
 
-        loginButton.setTitle(Constants.register,
+        registerButton.setTitle(Constants.register,
                              for: .normal)
-        loginButton.setTitleColor(Style.backgroundColor,
+        registerButton.setTitleColor(Style.backgroundColor,
                                   for: .normal)
-        loginButton.make3dButton()
+        registerButton.make3dButton()
+        
+        messageLabel.text = Constants.passwordsAreNotTheSame
+        messageLabel.textColor = Style.errorColor
         
         alreadyHaveAccountLabel.textColor = Style.fontColor
         alreadyHaveAccountLabel.attributedText = Style.alreadyHaveAccountAttributeString
-        
     }
     
     private func setupLogoImageView() {
@@ -113,68 +127,79 @@ class SignUpViewController: UIViewController {
         ])
     }
     
-    private func installLoginTextField() {
-        view.addSubview(usernameTextField)
+    private func installUsernameTextField() {
+            view.addSubview(usernameTextField)
+            
+            usernameTextField.translatesAutoresizingMaskIntoConstraints = false
+            
+            NSLayoutConstraint.activate([
+                usernameTextField.topAnchor.constraint(equalTo: view.topAnchor, constant: 300),
+                usernameTextField.leadingAnchor.constraint(equalTo: view.layoutMarginsGuide.leadingAnchor),
+                usernameTextField.trailingAnchor.constraint(equalTo: view.layoutMarginsGuide.trailingAnchor),
+                usernameTextField.heightAnchor.constraint(equalToConstant: 40)
+            ])
+        }
         
-        usernameTextField.translatesAutoresizingMaskIntoConstraints = false
+        private func installEmailTextField() {
+            view.addSubview(emailTextField)
+            
+            emailTextField.translatesAutoresizingMaskIntoConstraints = false
+            
+            NSLayoutConstraint.activate([
+                emailTextField.topAnchor.constraint(equalTo: usernameTextField.topAnchor, constant: 80),
+                emailTextField.leadingAnchor.constraint(equalTo: view.layoutMarginsGuide.leadingAnchor),
+                emailTextField.trailingAnchor.constraint(equalTo: view.layoutMarginsGuide.trailingAnchor),
+                emailTextField.heightAnchor.constraint(equalToConstant: 40)
+            ])
+        }
         
-        NSLayoutConstraint.activate([
-            usernameTextField.topAnchor.constraint(equalTo: view.topAnchor, constant: 300),
-            usernameTextField.leadingAnchor.constraint(equalTo: view.layoutMarginsGuide.leadingAnchor),
-            usernameTextField.trailingAnchor.constraint(equalTo: view.layoutMarginsGuide.trailingAnchor),
-            usernameTextField.heightAnchor.constraint(equalToConstant: 40)
-        ])
-    }
+        private func installPasswordTextField() {
+            view.addSubview(passwordTextField)
+            
+            passwordTextField.translatesAutoresizingMaskIntoConstraints = false
+            
+            NSLayoutConstraint.activate([
+                passwordTextField.topAnchor.constraint(equalTo: emailTextField.topAnchor, constant: 80),
+                passwordTextField.leadingAnchor.constraint(equalTo: view.layoutMarginsGuide.leadingAnchor),
+                passwordTextField.trailingAnchor.constraint(equalTo: view.layoutMarginsGuide.trailingAnchor),
+                passwordTextField.heightAnchor.constraint(equalToConstant: 40)
+            ])
+        }
+        
+        private func installConfirmPasswordTextField() {
+            view.addSubview(confirmPasswordTextField)
+            
+            confirmPasswordTextField.translatesAutoresizingMaskIntoConstraints = false
+            
+            NSLayoutConstraint.activate([
+                confirmPasswordTextField.topAnchor.constraint(equalTo: passwordTextField.topAnchor, constant: 80),
+                confirmPasswordTextField.leadingAnchor.constraint(equalTo: view.layoutMarginsGuide.leadingAnchor),
+                confirmPasswordTextField.trailingAnchor.constraint(equalTo: view.layoutMarginsGuide.trailingAnchor),
+                confirmPasswordTextField.heightAnchor.constraint(equalToConstant: 40)
+            ])
+        }
+        
+        private func installRegisterButton() {
+            view.addSubview(registerButton)
+            
+            registerButton.translatesAutoresizingMaskIntoConstraints = false
+            
+            NSLayoutConstraint.activate([
+                registerButton.topAnchor.constraint(equalTo: confirmPasswordTextField.bottomAnchor, constant: 30),
+                registerButton.leadingAnchor.constraint(equalTo: view.layoutMarginsGuide.leadingAnchor, constant: 10),
+                registerButton.trailingAnchor.constraint(equalTo: view.layoutMarginsGuide.trailingAnchor, constant: -10),
+                registerButton.heightAnchor.constraint(equalToConstant: 40),
+            ])
+        }
     
-    private func installEmailTextField() {
-        view.addSubview(emailTextField)
+    private func installMessageLabel() {
+        view.addSubview(messageLabel)
         
-        emailTextField.translatesAutoresizingMaskIntoConstraints = false
-        
-        NSLayoutConstraint.activate([
-            emailTextField.topAnchor.constraint(equalTo: usernameTextField.topAnchor, constant: 80),
-            emailTextField.leadingAnchor.constraint(equalTo: view.layoutMarginsGuide.leadingAnchor),
-            emailTextField.trailingAnchor.constraint(equalTo: view.layoutMarginsGuide.trailingAnchor),
-            emailTextField.heightAnchor.constraint(equalToConstant: 40)
-        ])
-    }
-    
-    private func installPasswordTextField() {
-        view.addSubview(passwordTextField)
-        
-        passwordTextField.translatesAutoresizingMaskIntoConstraints = false
+        messageLabel.translatesAutoresizingMaskIntoConstraints = false
         
         NSLayoutConstraint.activate([
-            passwordTextField.topAnchor.constraint(equalTo: emailTextField.topAnchor, constant: 80),
-            passwordTextField.leadingAnchor.constraint(equalTo: view.layoutMarginsGuide.leadingAnchor),
-            passwordTextField.trailingAnchor.constraint(equalTo: view.layoutMarginsGuide.trailingAnchor),
-            passwordTextField.heightAnchor.constraint(equalToConstant: 40)
-        ])
-    }
-    
-    private func installConfirmPasswordTextField() {
-        view.addSubview(confirmPasswordTextField)
-        
-        confirmPasswordTextField.translatesAutoresizingMaskIntoConstraints = false
-        
-        NSLayoutConstraint.activate([
-            confirmPasswordTextField.topAnchor.constraint(equalTo: passwordTextField.topAnchor, constant: 80),
-            confirmPasswordTextField.leadingAnchor.constraint(equalTo: view.layoutMarginsGuide.leadingAnchor),
-            confirmPasswordTextField.trailingAnchor.constraint(equalTo: view.layoutMarginsGuide.trailingAnchor),
-            confirmPasswordTextField.heightAnchor.constraint(equalToConstant: 40)
-        ])
-    }
-    
-    private func installLoginButton() {
-        view.addSubview(loginButton)
-        
-        loginButton.translatesAutoresizingMaskIntoConstraints = false
-        
-        NSLayoutConstraint.activate([
-            loginButton.topAnchor.constraint(equalTo: confirmPasswordTextField.bottomAnchor, constant: 30),
-            loginButton.leadingAnchor.constraint(equalTo: view.layoutMarginsGuide.leadingAnchor, constant: 10),
-            loginButton.trailingAnchor.constraint(equalTo: view.layoutMarginsGuide.trailingAnchor, constant: -10),
-            loginButton.heightAnchor.constraint(equalToConstant: 40),
+            messageLabel.topAnchor.constraint(equalTo: registerButton.bottomAnchor, constant: 10),
+            messageLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor)
         ])
     }
     
@@ -196,5 +221,4 @@ class SignUpViewController: UIViewController {
             viewModel.alreadyHaveAccountTapped()
         }
     }
-    
 }

@@ -25,7 +25,7 @@ enum SignInStyle {
     static let fontColor = UIColor.white
     
     // Icons
-    static let loginIcon = "person"
+    static let emailIcon = "envelope"
     static let passwordIcon = "lock"
     
     // Images

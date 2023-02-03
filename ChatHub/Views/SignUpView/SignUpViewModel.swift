@@ -9,7 +9,7 @@ import Foundation
 import RxRelay
 import RxSwift
 
-enum SignUpViewModelOutput {
+enum SignUpViewModelOutput: String {
     case alreadyHaveAccount
     case signedUp
 }
@@ -23,22 +23,30 @@ final class SignUpViewModel {
     let passwordRelay = BehaviorSubject<String>(value: "")
     let confirmPasswordRelay = BehaviorSubject<String>(value: "")
     
+    let signUpSubject = PublishSubject<Void>()
+    
+    private let authorizationService = ConcreteAuthorizationService()
+    
+    private let outputErrorRelay: PublishRelay<Error>
     private let outputRelay: PublishRelay<Output>
     private let disposeBag = DisposeBag()
     
     private let diposeBag = DisposeBag()
     
-    init(outputRelay: PublishRelay<Output>) {
+    init(outputRelay: PublishRelay<Output>,
+         outputErrorRelay: PublishRelay<Error>) {
         self.outputRelay = outputRelay
+        self.outputErrorRelay = outputErrorRelay
+        bind()
     }
     
     func isValid() -> Observable<Bool> {
         return Observable
             .combineLatest(
-                isUsernameValid(),
                 isEmailValid(),
                 isPasswordValid(),
-                isConfirmPasswordValid())
+                isConfirmPasswordValid(),
+                arePasswordTheSame())
             .map { $0 && $1 && $2 && $3}
     }
     
@@ -46,8 +54,18 @@ final class SignUpViewModel {
         outputRelay.accept(.alreadyHaveAccount)
     }
     
-    private func isUsernameValid() -> Observable<Bool> {
-        return usernameRelay.map { $0.count > 5 }
+    private func bind() {
+        signUpSubject
+            .subscribe(onNext: { [weak self] in
+                self?.signUpTapped()
+            })
+            .disposed(by: disposeBag)
+    }
+    
+    func arePasswordTheSame() -> Observable<Bool>{
+        return Observable
+            .combineLatest(passwordRelay, confirmPasswordRelay)
+            .map { $0 == $1}
     }
     
     private func isEmailValid() -> Observable<Bool> {
@@ -61,5 +79,26 @@ final class SignUpViewModel {
     private func isConfirmPasswordValid() -> Observable<Bool> {
         return confirmPasswordRelay.map { $0.count > 5 }
     }
-
+    
+    private func signUpTapped() {
+        authorizationService.signUpUser(
+            withUsername: try! usernameRelay.value(), 
+            email: try! emailRelay.value(),
+            password: try! passwordRelay.value(),
+            completion: { [weak self] in
+                self?.handleSigUpResult(with: $0)
+        })
+    }
+    
+    private func handleSigUpResult(with result: Result<Void, Error>) {
+        switch result {
+        case .success:
+            print("Sucessfully signed up")
+        case .failure(let error):
+            outputErrorRelay.accept(error)
+        }
+    }
+    
+    
+    
 }
