@@ -24,11 +24,16 @@ final class SignInViewModel {
     
     let signInSubject = PublishSubject<Void>()
     
+    private let authorizationService = ConcreteAuthorizationService()
+    
+    private let outputErrorRelay: PublishRelay<Error>
     private let outputRelay: PublishRelay<Output>
     private let disposeBag = DisposeBag()
     
-    init(outputRelay: PublishRelay<Output>) {
+    init(outputRelay: PublishRelay<Output>,
+         outputErrorRelay: PublishRelay<Error>) {
         self.outputRelay = outputRelay
+        self.outputErrorRelay = outputErrorRelay
         bind()
     }
     
@@ -46,6 +51,14 @@ final class SignInViewModel {
         outputRelay.accept(.alreadyHaveAccount)
     }
     
+    private func bind() {
+        signInSubject
+            .subscribe(onNext: { [weak self] in
+                self?.signInTapped()
+            })
+            .disposed(by: disposeBag)
+    }
+    
     private func isUsernameValid() -> Observable<Bool> {
         return usernameRelay.map { $0.count > 5 }
     }
@@ -54,11 +67,23 @@ final class SignInViewModel {
         return passwordRelay.map { $0.count > 5 }
     }
     
-    private func bind() {
-        signInSubject.subscribe(onNext: {[weak self] _ in
-            self?.outputRelay.accept(.signedIn)
-        }).disposed(by: disposeBag)
-        
+    private func signInTapped() {
+        authorizationService
+            .signInUser(
+                withEmail: try! usernameRelay.value(),
+                password: try! passwordRelay.value(),
+                completion: { [weak self] in
+                    self?.handleSignIn(with: $0)
+                })
+    }
+    
+    private func handleSignIn(with result: Result<Void, Error>) {
+        switch result {
+        case .success: 
+            outputRelay.accept(.signedIn)
+        case .failure(let error):
+            outputErrorRelay.accept(error)
+        }
     }
     
 }

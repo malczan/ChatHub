@@ -67,7 +67,7 @@ class SignUpViewController: UIViewController {
         registerButton
             .rx
             .tap
-            .bind(to: viewModel.signUnSubject)
+            .bind(to: viewModel.signUpSubject)
             .disposed(by: disposeBag)
         
         viewModel

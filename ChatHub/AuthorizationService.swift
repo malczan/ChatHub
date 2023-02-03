@@ -9,22 +9,28 @@ import Foundation
 import Firebase
 
 protocol AuthorizationService {
-    func signInUser()
-    func signUpUser(with email: String, password: String, completion: @escaping (Result<Void, Error>) -> Void)
+    func signInUser(withEmail email: String, password: String, completion: @escaping (Result<Void, Error>) -> Void)
+    func signUpUser(withEmail email: String, password: String, completion: @escaping (Result<Void, Error>) -> Void)
     func signOutUser()
 }
 
 final class ConcreteAuthorizationService: AuthorizationService {
-    func signInUser() {
-        //
+    
+    func signInUser(withEmail email: String, password: String, completion: @escaping (Result<Void, Error>) -> Void) {
+        Auth.auth().signIn(withEmail: email, password: password) { _, error in
+            guard error == nil else {
+                guard let error = error else {
+                    return
+                }
+                completion(.failure(error))
+                return
+            }
+            completion(.success(()))
+        }
     }
-    
-//    private func dupa(with email: String, password: String, completion:") {
-//
-//    }
-    
-    func signUpUser(with email: String, password: String, completion: @escaping (Result<Void, Error>) -> Void) {
-        Auth.auth().createUser(withEmail: email, password: password) { result, error in
+        
+    func signUpUser(withEmail email: String, password: String, completion: @escaping (Result<Void, Error>) -> Void) {
+        Auth.auth().createUser(withEmail: email, password: password) { _, error in
             guard error == nil else {
                 guard let error = error else {
                     return
@@ -39,6 +45,4 @@ final class ConcreteAuthorizationService: AuthorizationService {
     func signOutUser() {
         //
     }
-    
-    
 }

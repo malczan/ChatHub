@@ -7,7 +7,7 @@
 
 import UIKit
 
-enum SignInViewControllerFactory {
+enum SignInViewControllerFactory { 
     
     static func createSignInViewController(viewModel: SignInViewModel) -> SignInViewController {
         

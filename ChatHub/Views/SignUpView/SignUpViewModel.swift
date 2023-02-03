@@ -22,7 +22,7 @@ final class SignUpViewModel {
     let passwordRelay = BehaviorSubject<String>(value: "")
     let confirmPasswordRelay = BehaviorSubject<String>(value: "")
     
-    let signUnSubject = PublishSubject<Void>()
+    let signUpSubject = PublishSubject<Void>()
     
     private let authorizationService = ConcreteAuthorizationService()
     
@@ -54,7 +54,7 @@ final class SignUpViewModel {
     }
     
     private func bind() {
-        signUnSubject
+        signUpSubject
             .subscribe(onNext: { [weak self] in
                 self?.signUpTapped()
             })
@@ -81,7 +81,7 @@ final class SignUpViewModel {
     
     private func signUpTapped() {
         authorizationService.signUpUser(
-            with: try! emailRelay.value(),
+            withEmail: try! emailRelay.value(),
             password: try! passwordRelay.value(),
             completion: { [weak self] in
                 self?.handleSigUpResult(with: $0)

@@ -23,7 +23,7 @@ final class AppCoordinator: Coordinator {
     private let welcomeRelay = PublishRelay<WelcomeViewModelOutput>()
     private let signInRelay = PublishRelay<SignInViewModelOutput>()
     private let signUpRelay = PublishRelay<SignUpViewModelOutput>()
-    private let signUpErrorRelay = PublishRelay<Error>()
+    private let authorizationErrorRelay = PublishRelay<Error>()
     private let forgotPasswordRelay = PublishRelay<ForgotPasswordViewModelOutput>()
     private let popUpRelay = PublishRelay<Void>()
     private let disposeBag = DisposeBag()
@@ -83,7 +83,7 @@ final class AppCoordinator: Coordinator {
             })
             .disposed(by: disposeBag)
         
-        signUpErrorRelay
+        authorizationErrorRelay
             .subscribe(onNext: { [weak self] in
                 self?.showPopUpView(with: $0)
             })
@@ -116,7 +116,8 @@ final class AppCoordinator: Coordinator {
     private func showSignInView() {
         let signInViewCoordinator = SignInViewCoordinator(
             navigationController: navigationController,
-            outputRelay: signInRelay)
+            outputRelay: signInRelay,
+            outputErrorRelay: authorizationErrorRelay)
         signInViewCoordinator.start()
     }
     
@@ -124,7 +125,7 @@ final class AppCoordinator: Coordinator {
         let signUpViewCoordinator = SignUpViewCoordinator(
             navigationController: navigationController,
             outputRelay: signUpRelay,
-            outputErrorRelay: signUpErrorRelay)
+            outputErrorRelay: authorizationErrorRelay)
         signUpViewCoordinator.start()
     }
     
