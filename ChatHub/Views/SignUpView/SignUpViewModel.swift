@@ -67,7 +67,6 @@ final class SignUpViewModel {
             .map { $0 == $1}
     }
     
-
     private func isEmailValid() -> Observable<Bool> {
         return emailRelay.map { $0.count > 5 }
     }
@@ -81,17 +80,12 @@ final class SignUpViewModel {
     }
     
     private func signUpTapped() {
-        Observable
-            .combineLatest(emailRelay, passwordRelay)
-            .subscribe(onNext: { [weak self] in
-                self?.authorizationService.signUpUser(
-                    with: $0,
-                    password: $1,
-                    completion: { [weak self] in
-                        self?.handleSigUpResult(with: $0)
-                })
-            })
-            .disposed(by: disposeBag)
+        authorizationService.signUpUser(
+            with: try! emailRelay.value(),
+            password: try! passwordRelay.value(),
+            completion: { [weak self] in
+                self?.handleSigUpResult(with: $0)
+        })
     }
     
     private func handleSigUpResult(with result: Result<Void, Error>) {
