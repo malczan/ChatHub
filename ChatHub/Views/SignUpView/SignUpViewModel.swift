@@ -18,6 +18,7 @@ final class SignUpViewModel {
     
     typealias Output = SignUpViewModelOutput
     
+    let usernameRelay = BehaviorSubject<String>(value: "")
     let emailRelay = BehaviorSubject<String>(value: "")
     let passwordRelay = BehaviorSubject<String>(value: "")
     let confirmPasswordRelay = BehaviorSubject<String>(value: "")
@@ -81,7 +82,8 @@ final class SignUpViewModel {
     
     private func signUpTapped() {
         authorizationService.signUpUser(
-            withEmail: try! emailRelay.value(),
+            withUsername: try! usernameRelay.value(), 
+            email: try! emailRelay.value(),
             password: try! passwordRelay.value(),
             completion: { [weak self] in
                 self?.handleSigUpResult(with: $0)

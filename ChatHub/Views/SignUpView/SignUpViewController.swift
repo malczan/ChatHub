@@ -18,6 +18,7 @@ class SignUpViewController: UIViewController {
     private let disposeBag = DisposeBag()
     
     private let logoImageView = UIImageView()
+    private let usernameTextField = CustomTextField(icon: Style.loginIcon, placeholderText: Constants.username)
     private let emailTextField = CustomTextField(icon: Style.emailIcon, placeholderText: Constants.email)
     private let passwordTextField = CustomTextField(icon: Style.passwordIcon,
                                                     placeholderText: Constants.password,
@@ -34,6 +35,7 @@ class SignUpViewController: UIViewController {
         bind()
         setupStyle()
         setupLogoImageView()
+        installUsernameTextField()
         installEmailTextField()
         installPasswordTextField()
         installConfirmPasswordTextField()
@@ -43,6 +45,13 @@ class SignUpViewController: UIViewController {
     }
     
     private func bind() {
+        usernameTextField
+            .rx
+            .text
+            .map { $0 ?? "" }
+            .bind(to: viewModel.usernameRelay)
+            .disposed(by: disposeBag)
+        
         emailTextField
             .rx
             .text
@@ -118,57 +127,70 @@ class SignUpViewController: UIViewController {
         ])
     }
     
-    private func installEmailTextField() {
-        view.addSubview(emailTextField)
+    private func installUsernameTextField() {
+            view.addSubview(usernameTextField)
+            
+            usernameTextField.translatesAutoresizingMaskIntoConstraints = false
+            
+            NSLayoutConstraint.activate([
+                usernameTextField.topAnchor.constraint(equalTo: view.topAnchor, constant: 300),
+                usernameTextField.leadingAnchor.constraint(equalTo: view.layoutMarginsGuide.leadingAnchor),
+                usernameTextField.trailingAnchor.constraint(equalTo: view.layoutMarginsGuide.trailingAnchor),
+                usernameTextField.heightAnchor.constraint(equalToConstant: 40)
+            ])
+        }
         
-        emailTextField.translatesAutoresizingMaskIntoConstraints = false
+        private func installEmailTextField() {
+            view.addSubview(emailTextField)
+            
+            emailTextField.translatesAutoresizingMaskIntoConstraints = false
+            
+            NSLayoutConstraint.activate([
+                emailTextField.topAnchor.constraint(equalTo: usernameTextField.topAnchor, constant: 80),
+                emailTextField.leadingAnchor.constraint(equalTo: view.layoutMarginsGuide.leadingAnchor),
+                emailTextField.trailingAnchor.constraint(equalTo: view.layoutMarginsGuide.trailingAnchor),
+                emailTextField.heightAnchor.constraint(equalToConstant: 40)
+            ])
+        }
         
-        NSLayoutConstraint.activate([
-            emailTextField.topAnchor.constraint(equalTo: view.topAnchor, constant: 300),
-            emailTextField.leadingAnchor.constraint(equalTo: view.layoutMarginsGuide.leadingAnchor),
-            emailTextField.trailingAnchor.constraint(equalTo: view.layoutMarginsGuide.trailingAnchor),
-            emailTextField.heightAnchor.constraint(equalToConstant: 40)
-        ])
-    }
-    
-    private func installPasswordTextField() {
-        view.addSubview(passwordTextField)
+        private func installPasswordTextField() {
+            view.addSubview(passwordTextField)
+            
+            passwordTextField.translatesAutoresizingMaskIntoConstraints = false
+            
+            NSLayoutConstraint.activate([
+                passwordTextField.topAnchor.constraint(equalTo: emailTextField.topAnchor, constant: 80),
+                passwordTextField.leadingAnchor.constraint(equalTo: view.layoutMarginsGuide.leadingAnchor),
+                passwordTextField.trailingAnchor.constraint(equalTo: view.layoutMarginsGuide.trailingAnchor),
+                passwordTextField.heightAnchor.constraint(equalToConstant: 40)
+            ])
+        }
         
-        passwordTextField.translatesAutoresizingMaskIntoConstraints = false
+        private func installConfirmPasswordTextField() {
+            view.addSubview(confirmPasswordTextField)
+            
+            confirmPasswordTextField.translatesAutoresizingMaskIntoConstraints = false
+            
+            NSLayoutConstraint.activate([
+                confirmPasswordTextField.topAnchor.constraint(equalTo: passwordTextField.topAnchor, constant: 80),
+                confirmPasswordTextField.leadingAnchor.constraint(equalTo: view.layoutMarginsGuide.leadingAnchor),
+                confirmPasswordTextField.trailingAnchor.constraint(equalTo: view.layoutMarginsGuide.trailingAnchor),
+                confirmPasswordTextField.heightAnchor.constraint(equalToConstant: 40)
+            ])
+        }
         
-        NSLayoutConstraint.activate([
-            passwordTextField.topAnchor.constraint(equalTo: emailTextField.topAnchor, constant: 80),
-            passwordTextField.leadingAnchor.constraint(equalTo: view.layoutMarginsGuide.leadingAnchor),
-            passwordTextField.trailingAnchor.constraint(equalTo: view.layoutMarginsGuide.trailingAnchor),
-            passwordTextField.heightAnchor.constraint(equalToConstant: 40)
-        ])
-    }
-    
-    private func installConfirmPasswordTextField() {
-        view.addSubview(confirmPasswordTextField)
-        
-        confirmPasswordTextField.translatesAutoresizingMaskIntoConstraints = false
-        
-        NSLayoutConstraint.activate([
-            confirmPasswordTextField.topAnchor.constraint(equalTo: passwordTextField.topAnchor, constant: 80),
-            confirmPasswordTextField.leadingAnchor.constraint(equalTo: view.layoutMarginsGuide.leadingAnchor),
-            confirmPasswordTextField.trailingAnchor.constraint(equalTo: view.layoutMarginsGuide.trailingAnchor),
-            confirmPasswordTextField.heightAnchor.constraint(equalToConstant: 40)
-        ])
-    }
-    
-    private func installRegisterButton() {
-        view.addSubview(registerButton)
-        
-        registerButton.translatesAutoresizingMaskIntoConstraints = false
-        
-        NSLayoutConstraint.activate([
-            registerButton.topAnchor.constraint(equalTo: confirmPasswordTextField.bottomAnchor, constant: 30),
-            registerButton.leadingAnchor.constraint(equalTo: view.layoutMarginsGuide.leadingAnchor, constant: 10),
-            registerButton.trailingAnchor.constraint(equalTo: view.layoutMarginsGuide.trailingAnchor, constant: -10),
-            registerButton.heightAnchor.constraint(equalToConstant: 40),
-        ])
-    }
+        private func installRegisterButton() {
+            view.addSubview(registerButton)
+            
+            registerButton.translatesAutoresizingMaskIntoConstraints = false
+            
+            NSLayoutConstraint.activate([
+                registerButton.topAnchor.constraint(equalTo: confirmPasswordTextField.bottomAnchor, constant: 30),
+                registerButton.leadingAnchor.constraint(equalTo: view.layoutMarginsGuide.leadingAnchor, constant: 10),
+                registerButton.trailingAnchor.constraint(equalTo: view.layoutMarginsGuide.trailingAnchor, constant: -10),
+                registerButton.heightAnchor.constraint(equalToConstant: 40),
+            ])
+        }
     
     private func installMessageLabel() {
         view.addSubview(messageLabel)

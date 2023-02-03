@@ -8,9 +8,13 @@
 import Foundation
 import Firebase
 
+enum CustomErrors : Error {
+    case somethingWentWrong
+}
+
 protocol AuthorizationService {
     func signInUser(withEmail email: String, password: String, completion: @escaping (Result<Void, Error>) -> Void)
-    func signUpUser(withEmail email: String, password: String, completion: @escaping (Result<Void, Error>) -> Void)
+    func signUpUser(withUsername username: String, email: String, password: String, completion: @escaping (Result<Void, Error>) -> Void)
     func signOutUser()
 }
 
@@ -29,16 +33,30 @@ final class ConcreteAuthorizationService: AuthorizationService {
         }
     }
         
-    func signUpUser(withEmail email: String, password: String, completion: @escaping (Result<Void, Error>) -> Void) {
-        Auth.auth().createUser(withEmail: email, password: password) { _, error in
+    func signUpUser(withUsername username: String, email: String, password: String, completion: @escaping (Result<Void, Error>) -> Void) {
+        Auth.auth().createUser(withEmail: email, password: password) { result, error in
             guard error == nil else {
-                guard let error = error else {
-                    return
-                }
+                guard let error = error else { return }
                 completion(.failure(error))
                 return
             }
-            completion(.success(()))
+            
+            guard let user = result?.user else {
+                completion(.failure(CustomErrors.somethingWentWrong))
+                return
+            }
+            
+            let data: [String: Any] = ["username": username,
+                                       "email": email]
+            
+            Firestore.firestore().collection("users").document(user.uid).setData(data) { error in
+                guard error == nil else {
+                    guard let error = error else { return }
+                    completion(.failure(error))
+                    return
+                }
+                completion(.success(()))
+            }
         }
     }
     
