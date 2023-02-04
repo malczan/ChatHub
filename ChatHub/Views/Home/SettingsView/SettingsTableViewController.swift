@@ -8,27 +8,42 @@
 import UIKit
 
 class SettingsTableViewController: UITableViewController {
+    
+    private var snapshot: DataSourceSnapshot!
+    private var dataSource: DataSource!
+    
+    private typealias DataSource = UITableViewDiffableDataSource<String, SettingModel>
+    private typealias DataSourceSnapshot = NSDiffableDataSourceSnapshot<String, SettingModel>
 
     override func viewDidLoad() {
         super.viewDidLoad()
-
-        // Uncomment the following line to preserve selection between presentations
-        // self.clearsSelectionOnViewWillAppear = false
-
-        // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
-        // self.navigationItem.rightBarButtonItem = self.editButtonItem
+        view.backgroundColor = .clear
+        snapshot = DataSourceSnapshot()
+        registerCell()
+        configureTableViewDataSource()
+        applySettingsForSnapshot(settings: [SettingModel(title: "", icon: "")])
+    }
+    
+    private func registerCell() {
+        tableView.register(SettingsTableViewCell.self, forCellReuseIdentifier: "cell")
+    }
+    
+    private func applySettingsForSnapshot(settings: [SettingModel]) {
+        self.snapshot.appendSections(["Profile"])
+        settings.forEach({ self.snapshot.appendItems([$0], toSection: "Profile") })
+        dataSource.apply(snapshot, animatingDifferences: true)
+    }
+    
+    private func configureTableViewDataSource() {
+        dataSource = DataSource(tableView: tableView, cellProvider: { tableView, indexPath, setting -> UITableViewCell? in
+            let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath) as! SettingsTableViewCell
+            return cell
+        })
     }
 
-    // MARK: - Table view data source
+}
 
-    override func numberOfSections(in tableView: UITableView) -> Int {
-        // #warning Incomplete implementation, return the number of sections
-        return 0
-    }
-
-    override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        // #warning Incomplete implementation, return the number of rows
-        return 0
-    }
-
+struct SettingModel: Hashable {
+    let title: String
+    let icon: String
 }

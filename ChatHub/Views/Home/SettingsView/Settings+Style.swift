@@ -16,4 +16,5 @@ enum SettingsStyle {
     static let backgroundColor = UIColor(named: "backgroundColor")
     
     static let usernameFont = UIFont.systemFont(ofSize: 26)
+    static let settingFont = UIFont.systemFont(ofSize: 26)
 }

@@ -28,14 +28,12 @@ class SettingsViewModel {
         bind()
     }
     
+    func viewDidAppear() -> Observable<User>{
+        return userService
+                .fetchUserInformation()
+    }
+    
     private func bind() {
-        userService
-            .fetchUserInformation()
-            .subscribe(onNext: { [weak self] in
-                self?.username = $0.username
-            })
-            .disposed(by: disposeBag)
-        
         buttonInput
             .subscribe(onNext: { [weak self] in
                 self?.buttonLogoutTapped()

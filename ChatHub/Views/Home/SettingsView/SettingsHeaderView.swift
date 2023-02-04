@@ -34,7 +34,6 @@ class SettingsHeaderView: UIView {
     
     func inject(viewModel: SettingsViewModel) {
         self.viewModel = viewModel
-        usernameLabel.text = viewModel.username.lowercased()
         bind()
     }
     
@@ -43,6 +42,13 @@ class SettingsHeaderView: UIView {
             .rx
             .tap
             .bind(to: viewModel.buttonInput)
+            .disposed(by: disposeBag)
+        
+        viewModel
+            .viewDidAppear()
+            .subscribe(onNext: { [weak self] in
+                self?.usernameLabel.text = $0.username
+            })
             .disposed(by: disposeBag)
     }
         
