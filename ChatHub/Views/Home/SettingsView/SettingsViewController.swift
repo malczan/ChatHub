@@ -10,6 +10,7 @@ import Firebase
 
 class SettingsViewController: UIViewController {
     
+    var viewModel: SettingsViewModel!
     private var headerView: SettingsHeaderView!
 
     override func viewDidLoad() {
@@ -18,10 +19,9 @@ class SettingsViewController: UIViewController {
         view.backgroundColor = UIColor(named: "backgroundColor")
         
         headerView = SettingsHeaderView()
+        headerView.inject(viewModel: viewModel)
         
         view.addSubview(headerView)
-        
-        
         
         headerView.translatesAutoresizingMaskIntoConstraints = false
         
@@ -29,7 +29,7 @@ class SettingsViewController: UIViewController {
             headerView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
             headerView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             headerView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            headerView.heightAnchor.constraint(equalToConstant: 100)
+            headerView.heightAnchor.constraint(equalToConstant: 80)
         ])
     }
 
