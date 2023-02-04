@@ -11,6 +11,8 @@ import RxSwift
 
 class SettingsHeaderView: UIView {
     
+    private typealias Style = SettingsStyle
+    
     private var viewModel: SettingsViewModel!
     private let disposeBag = DisposeBag()
     
@@ -20,7 +22,7 @@ class SettingsHeaderView: UIView {
     
     override init(frame: CGRect) {
         super.init(frame: frame)
-        setupView()
+        setupStyle()
         installAvatarImage()
         installUsernameLabel()
         installLogoutButton()
@@ -44,17 +46,17 @@ class SettingsHeaderView: UIView {
             .disposed(by: disposeBag)
     }
         
-    private func setupView() {
-        backgroundColor = .clear
+    private func setupStyle() {
+        backgroundColor = Style.backgroundColor
         avatarImageView.backgroundColor = .yellow
         avatarImageView.layer.cornerRadius = 30
         
-        usernameLabel.textColor = .white
+        usernameLabel.textColor = Style.whiteColor
         
-        usernameLabel.font =  UIFont.systemFont(ofSize: 26)
-        logoutButton.backgroundColor = UIColor(named: "purple")
+        usernameLabel.font =  Style.usernameFont
+        logoutButton.backgroundColor = Style.buttonColor
         logoutButton.setTitle("LOG OUT", for: .normal)
-        logoutButton.setTitleColor(UIColor(named: "backgroundColor"), for: .normal)
+        logoutButton.setTitleColor(Style.backgroundColor, for: .normal)
         logoutButton.make3dButton()
     }
     
