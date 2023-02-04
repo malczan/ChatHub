@@ -84,21 +84,12 @@ final class SignUpViewModel {
         authorizationService.signUpUser(
             withUsername: try! usernameRelay.value(), 
             email: try! emailRelay.value(),
-            password: try! passwordRelay.value(),
-            completion: { [weak self] in
-                self?.handleSigUpResult(with: $0)
-        })
-    }
-    
-    private func handleSigUpResult(with result: Result<Void, Error>) {
-        switch result {
-        case .success:
-            print("Sucessfully signed up")
-        case .failure(let error):
-            outputErrorRelay.accept(error)
+            password: try! passwordRelay.value())
+        .subscribe { [weak self] _ in
+            self?.outputRelay.accept(.signedUp)
+        } onError: { [weak self] in
+            self?.outputErrorRelay.accept($0)
         }
+        .disposed(by: disposeBag)
     }
-    
-    
-    
 }

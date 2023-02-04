@@ -71,19 +71,13 @@ final class SignInViewModel {
         authorizationService
             .signInUser(
                 withEmail: try! usernameRelay.value(),
-                password: try! passwordRelay.value(),
-                completion: { [weak self] in
-                    self?.handleSignIn(with: $0)
-                })
+                password: try! passwordRelay.value())
+            .subscribe { [weak self] _ in
+                self?.outputRelay.accept(.signedIn)
+            } onError: { [weak self] in
+                self?.outputErrorRelay.accept($0)
+            }
+            .disposed(by: disposeBag)
+
     }
-    
-    private func handleSignIn(with result: Result<Void, Error>) {
-        switch result {
-        case .success: 
-            outputRelay.accept(.signedIn)
-        case .failure(let error):
-            outputErrorRelay.accept(error)
-        }
-    }
-    
 }

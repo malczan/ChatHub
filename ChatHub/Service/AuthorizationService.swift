@@ -14,50 +14,59 @@ enum CustomErrors : Error {
 }
 
 protocol AuthorizationService {
-    func signInUser(withEmail email: String, password: String, completion: @escaping (Result<Void, Error>) -> Void)
-    func signUpUser(withUsername username: String, email: String, password: String, completion: @escaping (Result<Void, Error>) -> Void)
+//    func signInUser(withEmail email: String, password: String, completion: @escaping (Result<Void, Error>) -> Void)
+//    func signUpUser(withUsername username: String, email: String, password: String, completion: @escaping (Result<Void, Error>) -> Void)
 //    func signOutUser()
 }
 
 final class ConcreteAuthorizationService: AuthorizationService {
     
-    func signInUser(withEmail email: String, password: String, completion: @escaping (Result<Void, Error>) -> Void) {
-        Auth.auth().signIn(withEmail: email, password: password) { _, error in
-            guard error == nil else {
-                guard let error = error else {
+    func signInUser(withEmail email: String, password: String) -> Observable<Void> {
+        return Observable.create { observer in
+            Auth.auth().signIn(withEmail: email, password: password) { _, error in
+                guard error == nil else {
+                    guard let error = error else {
+                        return
+                    }
+                    observer.onError(error)
                     return
                 }
-                completion(.failure(error))
-                return
+                observer.onNext(())
+                observer.onCompleted()
             }
-            completion(.success(()))
+            return Disposables.create()
         }
+        
     }
         
-    func signUpUser(withUsername username: String, email: String, password: String, completion: @escaping (Result<Void, Error>) -> Void) {
-        Auth.auth().createUser(withEmail: email, password: password) { result, error in
-            guard error == nil else {
-                guard let error = error else { return }
-                completion(.failure(error))
-                return
-            }
-            
-            guard let user = result?.user else {
-                completion(.failure(CustomErrors.somethingWentWrong))
-                return
-            }
-            
-            let data: [String: Any] = ["username": username,
-                                       "email": email]
-            
-            Firestore.firestore().collection("users").document(user.uid).setData(data) { error in
+    func signUpUser(withUsername username: String, email: String, password: String) -> Observable<Void> {
+        return Observable.create { observer in
+            Auth.auth().createUser(withEmail: email, password: password) { result, error in
                 guard error == nil else {
                     guard let error = error else { return }
-                    completion(.failure(error))
+                    observer.onError(error)
                     return
                 }
-                completion(.success(()))
+                
+                guard let user = result?.user else {
+                    observer.onError(CustomErrors.somethingWentWrong)
+                    return
+                }
+                
+                let data: [String: Any] = ["username": username,
+                                           "email": email]
+                
+                Firestore.firestore().collection("users").document(user.uid).setData(data) { error in
+                    guard error == nil else {
+                        guard let error = error else { return }
+                        observer.onError(error)
+                        return
+                    }
+                    observer.onNext(())
+                    observer.onCompleted()
+                }
             }
+            return Disposables.create()
         }
     }
     
@@ -69,7 +78,6 @@ final class ConcreteAuthorizationService: AuthorizationService {
                 observer.onCompleted()
             } catch let signOutError {
                 observer.onError(signOutError)
-                observer.onCompleted()
             }
             return Disposables.create()
         }
