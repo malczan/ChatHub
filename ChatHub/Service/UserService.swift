@@ -20,13 +20,20 @@ final class ConcreteUserService {
         self.userSession = Auth.auth().currentUser
     }
     
-    func fetchUserInformation(completion: @escaping (User) -> Void) {
-        guard let uid = userSession?.uid else { return }
-        
-        Firestore.firestore().collection("users").document(uid).getDocument { snapshot, _ in
-            guard let user = try? snapshot?.data(as: User.self) else { return }
-            completion(user)
+    func fetchUserInformation() -> Observable<User> {
+        return Observable.create { observer in
+            guard let uid = self.userSession?.uid else { return Disposables.create() }
+            
+            Firestore.firestore().collection("users").document(uid).getDocument { snapshot, _ in
+                guard let user = try? snapshot?.data(as: User.self) else { return }
+                observer.onNext(user)
+                observer.onCompleted()
+            }
+            
+            return Disposables.create()
         }
+        
+        
     }
 }
 

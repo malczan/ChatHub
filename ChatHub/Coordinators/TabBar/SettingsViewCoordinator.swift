@@ -6,6 +6,8 @@
 //
 
 import UIKit
+import RxSwift
+import RxRelay
 
 final class SettingsViewCoordinator: Coordinator {
     
@@ -14,13 +16,20 @@ final class SettingsViewCoordinator: Coordinator {
     var childCoordinators: [Coordinator] = []
     private let navigationController: UINavigationController
 
-
-    init(navigationController: UINavigationController) {
+    private let outputErrorRelay: PublishRelay<Error>
+    private let outputRelay: PublishRelay<Void>
+    
+    init(outputErrorRelay: PublishRelay<Error>,
+         outputRelay: PublishRelay<Void>,
+         navigationController: UINavigationController) {
+        self.outputErrorRelay = outputErrorRelay
+        self.outputRelay = outputRelay
         self.navigationController = navigationController
     }
     
     func start() {
-        let viewModel = SettingsViewModel()
+        let viewModel = SettingsViewModel(outputErrorRelay: outputErrorRelay,
+                                          outputRelay: outputRelay)
         let settingsViewController = Factory.createSettingsViewController(viewModel: viewModel)
         
         navigationController.setViewControllers([settingsViewController], animated: true)

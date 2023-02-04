@@ -7,6 +7,7 @@
 
 import Foundation
 import Firebase
+import RxSwift
 
 enum CustomErrors : Error {
     case somethingWentWrong
@@ -15,7 +16,7 @@ enum CustomErrors : Error {
 protocol AuthorizationService {
     func signInUser(withEmail email: String, password: String, completion: @escaping (Result<Void, Error>) -> Void)
     func signUpUser(withUsername username: String, email: String, password: String, completion: @escaping (Result<Void, Error>) -> Void)
-    func signOutUser()
+//    func signOutUser()
 }
 
 final class ConcreteAuthorizationService: AuthorizationService {
@@ -60,7 +61,17 @@ final class ConcreteAuthorizationService: AuthorizationService {
         }
     }
     
-    func signOutUser() {
-        //
+    func signOutUser() -> Observable<Void> {
+        return Observable.create { observer in
+            do {
+                try Auth.auth().signOut()
+                observer.onNext(())
+                observer.onCompleted()
+            } catch let signOutError {
+                observer.onError(signOutError)
+                observer.onCompleted()
+            }
+            return Disposables.create()
+        }
     }
 }

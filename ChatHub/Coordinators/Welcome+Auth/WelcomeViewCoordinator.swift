@@ -43,7 +43,7 @@ final class WelcomeViewCoordinator: Coordinator {
         let viewModel = WelcomeViewModel(outputScreenSelected: welcomeRelay)
         let welcomeViewController =  Factory.createWelcomeViewController(viewModel: viewModel)
         
-        navigationController.setViewControllers([welcomeViewController], animated: false)
+        navigationController.setViewControllers([welcomeViewController], animated: true)
     }
     
     private func bind() {

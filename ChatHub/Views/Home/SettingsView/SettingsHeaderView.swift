@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import RxCocoa
 import RxSwift
 
 class SettingsHeaderView: UIView {
@@ -31,16 +32,18 @@ class SettingsHeaderView: UIView {
     
     func inject(viewModel: SettingsViewModel) {
         self.viewModel = viewModel
+        usernameLabel.text = viewModel.username.lowercased()
         bind()
     }
     
     private func bind() {
-        viewModel.viewDidAppear()
-        viewModel.userSubject.subscribe(onNext: { [weak self] in
-            self?.usernameLabel.text = "@\($0.username.lowercased())"
-        }).disposed(by: disposeBag )
+        logoutButton
+            .rx
+            .tap
+            .bind(to: viewModel.buttonInput)
+            .disposed(by: disposeBag)
     }
-    
+        
     private func setupView() {
         backgroundColor = .clear
         avatarImageView.backgroundColor = .yellow

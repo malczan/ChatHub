@@ -75,6 +75,7 @@ final class AppCoordinator: Coordinator {
     
     private func showTabBarView() {
         let tabBarCoordinator = TabBarCoordinator(
+            appCoordinatorRelay: appCoordinatorRelay,
             navigationController: navigationController,
             window: window)
         
