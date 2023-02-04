@@ -10,6 +10,8 @@ import Firebase
 
 class SettingsViewController: UIViewController {
     
+    private typealias TableFactory = SettingsTableFactory
+    
     var viewModel: SettingsViewModel!
     private var headerView: SettingsHeaderView!
     private var tableViewContainer = UIView()
@@ -19,6 +21,7 @@ class SettingsViewController: UIViewController {
         super.viewDidLoad()
         view.backgroundColor = UIColor(named: "backgroundColor")
         installHeaderView()
+        installTableContainer()
         installSettingsTableView()
         
     }
@@ -39,7 +42,7 @@ class SettingsViewController: UIViewController {
         ])
     }
     
-    private func installSettingsTableView() {
+    private func installTableContainer() {
         view.addSubview(tableViewContainer)
         
         tableViewContainer.translatesAutoresizingMaskIntoConstraints = false
@@ -50,12 +53,13 @@ class SettingsViewController: UIViewController {
             tableViewContainer.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             tableViewContainer.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor)
         ])
+    }
+    
+    private func installSettingsTableView() {
+        settingsTable = TableFactory.createSettingsTable(viewModel: viewModel)
         
-        settingsTable = SettingsTableViewController()
-
         self.addChild(settingsTable)
         settingsTable.view.frame = self.tableViewContainer.frame
-
         view.addSubview(settingsTable.view)
         
         settingsTable.view.translatesAutoresizingMaskIntoConstraints = false

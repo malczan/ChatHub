@@ -13,7 +13,7 @@ class SettingsHeaderView: UIView {
     
     private typealias Style = SettingsStyle
     
-    private var viewModel: SettingsViewModel!
+    var viewModel: SettingsViewModel!
     private let disposeBag = DisposeBag()
     
     private let avatarImageView = UIImageView()
@@ -26,6 +26,7 @@ class SettingsHeaderView: UIView {
         installAvatarImage()
         installUsernameLabel()
         installLogoutButton()
+        
     }
     
     required init?(coder: NSCoder) {

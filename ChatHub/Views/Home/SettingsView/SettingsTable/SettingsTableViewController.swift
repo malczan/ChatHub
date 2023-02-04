@@ -9,19 +9,21 @@ import UIKit
 
 class SettingsTableViewController: UITableViewController {
     
+    var viewModel: SettingsViewModel!
+    
     private var snapshot: DataSourceSnapshot!
     private var dataSource: DataSource!
     
     private typealias DataSource = UITableViewDiffableDataSource<String, SettingModel>
     private typealias DataSourceSnapshot = NSDiffableDataSourceSnapshot<String, SettingModel>
-
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .clear
         snapshot = DataSourceSnapshot()
         registerCell()
         configureTableViewDataSource()
-        applySettingsForSnapshot(settings: [SettingModel(title: "", icon: "")])
+        applySettingsForSnapshot(settings: viewModel.settings())
     }
     
     private func registerCell() {
@@ -37,13 +39,8 @@ class SettingsTableViewController: UITableViewController {
     private func configureTableViewDataSource() {
         dataSource = DataSource(tableView: tableView, cellProvider: { tableView, indexPath, setting -> UITableViewCell? in
             let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath) as! SettingsTableViewCell
+            cell.model = setting
             return cell
         })
     }
-
-}
-
-struct SettingModel: Hashable {
-    let title: String
-    let icon: String
 }

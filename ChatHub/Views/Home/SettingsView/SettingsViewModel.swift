@@ -10,6 +10,7 @@ import RxSwift
 import RxRelay
 
 class SettingsViewModel {
+    
 
     var username: String = ""
     let buttonInput = PublishSubject<Void>()
@@ -26,6 +27,14 @@ class SettingsViewModel {
         self.outputErrorRelay = outputErrorRelay
         self.outputRelay = outputRelay
         bind()
+    }
+    
+    func settings() -> [SettingModel] {
+        return [
+            SettingModel(title: "Upload photo", icon: "photo"),
+            SettingModel(title: "Update username", icon: "person"),
+            SettingModel(title: "Notifications", icon: "bell")
+        ]
     }
     
     func viewDidAppear() -> Observable<User>{
@@ -50,6 +59,5 @@ class SettingsViewModel {
                 self?.outputErrorRelay.accept($0)
             }
             .disposed(by: disposeBag)
-
     }
 }
