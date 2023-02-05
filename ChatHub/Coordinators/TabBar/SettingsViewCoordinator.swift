@@ -11,16 +11,17 @@ import RxRelay
 
 final class SettingsViewCoordinator: Coordinator {
     
+    typealias Output = SettingsViewModelOutput
     private typealias Factory = SettingsViewControllerFactory
     
     var childCoordinators: [Coordinator] = []
     private let navigationController: UINavigationController
 
     private let outputErrorRelay: PublishRelay<Error>
-    private let outputRelay: PublishRelay<Void>
+    private let outputRelay: PublishRelay<Output>
     
     init(outputErrorRelay: PublishRelay<Error>,
-         outputRelay: PublishRelay<Void>,
+         outputRelay: PublishRelay<Output>,
          navigationController: UINavigationController) {
         self.outputErrorRelay = outputErrorRelay
         self.outputRelay = outputRelay

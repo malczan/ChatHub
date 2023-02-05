@@ -37,6 +37,7 @@ class SettingsTableViewCell: UITableViewCell {
     
     private func setupStyle() {
         self.backgroundColor = .clear
+        self.selectionStyle = .none
         settingLabel.font = Style.settingFont
         settingLabel.textColor = Style.buttonColor
         settingIconView.tintColor = Style.buttonColor

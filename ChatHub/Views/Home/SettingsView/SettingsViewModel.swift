@@ -9,9 +9,15 @@ import Foundation
 import RxSwift
 import RxRelay
 
+enum SettingsViewModelOutput {
+    case signOut
+    case updatePhoto
+}
+
 class SettingsViewModel {
     
-
+    typealias Output = SettingsViewModelOutput
+    
     var username: String = ""
     let buttonInput = PublishSubject<Void>()
     
@@ -19,11 +25,11 @@ class SettingsViewModel {
     private let authService = ConcreteAuthorizationService()
     
     private let outputErrorRelay: PublishRelay<Error>
-    private let outputRelay: PublishRelay<Void>
+    private let outputRelay: PublishRelay<Output>
     private let disposeBag = DisposeBag()
     
     init(outputErrorRelay: PublishRelay<Error>,
-         outputRelay: PublishRelay<Void>) {
+         outputRelay: PublishRelay<Output>) {
         self.outputErrorRelay = outputErrorRelay
         self.outputRelay = outputRelay
         bind()
@@ -42,6 +48,11 @@ class SettingsViewModel {
                 .fetchUserInformation()
     }
     
+    func selected(cell: SettingModel) {
+        outputRelay
+            .accept(.updatePhoto)
+    }
+    
     private func bind() {
         buttonInput
             .subscribe(onNext: { [weak self] in
@@ -54,7 +65,7 @@ class SettingsViewModel {
         authService
             .signOutUser()
             .subscribe { [weak self] in
-                self?.outputRelay.accept(())
+                self?.outputRelay.accept(.signOut)
             } onError: { [weak self] in
                 self?.outputErrorRelay.accept($0)
             }

@@ -14,13 +14,15 @@ final class TabBarCoordinator: Coordinator {
     private typealias TabBarFactory = TabBarViewControllerFactory
     private typealias SettingsFactory = SettingsViewControllerFactory
     
+    private typealias Output = SettingsViewModelOutput
+    
     private(set) var childCoordinators: [Coordinator] = []
     
     private let appCoordinatorRelay: PublishRelay<AppCoordinatorSignals>
     private let navigationController: UINavigationController
     private let window: UIWindow
     
-    private let settingsOutputRelay = PublishRelay<Void>()
+    private let settingsOutputRelay = PublishRelay<Output>()
     private let errorRelay = PublishRelay<Error>()
     private let popUpRelay = PublishRelay<Void>()
 
@@ -39,27 +41,15 @@ final class TabBarCoordinator: Coordinator {
         
         let tabBarViewController = TabBarFactory.createTabBarViewController()
         
-        let messgesNavigationController = UINavigationController()
-        messgesNavigationController.tabBarItem = UITabBarItem(
-            title: "Messeges",
-            image: UIImage(systemName: "message"),
-            tag: 0)
+        let messgesNavigationController = TabBarFactory.createMessegesNavigatonController()
         let messegesCoordinator = MessegesViewCoordinator(navigationController: messgesNavigationController)
         messegesCoordinator.start()
         
-        let friendsNavigationController = UINavigationController()
-        friendsNavigationController.tabBarItem = UITabBarItem(
-            title: "Friends",
-            image: UIImage(systemName: "person.2"),
-            tag: 1)
+        let friendsNavigationController = TabBarFactory.createFriendsNavigationController()
         let friendsCoordinator = FriendsViewCoordinator(navigationController: friendsNavigationController)
         friendsCoordinator.start()
         
-        let settingsNavigationController = UINavigationController()
-        settingsNavigationController.tabBarItem = UITabBarItem(
-            title: "Settings",
-            image: UIImage(systemName: "gear"),
-            tag: 2)
+        let settingsNavigationController = TabBarFactory.createSettingsNavigationController()
         let settingsCoordinator = SettingsViewCoordinator(
             outputErrorRelay: errorRelay,
             outputRelay: settingsOutputRelay,
@@ -72,8 +62,13 @@ final class TabBarCoordinator: Coordinator {
     
     private func bind() {
         settingsOutputRelay
-            .subscribe(onNext: { [weak self] _ in
-                self?.appCoordinatorRelay.accept(.welcomeView)
+            .subscribe(onNext: { [weak self] in
+                switch $0 {
+                case .signOut:
+                    self?.appCoordinatorRelay.accept(.welcomeView)
+                case .updatePhoto:
+                    self?.showPhotoPicker()
+                }
             })
             .disposed(by: disposeBag)
         
@@ -99,6 +94,18 @@ final class TabBarCoordinator: Coordinator {
     }
     
     private func hidePopUpView() {
+        window.rootViewController?.dismiss(animated: false)
+    }
+    
+    private func showPhotoPicker() {
+       
+        let popUpViewController = PhotoPickerViewController()
+        popUpViewController.modalPresentationStyle = .custom
+        window.rootViewController?.present(popUpViewController, animated: false)
+        window.makeKeyAndVisible()
+    }
+    
+    private func hidePhotoPicker() {
         window.rootViewController?.dismiss(animated: false)
     }
     

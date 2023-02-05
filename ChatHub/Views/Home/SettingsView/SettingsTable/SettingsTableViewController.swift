@@ -6,6 +6,8 @@
 //
 
 import UIKit
+import RxCocoa
+import RxSwift
 
 class SettingsTableViewController: UITableViewController {
     
@@ -17,6 +19,8 @@ class SettingsTableViewController: UITableViewController {
     private typealias DataSource = UITableViewDiffableDataSource<String, SettingModel>
     private typealias DataSourceSnapshot = NSDiffableDataSourceSnapshot<String, SettingModel>
     
+    private let disposeBag = DisposeBag()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .clear
@@ -24,6 +28,17 @@ class SettingsTableViewController: UITableViewController {
         registerCell()
         configureTableViewDataSource()
         applySettingsForSnapshot(settings: viewModel.settings())
+        bind()
+    }
+    
+    private func bind() {
+        tableView
+            .rx
+            .itemSelected
+            .subscribe(onNext: { [weak self] in
+                guard let cell = self?.dataSource.itemIdentifier(for: $0) else { return }
+                self?.viewModel.selected(cell: cell)
+            }).disposed(by: disposeBag)
     }
     
     private func registerCell() {
@@ -43,4 +58,7 @@ class SettingsTableViewController: UITableViewController {
             return cell
         })
     }
+    
+    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) { }
+    override func tableView(_ tableView: UITableView, didDeselectRowAt indexPath: IndexPath) { }
 }
