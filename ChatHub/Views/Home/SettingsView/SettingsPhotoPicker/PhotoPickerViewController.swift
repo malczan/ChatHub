@@ -5,12 +5,20 @@
 //  Created by Jakub Malczyk on 04/02/2023.
 //
 
+import Photos
+import PhotosUI
 import UIKit
+import RxCocoa
+import RxSwift
 
-class PhotoPickerViewController: UIViewController {
+class PhotoPickerViewController: UIViewController, PHPickerViewControllerDelegate {
+    
+    var viewModel: PhotoPickerViewModel!
     
     private var bottomAnchor: NSLayoutConstraint?
     private var photoPickerView: PhotoPickerView!
+    
+    private let disposeBag = DisposeBag()
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
@@ -21,6 +29,20 @@ class PhotoPickerViewController: UIViewController {
         super.viewDidLoad()
         setupStyle()
         installPopUpView()
+        
+        viewModel
+            .gallerySubject
+            .subscribe(onNext: { [weak self] _ in
+                self?.showSystemPhotoPicker()
+            })
+            .disposed(by: disposeBag)
+        
+        viewModel
+            .cancelDriver
+            .drive(onNext: { [weak self] _ in
+                self?.hidePopUpWithAnimation()
+            })
+            .disposed(by: disposeBag)
     }
     
     private func setupStyle() {
@@ -29,6 +51,8 @@ class PhotoPickerViewController: UIViewController {
     
     private func installPopUpView() {
         photoPickerView = PhotoPickerView()
+        photoPickerView.inject(viewModel: viewModel)
+        
         view.addSubview(photoPickerView)
         
         photoPickerView.translatesAutoresizingMaskIntoConstraints = false
@@ -51,7 +75,7 @@ class PhotoPickerViewController: UIViewController {
             self.view.backgroundColor = .clear
             self.view.layoutIfNeeded()
         } completion: { [weak self] _ in
-            //
+            self?.viewModel?.cancelTapped()
         }
     }
     
@@ -65,5 +89,26 @@ class PhotoPickerViewController: UIViewController {
         }
     }
     
+    private func showSystemPhotoPicker() {
+        var config = PHPickerConfiguration(photoLibrary: .shared())
+        config.filter = .images
+        config.selectionLimit = 1
+        let photoPickerViewController = PHPickerViewController(configuration: config)
+        photoPickerViewController.delegate = self
+        present(photoPickerViewController, animated: true)
+    }
+    
+    func picker(_ picker: PHPickerViewController, didFinishPicking results: [PHPickerResult]) {
+        picker.dismiss(animated: true)
+        
+        results.forEach { result in
+            result.itemProvider.loadObject(ofClass: UIImage.self) { [weak self] reading, error in
+                guard let image = reading as? UIImage, error == nil else {
+                    return
+                }
+                self?.viewModel.inputImage.accept(image)
+            }
+        }
+    }
 }
 

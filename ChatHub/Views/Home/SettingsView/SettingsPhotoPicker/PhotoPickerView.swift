@@ -11,10 +11,10 @@ import RxSwift
 
 class PhotoPickerView: UIView {
     
+    var viewModel: PhotoPickerViewModel!
     private typealias Style = PhotoPickerStyle
         
     private let galleryButton = UIButton()
-    private let messageLabel = UILabel()
     private let uploadButton = UIButton()
     private let cancelButton = UIButton()
     
@@ -24,7 +24,6 @@ class PhotoPickerView: UIView {
         super.init(frame: frame)
         setupStyle()
         installGalleryButton()
-        installMessageLabel()
         installUploadButton()
         installCancelButton()
     }
@@ -33,31 +32,67 @@ class PhotoPickerView: UIView {
         fatalError("init(coder:) has not been implemented")
     }
     
+    func inject(viewModel: PhotoPickerViewModel) {
+        self.viewModel = viewModel
+        bind()
+    }
+    
+    private func bind() {
+        galleryButton
+            .rx
+            .tap
+            .bind(to: viewModel.gallerySubject)
+            .disposed(by: disposeBag)
+        
+        uploadButton
+            .rx
+            .tap
+            .bind(to: viewModel.uploadSubject)
+            .disposed(by: disposeBag)
+        
+        cancelButton
+            .rx
+            .tap
+            .bind(to: viewModel.cancelSubject)
+            .disposed(by: disposeBag)
+        
+        viewModel
+            .imageDriver
+            .drive(onNext: { [weak self] in
+                self?.galleryButton.setImage($0, for: .normal)
+            })
+            .disposed(by: disposeBag)
+        
+        viewModel
+            .isImageSelected()
+            .bind(to: uploadButton.rx.isEnabled)
+            .disposed(by: disposeBag)
+        
+        viewModel
+            .isImageSelected()
+            .map { $0 ? Style.buttonColor : Style.buttonColorDisabled }
+            .bind(to: uploadButton.rx.backgroundColor)
+            .disposed(by: disposeBag)
+    }
+    
     private func setupStyle() {
         backgroundColor = Style.backgroundColor
         
-        galleryButton.setImage(Style.galleryImage, for: .normal)
         galleryButton.tintColor = Style.buttonColor
-        galleryButton.layer.cornerRadius = 60
-        galleryButton.imageView?.contentMode = .scaleAspectFit
-        galleryButton.contentMode = .scaleAspectFit
+        galleryButton.layer.cornerRadius = 80
+        galleryButton.clipsToBounds = true
+        galleryButton.contentMode = .scaleAspectFill
         galleryButton.contentHorizontalAlignment = .fill
         galleryButton.contentVerticalAlignment = .fill
                 
-        messageLabel.text = "Select photo first!"
-        messageLabel.textColor = Style.errorColor
-        messageLabel.isHidden = false
-        
-        uploadButton.backgroundColor = Style.buttonColor
-        uploadButton.setTitle("UPLOAD", for: .normal)
-        uploadButton.setTitleColor(Style.buttonColor, for: .normal)
+        uploadButton.setTitle("SAVE", for: .normal)
+        uploadButton.setTitleColor(Style.backgroundColor, for: .normal)
         uploadButton.make3dButton()
         
         cancelButton.backgroundColor = Style.buttonColor
         cancelButton.setTitle("CANCEL", for: .normal)
-        cancelButton.setTitleColor(Style.buttonColor, for: .normal)
+        cancelButton.setTitleColor(Style.backgroundColor, for: .normal)
         cancelButton.make3dButton()
-    
     }
     
     private func installGalleryButton() {
@@ -66,20 +101,9 @@ class PhotoPickerView: UIView {
         galleryButton.translatesAutoresizingMaskIntoConstraints = false
         
         NSLayoutConstraint.activate([
-            galleryButton.topAnchor.constraint(equalTo: self.topAnchor, constant: 10),
             galleryButton.centerXAnchor.constraint(equalTo: self.centerXAnchor),
-            galleryButton.heightAnchor.constraint(equalToConstant: 120),
-            galleryButton.widthAnchor.constraint(equalToConstant: 120)
-        ])
-    }
-    
-    private func installMessageLabel() {
-        self.addSubview(messageLabel)
-        
-        messageLabel.translatesAutoresizingMaskIntoConstraints = false
-        
-        NSLayoutConstraint.activate([
-            messageLabel.centerXAnchor.constraint(equalTo: self.centerXAnchor)
+            galleryButton.heightAnchor.constraint(equalToConstant: 160),
+            galleryButton.widthAnchor.constraint(equalToConstant: 160)
         ])
     }
     
@@ -91,7 +115,7 @@ class PhotoPickerView: UIView {
         NSLayoutConstraint.activate([
             uploadButton.leadingAnchor.constraint(equalTo: self.layoutMarginsGuide.leadingAnchor,  constant: 50),
             uploadButton.trailingAnchor.constraint(equalTo: self.layoutMarginsGuide.trailingAnchor, constant: -50),
-            uploadButton.topAnchor.constraint(equalTo: messageLabel.bottomAnchor, constant: 15),
+            uploadButton.topAnchor.constraint(equalTo: galleryButton.bottomAnchor, constant: 10),
             uploadButton.heightAnchor.constraint(equalToConstant: 40)
         ])
     }

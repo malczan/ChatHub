@@ -6,6 +6,8 @@
 //
 
 import UIKit
+//import Photos
+//import PhotosUI
 import RxSwift
 import RxRelay
 
@@ -13,8 +15,9 @@ final class TabBarCoordinator: Coordinator {
     
     private typealias TabBarFactory = TabBarViewControllerFactory
     private typealias SettingsFactory = SettingsViewControllerFactory
+    private typealias PhotoPickerFactory = PhotoPickerViewControllerFactory
     
-    private typealias Output = SettingsViewModelOutput
+    private typealias SettingsOutput = SettingsViewModelOutput
     
     private(set) var childCoordinators: [Coordinator] = []
     
@@ -22,7 +25,9 @@ final class TabBarCoordinator: Coordinator {
     private let navigationController: UINavigationController
     private let window: UIWindow
     
-    private let settingsOutputRelay = PublishRelay<Output>()
+    private let settingsOutputRelay = PublishRelay<SettingsOutput>()
+    private let photoPickerOutputRelay = PublishRelay<Void>()
+    
     private let errorRelay = PublishRelay<Error>()
     private let popUpRelay = PublishRelay<Void>()
 
@@ -61,6 +66,7 @@ final class TabBarCoordinator: Coordinator {
     }
     
     private func bind() {
+        // Settings & PhotoPicker
         settingsOutputRelay
             .subscribe(onNext: { [weak self] in
                 switch $0 {
@@ -72,6 +78,13 @@ final class TabBarCoordinator: Coordinator {
             })
             .disposed(by: disposeBag)
         
+        photoPickerOutputRelay
+            .subscribe(onNext: { [weak self] in
+                self?.hidePhotoPicker()
+            })
+            .disposed(by: disposeBag)
+        
+        // Error Pop Up
         errorRelay
             .subscribe(onNext: { [weak self] in
                 self?.showPopUpView(with: $0)
@@ -98,16 +111,16 @@ final class TabBarCoordinator: Coordinator {
     }
     
     private func showPhotoPicker() {
-       
-        let popUpViewController = PhotoPickerViewController()
+        let viewModel = PhotoPickerViewModel(outputRelay: photoPickerOutputRelay)
+        
+        let popUpViewController = PhotoPickerFactory.createPhotoPickerViewController(viewModel: viewModel)
         popUpViewController.modalPresentationStyle = .custom
-        window.rootViewController?.present(popUpViewController, animated: false)
-        window.makeKeyAndVisible()
+        self.window.rootViewController?.present(popUpViewController, animated: false)
+        self.window.makeKeyAndVisible()
     }
     
     private func hidePhotoPicker() {
         window.rootViewController?.dismiss(animated: false)
     }
-    
     
 }

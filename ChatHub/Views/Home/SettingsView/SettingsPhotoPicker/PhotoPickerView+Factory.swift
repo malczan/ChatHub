@@ -6,3 +6,13 @@
 //
 
 import Foundation
+
+
+enum PhotoPickerViewControllerFactory {
+
+    static func createPhotoPickerViewController(viewModel: PhotoPickerViewModel) -> PhotoPickerViewController {
+        let photoPickerViewController = PhotoPickerViewController()
+        photoPickerViewController.viewModel = viewModel
+        return photoPickerViewController
+    }
+}
