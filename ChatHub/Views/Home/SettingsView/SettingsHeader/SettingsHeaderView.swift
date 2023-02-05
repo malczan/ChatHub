@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import Kingfisher
 import RxCocoa
 import RxSwift
 
@@ -48,16 +49,20 @@ class SettingsHeaderView: UIView {
         viewModel
             .viewDidAppear()
             .subscribe(onNext: { [weak self] in
-                self?.usernameLabel.text = $0.username
+                self?.usernameLabel.text = $0.username.lowercased()
+                guard let url = URL(string: $0.profileImageUrl) else { return }
+                self?.avatarImageView.kf.setImage(with: url)
             })
             .disposed(by: disposeBag)
     }
         
     private func setupStyle() {
         backgroundColor = Style.backgroundColor
-        avatarImageView.backgroundColor = .yellow
+        avatarImageView.image = UIImage(systemName: "person.circle")
         avatarImageView.layer.cornerRadius = 30
-        
+        avatarImageView.clipsToBounds = true
+        avatarImageView.contentMode = .scaleAspectFill
+    
         usernameLabel.textColor = Style.whiteColor
         
         usernameLabel.font =  Style.usernameFont
