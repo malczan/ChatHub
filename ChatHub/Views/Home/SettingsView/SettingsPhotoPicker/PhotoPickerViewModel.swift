@@ -17,7 +17,8 @@ class PhotoPickerViewModel {
     let gallerySubject = PublishSubject<Void>()
     let uploadSubject = PublishSubject<Void>()
     let cancelSubject = PublishSubject<Void>()
-    
+
+    private let imageService = ConcreteImageService()
     private let outputRelay: PublishRelay<Void>
     
     private let diposeBag = DisposeBag()
@@ -31,7 +32,7 @@ class PhotoPickerViewModel {
         return inputImage.asObservable().asDriver(onErrorJustReturn: UIImage(systemName: "photo.circle")!)
         
     }
-    
+        
     var cancelDriver: Driver<Void> {
         return cancelSubject.asDriver(onErrorJustReturn: ())
     }
@@ -47,7 +48,9 @@ class PhotoPickerViewModel {
     private func bind() {
         uploadSubject
             .subscribe(onNext: { [weak self] in
-                print("@@@@")
+                self?.imageService
+                    .uploadProfileImage((self?.inputImage.value)!)
+                self?.outputRelay.accept(())
             })
             .disposed(by: diposeBag)
     }

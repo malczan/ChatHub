@@ -81,7 +81,7 @@ class PhotoPickerView: UIView {
         galleryButton.tintColor = Style.buttonColor
         galleryButton.layer.cornerRadius = 80
         galleryButton.clipsToBounds = true
-        galleryButton.contentMode = .scaleAspectFill
+        galleryButton.contentMode = .scaleAspectFit
         galleryButton.contentHorizontalAlignment = .fill
         galleryButton.contentVerticalAlignment = .fill
                 

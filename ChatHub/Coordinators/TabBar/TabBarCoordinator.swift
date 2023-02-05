@@ -6,8 +6,6 @@
 //
 
 import UIKit
-//import Photos
-//import PhotosUI
 import RxSwift
 import RxRelay
 
@@ -112,7 +110,6 @@ final class TabBarCoordinator: Coordinator {
     
     private func showPhotoPicker() {
         let viewModel = PhotoPickerViewModel(outputRelay: photoPickerOutputRelay)
-        
         let popUpViewController = PhotoPickerFactory.createPhotoPickerViewController(viewModel: viewModel)
         popUpViewController.modalPresentationStyle = .custom
         self.window.rootViewController?.present(popUpViewController, animated: false)

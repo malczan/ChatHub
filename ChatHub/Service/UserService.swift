@@ -8,12 +8,13 @@
 import Foundation
 import Firebase
 import FirebaseFirestoreSwift
+import FirebaseStorage
 import RxSwift
 
 final class ConcreteUserService {
     
     let activeSession: Bool
-    private let userSession: FirebaseAuth.User?
+    let userSession: FirebaseAuth.User?
     
     init() {
         self.activeSession = (Auth.auth().currentUser != nil)
@@ -32,8 +33,6 @@ final class ConcreteUserService {
             
             return Disposables.create()
         }
-        
-        
     }
 }
 
