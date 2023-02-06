@@ -11,7 +11,16 @@ import RxRelay
 import RxCocoa
 import Accessibility
 
+enum PhotoPickerViewModelOutput {
+    case hidePicker
+    case imageUploaded
+}
+
 class PhotoPickerViewModel {
+    
+    let userService = ConcreteUserService()
+    
+    typealias Output = PhotoPickerViewModelOutput
     
     let inputImage = BehaviorRelay<UIImage>(value: UIImage(systemName: "photo.circle")!)
     let gallerySubject = PublishSubject<Void>()
@@ -19,11 +28,11 @@ class PhotoPickerViewModel {
     let cancelSubject = PublishSubject<Void>()
 
     private let imageService = ConcreteImageService()
-    private let outputRelay: PublishRelay<Void>
+    private let outputRelay: PublishRelay<Output>
     
     private let diposeBag = DisposeBag()
     
-    init(outputRelay: PublishRelay<Void>) {
+    init(outputRelay: PublishRelay<Output>) {
         self.outputRelay = outputRelay
         bind()
     }
@@ -42,16 +51,30 @@ class PhotoPickerViewModel {
     }
     
     func cancelTapped() {
-        outputRelay.accept(())
+        outputRelay.accept((.hidePicker))
     }
     
     private func bind() {
         uploadSubject
             .subscribe(onNext: { [weak self] in
-                self?.imageService
-                    .uploadProfileImage((self?.inputImage.value)!)
-                self?.outputRelay.accept(())
+                self?.uploadImage()
+                self?.outputRelay.accept((.hidePicker))
+                
             })
             .disposed(by: diposeBag)
+    }
+    
+    private func uploadImage() {
+        let image = inputImage.value
+        imageService
+            .uploadProfileImage(image)
+            .subscribe { _ in
+                print("@@ Refresh picture")
+            } onError: { _ in
+                print("@@@ ERROR")
+            }
+            .disposed(by: diposeBag)
+
+                      
     }
 }

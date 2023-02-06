@@ -34,15 +34,24 @@ final class ConcreteImageService {
         }
     }
     
-    func uploadProfileImage(_ image: UIImage) {
-        guard let uid = userService.userSession?.uid else { return }
-
-        uploadImage(image: image) { imageUrl in
-            Firestore.firestore().collection("users").document(uid).updateData(["profileImageUrl": imageUrl]) { error in
-                guard error == nil else {
-                    return
+    func uploadProfileImage(_ image: UIImage) -> Observable<Void> {
+        return Observable.create { observer in
+            guard let uid = self.userService.userSession?.uid else { return Disposables.create() }
+            self.uploadImage(image: image) { imageUrl in
+                Firestore.firestore().collection("users").document(uid).updateData(["profileImageUrl": imageUrl]) { error in
+                    guard error == nil else {
+                        guard let error = error else { return }
+                        observer.onError(error)
+                        return
+                    }
+                    observer.onNext(())
+                    observer.onCompleted()
                 }
             }
+            
+            return Disposables.create()
+
         }
+                
     }
 }

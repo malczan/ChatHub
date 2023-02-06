@@ -8,6 +8,7 @@
 import Foundation
 import RxSwift
 import RxRelay
+import RxCocoa
 
 enum SettingsViewModelOutput {
     case signOut
@@ -18,9 +19,9 @@ class SettingsViewModel {
     
     typealias Output = SettingsViewModelOutput
     
-    var username: String = ""
     let buttonInput = PublishSubject<Void>()
     
+    var userSubject = PublishRelay<User>()
     private let userService = ConcreteUserService()
     private let authService = ConcreteAuthorizationService()
     
@@ -35,6 +36,11 @@ class SettingsViewModel {
         bind()
     }
     
+    
+    var userObservable: Observable<User> {
+        return userService.user.asObservable()
+    }
+    
     func settings() -> [SettingModel] {
         return [
             SettingModel(title: "Upload photo", icon: "photo"),
@@ -43,9 +49,8 @@ class SettingsViewModel {
         ]
     }
     
-    func viewDidAppear() -> Observable<User>{
-        return userService
-                .fetchUserInformation()
+    func refreshUser() {
+        userService.refreshUserInfo()
     }
     
     func selected(cell: SettingModel) {

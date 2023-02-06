@@ -16,6 +16,7 @@ final class TabBarCoordinator: Coordinator {
     private typealias PhotoPickerFactory = PhotoPickerViewControllerFactory
     
     private typealias SettingsOutput = SettingsViewModelOutput
+    private typealias PhotoPickerOutput = PhotoPickerViewModelOutput
     
     private(set) var childCoordinators: [Coordinator] = []
     
@@ -24,7 +25,8 @@ final class TabBarCoordinator: Coordinator {
     private let window: UIWindow
     
     private let settingsOutputRelay = PublishRelay<SettingsOutput>()
-    private let photoPickerOutputRelay = PublishRelay<Void>()
+
+    private let photoPickerOutputRelay = PublishRelay<PhotoPickerOutput>()
     
     private let errorRelay = PublishRelay<Error>()
     private let popUpRelay = PublishRelay<Void>()
@@ -78,7 +80,12 @@ final class TabBarCoordinator: Coordinator {
         
         photoPickerOutputRelay
             .subscribe(onNext: { [weak self] in
-                self?.hidePhotoPicker()
+                switch $0 {
+                case .hidePicker:
+                    self?.hidePhotoPicker()
+                case .imageUploaded:
+                    print("@@@")
+                }
             })
             .disposed(by: disposeBag)
         

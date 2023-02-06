@@ -47,7 +47,7 @@ class SettingsHeaderView: UIView {
             .disposed(by: disposeBag)
         
         viewModel
-            .viewDidAppear()
+            .userObservable
             .subscribe(onNext: { [weak self] in
                 self?.usernameLabel.text = $0.username.lowercased()
                 guard let url = URL(string: $0.profileImageUrl) else { return }

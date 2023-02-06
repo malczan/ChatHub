@@ -54,7 +54,8 @@ final class ConcreteAuthorizationService: AuthorizationService {
                 }
                 
                 let data: [String: Any] = ["username": username,
-                                           "email": email]
+                                           "email": email,
+                                           "profileImageUrl": ""]
                 
                 Firestore.firestore().collection("users").document(user.uid).setData(data) { error in
                     guard error == nil else {

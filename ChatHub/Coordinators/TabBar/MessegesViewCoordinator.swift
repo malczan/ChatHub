@@ -18,7 +18,6 @@ final class MessegesViewCoordinator: Coordinator {
     }
     
     func start() {
-//        let viewModel = SettingsViewModel()
         let messegesViewController = MessegesViewController()
         
         navigationController.setViewControllers([messegesViewController], animated: true)
