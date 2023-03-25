@@ -16,6 +16,8 @@ targets:
      - package: FirebaseFirestoreSwift
      - package: FirebaseFunctions
      - package: FirebaseStorage
+     - package: Kingfisher
+     - package: Swinject
 packages:
     FirebaseAuth:
         url: https://github.com/firebase/firebase-ios-sdk.git
@@ -29,4 +31,9 @@ packages:
     FirebaseStorage:
         url: https://github.com/firebase/firebase-ios-sdk.git
         branch: master
-        
+    Kingfisher:
+        url: https://github.com/onevcat/Kingfisher.git
+        branch: master
+    Swinject:
+        url: https://github.com/Swinject/Swinject.git
+        branch: master
