@@ -10,10 +10,18 @@ import Firebase
 import FirebaseStorage
 import RxSwift
 
-final class ConcreteImageService {
+protocol ImageService {
+    func uploadProfileImage(_ image: UIImage) -> Observable<Void>
+}
+
+final class ConcreteImageService: ImageService {
     
-    let userService = ConcreteUserService()
+    private let userService: UserService
     
+    init(userService: UserService) {
+        self.userService = userService
+    }
+        
     private let disposeBag = DisposeBag()
     
     private func uploadImage(image: UIImage, completion: @escaping (String) -> Void) {

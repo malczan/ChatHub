@@ -14,9 +14,9 @@ enum CustomErrors : Error {
 }
 
 protocol AuthorizationService {
-//    func signInUser(withEmail email: String, password: String, completion: @escaping (Result<Void, Error>) -> Void)
-//    func signUpUser(withUsername username: String, email: String, password: String, completion: @escaping (Result<Void, Error>) -> Void)
-//    func signOutUser()
+    func signInUser(withEmail email: String, password: String) -> Observable<Void>
+    func signUpUser(withUsername username: String, email: String, password: String) -> Observable<Void>
+    func signOutUser() -> Observable<Void>
 }
 
 final class ConcreteAuthorizationService: AuthorizationService {

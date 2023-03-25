@@ -25,7 +25,7 @@ final class SignUpViewModel {
     
     let signUpSubject = PublishSubject<Void>()
     
-    private let authorizationService = ConcreteAuthorizationService()
+    private let authorizationService: AuthorizationService
     
     private let outputErrorRelay: PublishRelay<Error>
     private let outputRelay: PublishRelay<Output>
@@ -33,8 +33,10 @@ final class SignUpViewModel {
     
     private let diposeBag = DisposeBag()
     
-    init(outputRelay: PublishRelay<Output>,
+    init(authorizationService: AuthorizationService,
+         outputRelay: PublishRelay<Output>,
          outputErrorRelay: PublishRelay<Error>) {
+        self.authorizationService = authorizationService
         self.outputRelay = outputRelay
         self.outputErrorRelay = outputErrorRelay
         bind()

@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import Swinject
 import RxSwift
 import RxRelay
 
@@ -17,6 +18,7 @@ final class WelcomeViewCoordinator: Coordinator {
     private(set) var childCoordinators: [Coordinator] = []
     private let navigationController: UINavigationController
     private let window: UIWindow
+    private let resolver: Resolver
     
     private let appCoordinatorRelay: PublishRelay<AppCoordinatorSignals>
 
@@ -31,10 +33,12 @@ final class WelcomeViewCoordinator: Coordinator {
     
     init(appCoordinatorRelay: PublishRelay<AppCoordinatorSignals>,
          navigationController: UINavigationController,
-         window: UIWindow) {
+         window: UIWindow,
+         resolver: Resolver) {
         self.appCoordinatorRelay = appCoordinatorRelay
         self.navigationController = navigationController
         self.window = window
+        self.resolver = resolver
         
         bind()
     }
@@ -107,7 +111,8 @@ final class WelcomeViewCoordinator: Coordinator {
         let signInViewCoordinator = SignInViewCoordinator(
             navigationController: navigationController,
             outputRelay: signInRelay,
-            outputErrorRelay: authorizationErrorRelay)
+            outputErrorRelay: authorizationErrorRelay,
+            resolver: resolver)
         signInViewCoordinator.start()
     }
     
@@ -115,7 +120,8 @@ final class WelcomeViewCoordinator: Coordinator {
         let signUpViewCoordinator = SignUpViewCoordinator(
             navigationController: navigationController,
             outputRelay: signUpRelay,
-            outputErrorRelay: authorizationErrorRelay)
+            outputErrorRelay: authorizationErrorRelay,
+            resolver: resolver)
         signUpViewCoordinator.start()
     }
     

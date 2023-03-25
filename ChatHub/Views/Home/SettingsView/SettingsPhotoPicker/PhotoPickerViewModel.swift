@@ -27,13 +27,15 @@ class PhotoPickerViewModel {
     let uploadSubject = PublishSubject<Void>()
     let cancelSubject = PublishSubject<Void>()
 
-    private let imageService = ConcreteImageService()
+    private let imageService: ImageService
     private let outputRelay: PublishRelay<Output>
     
     private let diposeBag = DisposeBag()
     
-    init(outputRelay: PublishRelay<Output>) {
+    init(outputRelay: PublishRelay<Output>,
+         imageService: ImageService) {
         self.outputRelay = outputRelay
+        self.imageService = imageService
         bind()
     }
     

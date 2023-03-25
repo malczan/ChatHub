@@ -37,6 +37,7 @@ class SettingsHeaderView: UIView {
     func inject(viewModel: SettingsViewModel) {
         self.viewModel = viewModel
         bind()
+        viewModel.refreshUser()
     }
     
     private func bind() {

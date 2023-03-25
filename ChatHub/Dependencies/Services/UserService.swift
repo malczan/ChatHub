@@ -12,7 +12,14 @@ import FirebaseStorage
 import RxSwift
 import RxRelay
 
-final class ConcreteUserService {
+protocol UserService {
+    var activeSession: Bool { get }
+    var user: PublishRelay<User> { get }
+    var userSession: FirebaseAuth.User? { get }
+    func refreshUserInfo()
+}
+
+final class ConcreteUserService: UserService {
     
     let activeSession: Bool
     let userSession: FirebaseAuth.User?

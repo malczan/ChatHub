@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import Swinject
 import RxSwift
 import RxRelay
 
@@ -23,6 +24,7 @@ final class TabBarCoordinator: Coordinator {
     private let appCoordinatorRelay: PublishRelay<AppCoordinatorSignals>
     private let navigationController: UINavigationController
     private let window: UIWindow
+    private let resolver: Resolver
     
     private let settingsOutputRelay = PublishRelay<SettingsOutput>()
 
@@ -35,10 +37,12 @@ final class TabBarCoordinator: Coordinator {
     
     init(appCoordinatorRelay: PublishRelay<AppCoordinatorSignals>,
          navigationController: UINavigationController,
-         window: UIWindow) {
+         window: UIWindow,
+         resolver: Resolver) {
         self.navigationController = navigationController
         self.window = window
         self.appCoordinatorRelay = appCoordinatorRelay
+        self.resolver = resolver
         bind()
     }
     
@@ -58,7 +62,8 @@ final class TabBarCoordinator: Coordinator {
         let settingsCoordinator = SettingsViewCoordinator(
             outputErrorRelay: errorRelay,
             outputRelay: settingsOutputRelay,
-            navigationController: settingsNavigationController)
+            navigationController: settingsNavigationController,
+            resolver: resolver)
         settingsCoordinator.start()
         
         tabBarViewController.viewControllers = [messgesNavigationController, friendsNavigationController, settingsNavigationController]
@@ -116,7 +121,7 @@ final class TabBarCoordinator: Coordinator {
     }
     
     private func showPhotoPicker() {
-        let viewModel = PhotoPickerViewModel(outputRelay: photoPickerOutputRelay)
+        let viewModel = PhotoPickerViewModel(outputRelay: photoPickerOutputRelay, imageService: resolver.resolve(ImageService.self)!)
         let popUpViewController = PhotoPickerFactory.createPhotoPickerViewController(viewModel: viewModel)
         popUpViewController.modalPresentationStyle = .custom
         self.window.rootViewController?.present(popUpViewController, animated: false)

@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import Swinject
 import RxSwift
 import RxRelay
 import Firebase
@@ -24,14 +25,16 @@ final class AppCoordinator: Coordinator {
     
     private(set) var childCoordinators: [Coordinator] = []
     private let window: UIWindow
+    private let resolver: Resolver
     
     let navigationController = UINavigationController()
     private let appCoordinatorRelay = PublishRelay<AppCoordinatorSignals>()
     private let disposeBag = DisposeBag()
     
-    init(window: UIWindow) {
+    init(window: UIWindow, resolver: Resolver) {
         navigationController.isNavigationBarHidden = true
         self.window = window
+        self.resolver = resolver
         bind()
     }
     
@@ -66,7 +69,8 @@ final class AppCoordinator: Coordinator {
         let welcomeViewCoordinator = WelcomeViewCoordinator(
             appCoordinatorRelay: appCoordinatorRelay,
             navigationController: navigationController,
-            window: window)
+            window: window,
+            resolver: resolver)
         
         childCoordinators.append(welcomeViewCoordinator)
 
@@ -77,7 +81,8 @@ final class AppCoordinator: Coordinator {
         let tabBarCoordinator = TabBarCoordinator(
             appCoordinatorRelay: appCoordinatorRelay,
             navigationController: navigationController,
-            window: window)
+            window: window,
+            resolver: resolver)
         
         childCoordinators.append(tabBarCoordinator)
         

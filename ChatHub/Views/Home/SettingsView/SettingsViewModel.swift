@@ -22,15 +22,19 @@ class SettingsViewModel {
     let buttonInput = PublishSubject<Void>()
     
     var userSubject = PublishRelay<User>()
-    private let userService = ConcreteUserService()
-    private let authService = ConcreteAuthorizationService()
+    private let authService: AuthorizationService
+    private let userService: UserService
     
     private let outputErrorRelay: PublishRelay<Error>
     private let outputRelay: PublishRelay<Output>
     private let disposeBag = DisposeBag()
     
-    init(outputErrorRelay: PublishRelay<Error>,
+    init(authService: AuthorizationService,
+         userService: UserService,
+         outputErrorRelay: PublishRelay<Error>,
          outputRelay: PublishRelay<Output>) {
+        self.authService = authService
+        self.userService = userService
         self.outputErrorRelay = outputErrorRelay
         self.outputRelay = outputRelay
         bind()
