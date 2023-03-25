@@ -72,6 +72,8 @@ class SignInViewController: UIViewController {
             .isValid()
             .bind(to: loginButton.rx.isEnabled)
             .disposed(by: disposeBag)
+        
+        
     }
 
     private func setupStyle() {

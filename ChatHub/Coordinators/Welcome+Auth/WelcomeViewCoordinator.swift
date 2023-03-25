@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import Swinject
 import RxSwift
 import RxRelay
 
@@ -17,7 +18,10 @@ final class WelcomeViewCoordinator: Coordinator {
     private(set) var childCoordinators: [Coordinator] = []
     private let navigationController: UINavigationController
     private let window: UIWindow
+    private let resolver: Resolver
     
+    private let appCoordinatorRelay: PublishRelay<AppCoordinatorSignals>
+
     private let welcomeRelay = PublishRelay<WelcomeViewModelOutput>()
     private let signInRelay = PublishRelay<SignInViewModelOutput>()
     private let signUpRelay = PublishRelay<SignUpViewModelOutput>()
@@ -27,10 +31,15 @@ final class WelcomeViewCoordinator: Coordinator {
     private let disposeBag = DisposeBag()
     
     
-    init(navigationController: UINavigationController,
-         window: UIWindow) {
+    init(appCoordinatorRelay: PublishRelay<AppCoordinatorSignals>,
+         navigationController: UINavigationController,
+         window: UIWindow,
+         resolver: Resolver) {
+        self.appCoordinatorRelay = appCoordinatorRelay
         self.navigationController = navigationController
         self.window = window
+        self.resolver = resolver
+        
         bind()
     }
     
@@ -38,7 +47,7 @@ final class WelcomeViewCoordinator: Coordinator {
         let viewModel = WelcomeViewModel(outputScreenSelected: welcomeRelay)
         let welcomeViewController =  Factory.createWelcomeViewController(viewModel: viewModel)
         
-        navigationController.setViewControllers([welcomeViewController], animated: false)
+        navigationController.setViewControllers([welcomeViewController], animated: true)
     }
     
     private func bind() {
@@ -60,7 +69,7 @@ final class WelcomeViewCoordinator: Coordinator {
                 case .forgotPassword:
                     self?.showForgotPasswordView()
                 case .signedIn:
-                    print("@@@ signed in")
+                    self?.appCoordinatorRelay.accept(.tabBarView)
                 }
             }).disposed(by: disposeBag)
         
@@ -70,7 +79,7 @@ final class WelcomeViewCoordinator: Coordinator {
                 case .alreadyHaveAccount:
                     self?.showSignInView()
                 case .signedUp:
-                    print("@")
+                    self?.appCoordinatorRelay.accept(.tabBarView)
                 }
             })
             .disposed(by: disposeBag)
@@ -102,7 +111,8 @@ final class WelcomeViewCoordinator: Coordinator {
         let signInViewCoordinator = SignInViewCoordinator(
             navigationController: navigationController,
             outputRelay: signInRelay,
-            outputErrorRelay: authorizationErrorRelay)
+            outputErrorRelay: authorizationErrorRelay,
+            resolver: resolver)
         signInViewCoordinator.start()
     }
     
@@ -110,7 +120,8 @@ final class WelcomeViewCoordinator: Coordinator {
         let signUpViewCoordinator = SignUpViewCoordinator(
             navigationController: navigationController,
             outputRelay: signUpRelay,
-            outputErrorRelay: authorizationErrorRelay)
+            outputErrorRelay: authorizationErrorRelay,
+            resolver: resolver)
         signUpViewCoordinator.start()
     }
     

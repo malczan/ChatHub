@@ -74,6 +74,4 @@ class PopUpView: UIView {
             okButton.heightAnchor.constraint(equalToConstant: 40)
         ])
     }
-        
-    
 }

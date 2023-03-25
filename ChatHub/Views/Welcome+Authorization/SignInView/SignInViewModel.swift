@@ -24,14 +24,16 @@ final class SignInViewModel {
     
     let signInSubject = PublishSubject<Void>()
     
-    private let authorizationService = ConcreteAuthorizationService()
+    private let authorizationService: AuthorizationService
     
     private let outputErrorRelay: PublishRelay<Error>
     private let outputRelay: PublishRelay<Output>
     private let disposeBag = DisposeBag()
     
-    init(outputRelay: PublishRelay<Output>,
+    init(authorizationService: AuthorizationService,
+         outputRelay: PublishRelay<Output>,
          outputErrorRelay: PublishRelay<Error>) {
+        self.authorizationService = authorizationService
         self.outputRelay = outputRelay
         self.outputErrorRelay = outputErrorRelay
         bind()
@@ -71,19 +73,13 @@ final class SignInViewModel {
         authorizationService
             .signInUser(
                 withEmail: try! usernameRelay.value(),
-                password: try! passwordRelay.value(),
-                completion: { [weak self] in
-                    self?.handleSignIn(with: $0)
-                })
+                password: try! passwordRelay.value())
+            .subscribe { [weak self] _ in
+                self?.outputRelay.accept(.signedIn)
+            } onError: { [weak self] in
+                self?.outputErrorRelay.accept($0)
+            }
+            .disposed(by: disposeBag)
+
     }
-    
-    private func handleSignIn(with result: Result<Void, Error>) {
-        switch result {
-        case .success: 
-            outputRelay.accept(.signedIn)
-        case .failure(let error):
-            outputErrorRelay.accept(error)
-        }
-    }
-    
 }
