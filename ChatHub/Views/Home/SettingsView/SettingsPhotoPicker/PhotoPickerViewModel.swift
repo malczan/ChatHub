@@ -27,6 +27,7 @@ class PhotoPickerViewModel {
     let uploadSubject = PublishSubject<Void>()
     let cancelSubject = PublishSubject<Void>()
 
+    let uploadRelay = PublishRelay<Result<Void, Error>>()
     private let imageService: ImageService
     private let outputRelay: PublishRelay<Output>
     
@@ -60,8 +61,6 @@ class PhotoPickerViewModel {
         uploadSubject
             .subscribe(onNext: { [weak self] in
                 self?.uploadImage()
-                self?.outputRelay.accept((.hidePicker))
-                
             })
             .disposed(by: diposeBag)
     }
@@ -70,10 +69,12 @@ class PhotoPickerViewModel {
         let image = inputImage.value
         imageService
             .uploadProfileImage(image)
-            .subscribe { _ in
-                print("@@ Refresh picture")
-            } onError: { _ in
-                print("@@@ ERROR")
+            .subscribe { [weak self] _ in
+                self?.uploadRelay.accept(.success(()))
+                self?.userService.refreshUserInfo()
+                self?.outputRelay.accept(.hidePicker)
+            } onError: { [weak self] in
+                self?.uploadRelay.accept(.failure($0))
             }
             .disposed(by: diposeBag)
 
