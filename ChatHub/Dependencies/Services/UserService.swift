@@ -14,16 +14,16 @@ import RxRelay
 
 protocol UserService {
     var activeSession: Bool { get }
-    var user: PublishRelay<User> { get }
+    var user: User? { get set }
     var userSession: FirebaseAuth.User? { get }
     func refreshUserInfo()
 }
 
 final class ConcreteUserService: UserService {
     
+    var user: User?
     let activeSession: Bool
     let userSession: FirebaseAuth.User?
-    let user = PublishRelay<User>()
     
     private let disposeBag = DisposeBag()
     
@@ -35,7 +35,7 @@ final class ConcreteUserService: UserService {
     func refreshUserInfo() {
         fetchUserInformation()
             .subscribe(onNext: { [weak self] in
-                self?.user.accept($0)
+                self?.user = $0
             })
             .disposed(by: disposeBag)
     }

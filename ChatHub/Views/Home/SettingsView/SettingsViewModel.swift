@@ -40,21 +40,20 @@ class SettingsViewModel {
         bind()
     }
     
-    
-    var userObservable: Observable<User> {
-        return userService.user.asObservable()
+    var username: String {
+        return userService.user?.username ?? ""
     }
     
+    var userPhoto: String {
+        return userService.user?.profileImageUrl ?? ""
+    }
+        
     func settings() -> [SettingModel] {
         return [
             SettingModel(title: "Upload photo", icon: "photo"),
             SettingModel(title: "Update username", icon: "person"),
             SettingModel(title: "Notifications", icon: "bell")
         ]
-    }
-    
-    func refreshUser() {
-        userService.refreshUserInfo()
     }
     
     func selected(cell: SettingModel) {

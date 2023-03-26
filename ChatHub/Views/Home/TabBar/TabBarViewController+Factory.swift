@@ -9,9 +9,10 @@ import UIKit
 
 enum TabBarViewControllerFactory {
     
-    static func createTabBarViewController() -> TabBarViewController {
+    static func createTabBarViewController(viewModel: TabBarViewModel) -> TabBarViewController {
         
         let tabBarViewController = TabBarViewController()
+        tabBarViewController.viewModel = viewModel
         return tabBarViewController
     }
     

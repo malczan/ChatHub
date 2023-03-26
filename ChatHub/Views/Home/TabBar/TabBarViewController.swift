@@ -8,17 +8,18 @@
 import UIKit
 
 class TabBarViewController: UITabBarController {
+    
+    var viewModel: TabBarViewModel!
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        viewModel.viewDidAppear()
+    }
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        
         UITabBar.appearance().backgroundColor = UIColor(named: "backgroundColor")
         UITabBar.appearance().tintColor = UIColor(named: "purple")
         
     }
-    
-    
-    
-
-
 }

@@ -37,7 +37,7 @@ class SettingsHeaderView: UIView {
     func inject(viewModel: SettingsViewModel) {
         self.viewModel = viewModel
         bind()
-        viewModel.refreshUser()
+        setupUserData()
     }
     
     private func bind() {
@@ -46,20 +46,19 @@ class SettingsHeaderView: UIView {
             .tap
             .bind(to: viewModel.buttonInput)
             .disposed(by: disposeBag)
-        
-        viewModel
-            .userObservable
-            .subscribe(onNext: { [weak self] in
-                self?.usernameLabel.text = $0.username.lowercased()
-                guard let url = URL(string: $0.profileImageUrl) else { return }
-                self?.avatarImageView.kf.setImage(with: url)
-            })
-            .disposed(by: disposeBag)
+    }
+    
+    private func setupUserData() {
+        usernameLabel.text = viewModel.username
+        guard let url = URL(string: viewModel.userPhoto) else { return }
+        avatarImageView.kf.setImage(
+            with: url,
+            placeholder: UIImage(systemName: "person.circle.fill")?
+                .withTintColor(.red))
     }
         
     private func setupStyle() {
         backgroundColor = Style.backgroundColor
-        avatarImageView.image = UIImage(systemName: "person.circle")
         avatarImageView.layer.cornerRadius = 30
         avatarImageView.clipsToBounds = true
         avatarImageView.contentMode = .scaleAspectFill
