@@ -22,9 +22,7 @@ final class SignUpViewModel {
     let emailRelay = BehaviorSubject<String>(value: "")
     let passwordRelay = BehaviorSubject<String>(value: "")
     let confirmPasswordRelay = BehaviorSubject<String>(value: "")
-    
-    let signUpSubject = PublishSubject<Void>()
-    
+        
     private let authorizationService: AuthorizationService
     
     private let outputErrorRelay: PublishRelay<Error>
@@ -39,7 +37,6 @@ final class SignUpViewModel {
         self.authorizationService = authorizationService
         self.outputRelay = outputRelay
         self.outputErrorRelay = outputErrorRelay
-        bind()
     }
     
     func isValid() -> Observable<Bool> {
@@ -56,14 +53,19 @@ final class SignUpViewModel {
         outputRelay.accept(.alreadyHaveAccount)
     }
     
-    private func bind() {
-        signUpSubject
-            .subscribe(onNext: { [weak self] in
-                self?.signUpTapped()
-            })
-            .disposed(by: disposeBag)
+    func signUpTapped() {
+        authorizationService.signUpUser(
+            withUsername: try! usernameRelay.value(),
+            email: try! emailRelay.value(),
+            password: try! passwordRelay.value())
+        .subscribe { [weak self] _ in
+            self?.outputRelay.accept(.signedUp)
+        } onError: { [weak self] in
+            self?.outputErrorRelay.accept($0)
+        }
+        .disposed(by: disposeBag)
     }
-    
+
     func arePasswordTheSame() -> Observable<Bool>{
         return Observable
             .combineLatest(passwordRelay, confirmPasswordRelay)
@@ -80,18 +82,5 @@ final class SignUpViewModel {
     
     private func isConfirmPasswordValid() -> Observable<Bool> {
         return confirmPasswordRelay.map { $0.count > 5 }
-    }
-    
-    private func signUpTapped() {
-        authorizationService.signUpUser(
-            withUsername: try! usernameRelay.value(), 
-            email: try! emailRelay.value(),
-            password: try! passwordRelay.value())
-        .subscribe { [weak self] _ in
-            self?.outputRelay.accept(.signedUp)
-        } onError: { [weak self] in
-            self?.outputErrorRelay.accept($0)
-        }
-        .disposed(by: disposeBag)
     }
 }

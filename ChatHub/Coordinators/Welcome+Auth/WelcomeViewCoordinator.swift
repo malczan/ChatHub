@@ -93,7 +93,7 @@ final class WelcomeViewCoordinator: Coordinator {
         forgotPasswordRelay
             .subscribe(onNext: { [weak self] in
                 switch $0 {
-                case .cofirm:
+                case .confirm:
                     self?.showSignInView()
                 case .goBack:
                     self?.showSignInView()

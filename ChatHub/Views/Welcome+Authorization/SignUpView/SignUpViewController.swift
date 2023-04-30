@@ -18,8 +18,10 @@ class SignUpViewController: UIViewController {
     private let disposeBag = DisposeBag()
     
     private let logoImageView = UIImageView()
-    private let usernameTextField = CustomTextField(icon: Style.loginIcon, placeholderText: Constants.username)
-    private let emailTextField = CustomTextField(icon: Style.emailIcon, placeholderText: Constants.email)
+    private let usernameTextField = CustomTextField(icon: Style.loginIcon,
+                                                    placeholderText: Constants.username)
+    private let emailTextField = CustomTextField(icon: Style.emailIcon,
+                                                 placeholderText: Constants.email)
     private let passwordTextField = CustomTextField(icon: Style.passwordIcon,
                                                     placeholderText: Constants.password,
                                                     password: true)
@@ -76,7 +78,10 @@ class SignUpViewController: UIViewController {
         registerButton
             .rx
             .tap
-            .bind(to: viewModel.signUpSubject)
+            .subscribe(onNext: {
+                [weak self] in
+                self?.viewModel.signUpTapped()
+            })
             .disposed(by: disposeBag)
         
         viewModel

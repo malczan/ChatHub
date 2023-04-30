@@ -41,19 +41,25 @@ class PhotoPickerView: UIView {
         galleryButton
             .rx
             .tap
-            .bind(to: viewModel.gallerySubject)
+            .subscribe(onNext: { [weak self] in
+                self?.viewModel.galleryButtonTapped()
+            })
             .disposed(by: disposeBag)
         
         uploadButton
             .rx
             .tap
-            .bind(to: viewModel.uploadSubject)
+            .subscribe(onNext: { [weak self] in
+                self?.viewModel.uploadButtonTapped()
+            })
             .disposed(by: disposeBag)
         
         cancelButton
             .rx
             .tap
-            .bind(to: viewModel.cancelSubject)
+            .subscribe(onNext: { [weak self] in
+                self?.viewModel.cancelButtonTapped()
+            })
             .disposed(by: disposeBag)
         
         viewModel

@@ -36,14 +36,18 @@ class WelcomeViewController: UIViewController {
         signInButton
             .rx
             .tap
-            .bind(to: viewModel.signInSubject)
-            .disposed(by: disposeBag)
+            .subscribe(onNext: {
+                [weak self] in
+                self?.viewModel.signInButtonTapped()
+            }).disposed(by: disposeBag)
         
         signUpButton
             .rx
             .tap
-            .bind(to: viewModel.signUpSubject)
-            .disposed(by: disposeBag)
+            .subscribe(onNext: {
+                [weak self] in
+                self?.viewModel.signUpButtonTapped()
+            }).disposed(by: disposeBag)
     }
     
     private func setupStyle() {

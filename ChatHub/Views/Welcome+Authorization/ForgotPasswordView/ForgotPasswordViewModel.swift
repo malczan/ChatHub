@@ -10,7 +10,7 @@ import RxSwift
 import RxRelay
 
 enum ForgotPasswordViewModelOutput {
-    case cofirm
+    case confirm
     case goBack
 }
 
@@ -20,15 +20,12 @@ class ForgotPasswordViewModel {
     
     let emailRelay = BehaviorSubject<String>(value: "")
     let usernameRelay = BehaviorSubject<String>(value: "")
-    
-    let confirmSubject = PublishSubject<Void>()
-    
+        
     private let outputRelay: PublishRelay<Output>
     private let disposeBag = DisposeBag()
     
     init(outputRelay: PublishRelay<Output>) {
         self.outputRelay = outputRelay
-        bind()
     }
     
     func isValid() -> Observable<Bool> {
@@ -37,15 +34,12 @@ class ForgotPasswordViewModel {
             .map { $0 && $1 }
     }
     
-    func goBackTapped() {
-        outputRelay.accept(.goBack)
+    func confirmTapped() {
+        outputRelay.accept(.confirm)
     }
     
-    private func bind() {
-        confirmSubject.subscribe(onNext: { [weak self] _ in
-            self?.outputRelay.accept(.cofirm)
-        }).disposed(by: disposeBag)
-        
+    func goBackTapped() {
+        outputRelay.accept(.goBack)
     }
 
     private func isUsernameValid() -> Observable<Bool> {
