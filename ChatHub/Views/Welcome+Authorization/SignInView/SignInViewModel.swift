@@ -21,9 +21,7 @@ final class SignInViewModel {
     
     let passwordRelay = BehaviorSubject<String>(value: "")
     let usernameRelay = BehaviorSubject<String>(value: "")
-    
-    let signInSubject = PublishSubject<Void>()
-    
+        
     private let authorizationService: AuthorizationService
     
     private let outputErrorRelay: PublishRelay<Error>
@@ -36,7 +34,6 @@ final class SignInViewModel {
         self.authorizationService = authorizationService
         self.outputRelay = outputRelay
         self.outputErrorRelay = outputErrorRelay
-        bind()
     }
     
     func isValid() -> Observable<Bool> {
@@ -45,31 +42,7 @@ final class SignInViewModel {
             .map { $0 && $1 }
     }
     
-    func forgotPasswordTapped() {
-        outputRelay.accept(.forgotPassword)
-    }
-    
-    func createAccountTapped() {
-        outputRelay.accept(.alreadyHaveAccount)
-    }
-    
-    private func bind() {
-        signInSubject
-            .subscribe(onNext: { [weak self] in
-                self?.signInTapped()
-            })
-            .disposed(by: disposeBag)
-    }
-    
-    private func isUsernameValid() -> Observable<Bool> {
-        return usernameRelay.map { $0.count > 5 }
-    }
-    
-    private func isPasswordValid() -> Observable<Bool> {
-        return passwordRelay.map { $0.count > 5 }
-    }
-    
-    private func signInTapped() {
+    func signInTapped() {
         authorizationService
             .signInUser(
                 withEmail: try! usernameRelay.value(),
@@ -80,6 +53,22 @@ final class SignInViewModel {
                 self?.outputErrorRelay.accept($0)
             }
             .disposed(by: disposeBag)
-
+        
     }
+    func forgotPasswordTapped() {
+        outputRelay.accept(.forgotPassword)
+    }
+    
+    func createAccountTapped() {
+        outputRelay.accept(.alreadyHaveAccount)
+    }
+    
+    private func isUsernameValid() -> Observable<Bool> {
+        return usernameRelay.map { $0.count > 5 }
+    }
+    
+    private func isPasswordValid() -> Observable<Bool> {
+        return passwordRelay.map { $0.count > 5 }
+    }
+    
 }

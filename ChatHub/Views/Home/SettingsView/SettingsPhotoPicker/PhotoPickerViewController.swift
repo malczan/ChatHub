@@ -31,16 +31,14 @@ class PhotoPickerViewController: UIViewController, PHPickerViewControllerDelegat
         installPopUpView()
         
         viewModel
-            .gallerySubject
-            .subscribe(onNext: { [weak self] _ in
-                self?.showSystemPhotoPicker()
-            })
-            .disposed(by: disposeBag)
-        
-        viewModel
-            .cancelDriver
-            .drive(onNext: { [weak self] _ in
-                self?.hidePopUpWithAnimation()
+            .userInteractionDriver
+            .drive(onNext: { [weak self] in
+                switch $0 {
+                case .showGallery:
+                    self?.showSystemPhotoPicker()
+                case .hideGallery:
+                    self?.hidePopUpWithAnimation()
+                }
             })
             .disposed(by: disposeBag)
     }
@@ -75,7 +73,7 @@ class PhotoPickerViewController: UIViewController, PHPickerViewControllerDelegat
             self.view.backgroundColor = .clear
             self.view.layoutIfNeeded()
         } completion: { [weak self] _ in
-            self?.viewModel?.cancelTapped()
+            self?.viewModel?.dismissPicker()
         }
     }
     

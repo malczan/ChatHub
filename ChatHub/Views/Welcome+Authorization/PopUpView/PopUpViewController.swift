@@ -55,8 +55,8 @@ class PopUpViewController: UIViewController {
     
     private func bind() {
         viewModel
-            .buttonInput
-            .subscribe(onNext: { [weak self] in
+            .hideDriver
+            .drive(onNext: { [weak self] in
                 self?.hidePopUpWithAnimation()
             })
             .disposed(by: disposeBag)
@@ -70,7 +70,7 @@ class PopUpViewController: UIViewController {
             self.view.backgroundColor = .clear
             self.view.layoutIfNeeded()
         } completion: { [weak self] _ in
-            self?.viewModel.buttonTapped()
+            self?.viewModel.dissmisPopUp()
         }
     }
     
