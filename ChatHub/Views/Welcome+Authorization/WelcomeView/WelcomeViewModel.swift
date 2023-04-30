@@ -18,26 +18,19 @@ final class WelcomeViewModel {
     
     typealias Output = WelcomeViewModelOutput
     
-    let signInSubject = PublishSubject<Void>()
-    let signUpSubject = PublishSubject<Void>()
-
     private let disposeBag = DisposeBag()
     private let outputRelay: PublishRelay<Output>
     
-
     init(outputScreenSelected: PublishRelay<Output>) {
         self.outputRelay = outputScreenSelected
-        bind()
+    }
+
+    func signInButtonTapped() {
+        outputRelay.accept(.signIn)
     }
     
-    private func bind() {
-        signInSubject.subscribe(onNext: {[weak self] _ in
-            self?.outputRelay.accept(.signIn)
-        }).disposed(by: disposeBag)
-        
-        signUpSubject.subscribe(onNext: { [weak self] _ in
-            self?.outputRelay.accept(.singUp)
-        }).disposed(by: disposeBag)
+    func signUpButtonTapped() {
+        outputRelay.accept(.singUp)
     }
 
 }

@@ -44,7 +44,9 @@ class SettingsHeaderView: UIView {
         logoutButton
             .rx
             .tap
-            .bind(to: viewModel.buttonInput)
+            .subscribe(onNext: { [weak self] in 
+                self?.viewModel.buttonLogoutTapped()
+            })
             .disposed(by: disposeBag)
     }
     

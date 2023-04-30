@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import RxCocoa
 import RxSwift
 import RxRelay
 
@@ -13,7 +14,7 @@ import RxRelay
 class PopUpViewModel {
     
     let labelText: String
-    let buttonInput = PublishSubject<Void>()
+    private let hideSubject = PublishSubject<Void>()
     
     private let outputRelay: PublishRelay<Void>
     
@@ -23,7 +24,16 @@ class PopUpViewModel {
         self.outputRelay = outputRelay
     }
     
+    var hideDriver: Driver<Void> {
+        return hideSubject
+            .asDriver(onErrorDriveWith: Driver.never())
+    }
+    
     func buttonTapped() {
+        hideSubject.onNext(())
+    }
+    
+    func dissmisPopUp() {
         outputRelay.accept(())
     }
     

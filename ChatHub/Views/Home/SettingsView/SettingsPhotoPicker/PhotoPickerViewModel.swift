@@ -18,16 +18,19 @@ enum PhotoPickerViewModelOutput {
 
 class PhotoPickerViewModel {
     
+    enum UserInteractionType {
+        case showGallery
+        case hideGallery
+    }
+    
     let userService = ConcreteUserService()
     
     typealias Output = PhotoPickerViewModelOutput
     
     let inputImage = BehaviorRelay<UIImage>(value: UIImage(systemName: "photo.circle")!)
-    let gallerySubject = PublishSubject<Void>()
-    let uploadSubject = PublishSubject<Void>()
-    let cancelSubject = PublishSubject<Void>()
 
     let uploadRelay = PublishRelay<Result<Void, Error>>()
+    private let userInteractionSubject = PublishSubject<UserInteractionType>()
     private let imageService: ImageService
     private let outputRelay: PublishRelay<Output>
     
@@ -37,34 +40,38 @@ class PhotoPickerViewModel {
          imageService: ImageService) {
         self.outputRelay = outputRelay
         self.imageService = imageService
-        bind()
     }
     
     var imageDriver: Driver<UIImage> {
-        return inputImage.asObservable().asDriver(onErrorJustReturn: UIImage(systemName: "photo.circle")!)
-        
+        return inputImage
+            .asDriver(onErrorDriveWith: Driver.never())
     }
-        
-    var cancelDriver: Driver<Void> {
-        return cancelSubject.asDriver(onErrorJustReturn: ())
+
+    var userInteractionDriver: Driver<UserInteractionType> {
+        userInteractionSubject
+            .asDriver(onErrorDriveWith: Driver.never())
     }
     
+    func galleryButtonTapped() {
+        userInteractionSubject.onNext(.showGallery)
+    }
+    
+    func uploadButtonTapped() {
+        self.uploadImage()
+    }
+    
+    func cancelButtonTapped() {
+        userInteractionSubject.onNext(.hideGallery)
+    }
+
     func isImageSelected() -> Observable<Bool> {
         return inputImage.map { $0 != UIImage(systemName: "photo.circle") }
     }
     
-    func cancelTapped() {
+    func dismissPicker() {
         outputRelay.accept((.hidePicker))
     }
-    
-    private func bind() {
-        uploadSubject
-            .subscribe(onNext: { [weak self] in
-                self?.uploadImage()
-            })
-            .disposed(by: diposeBag)
-    }
-    
+
     private func uploadImage() {
         let image = inputImage.value
         imageService
@@ -77,7 +84,5 @@ class PhotoPickerViewModel {
                 self?.uploadRelay.accept(.failure($0))
             }
             .disposed(by: diposeBag)
-
-                      
     }
 }

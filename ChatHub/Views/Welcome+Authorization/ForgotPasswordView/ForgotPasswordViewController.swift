@@ -55,7 +55,10 @@ class ForgotPasswordViewController: UIViewController {
         confirmButton
             .rx
             .tap
-            .bind(to: viewModel.confirmSubject)
+            .subscribe(onNext: {
+                [weak self] in
+                self?.viewModel.confirmTapped()
+            })
             .disposed(by: disposeBag)
         
         viewModel

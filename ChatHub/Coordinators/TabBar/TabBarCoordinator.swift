@@ -48,8 +48,7 @@ final class TabBarCoordinator: Coordinator {
     
     func start() {
         
-        let tabBarViewModel = TabBarViewModel(userService: resolver.resolve(UserService.self)!)
-        let tabBarViewController = TabBarFactory.createTabBarViewController(viewModel: tabBarViewModel)
+        let tabBarViewController = TabBarFactory.createTabBarViewController()
         
         let messgesNavigationController = TabBarFactory.createMessegesNavigatonController()
         let messegesCoordinator = MessegesViewCoordinator(navigationController: messgesNavigationController)

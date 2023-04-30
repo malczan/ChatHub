@@ -36,7 +36,10 @@ class PopUpView: UIView {
         okButton
             .rx
             .tap
-            .bind(to: viewModel.buttonInput)
+            .subscribe(onNext: { [weak self] in
+                self?.viewModel.buttonTapped()
+                
+            })
             .disposed(by: disposeBag)
     }
     

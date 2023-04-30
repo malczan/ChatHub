@@ -18,9 +18,7 @@ enum SettingsViewModelOutput {
 class SettingsViewModel {
     
     typealias Output = SettingsViewModelOutput
-    
-    let buttonInput = PublishSubject<Void>()
-    
+        
     var userSubject = PublishRelay<User>()
     private let authService: AuthorizationService
     private let userService: UserService
@@ -37,7 +35,6 @@ class SettingsViewModel {
         self.userService = userService
         self.outputErrorRelay = outputErrorRelay
         self.outputRelay = outputRelay
-        bind()
     }
     
     var username: String {
@@ -60,16 +57,8 @@ class SettingsViewModel {
         outputRelay
             .accept(.updatePhoto)
     }
-    
-    private func bind() {
-        buttonInput
-            .subscribe(onNext: { [weak self] in
-                self?.buttonLogoutTapped()
-            })
-            .disposed(by: disposeBag)
-    }
-    
-    private func buttonLogoutTapped() {
+
+    func buttonLogoutTapped() {
         authService
             .signOutUser()
             .subscribe { [weak self] in

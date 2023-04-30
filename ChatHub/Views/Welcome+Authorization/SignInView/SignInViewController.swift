@@ -24,7 +24,7 @@ class SignInViewController: UIViewController {
     private let passwordTextField = CustomTextField(icon: Style.passwordIcon,
                                                     placeholderText: Constants.password,
                                                     password: true)
-    private let loginButton = UIButton()
+    private let signInButton = UIButton()
     private let forgotPasswordLabel = UILabel()
     private let createAccountLabel = UILabel()
     
@@ -56,24 +56,25 @@ class SignInViewController: UIViewController {
             .bind(to: viewModel.passwordRelay)
             .disposed(by: disposeBag)
         
-        loginButton
+        signInButton
             .rx
             .tap
-            .bind(to: viewModel.signInSubject)
+            .subscribe(onNext: {
+                [weak self] in
+                self?.viewModel.signInTapped()
+            })
             .disposed(by: disposeBag)
         
         viewModel
             .isValid()
             .map { $0 ? Style.buttonColorEnabled : Style.buttonColorDisabled }
-            .bind(to: loginButton.rx.backgroundColor)
+            .bind(to: signInButton.rx.backgroundColor)
             .disposed(by: disposeBag)
     
         viewModel
             .isValid()
-            .bind(to: loginButton.rx.isEnabled)
+            .bind(to: signInButton.rx.isEnabled)
             .disposed(by: disposeBag)
-        
-        
     }
 
     private func setupStyle() {
@@ -82,11 +83,11 @@ class SignInViewController: UIViewController {
         logoImageView.image = Style.logoImage
         logoImageView.contentMode = .scaleAspectFit
     
-        loginButton.setTitle(Constants.login,
+        signInButton.setTitle(Constants.login,
                              for: .normal)
-        loginButton.setTitleColor(Style.backgroundColor,
+        signInButton.setTitleColor(Style.backgroundColor,
                                   for: .normal)
-        loginButton.make3dButton()
+        signInButton.make3dButton()
         
         forgotPasswordLabel.textColor = Style.fontColor
         forgotPasswordLabel.attributedText = Style.forgotPasswordAttributeString
@@ -134,15 +135,15 @@ class SignInViewController: UIViewController {
     }
     
     private func installLoginButton() {
-        view.addSubview(loginButton)
+        view.addSubview(signInButton)
         
-        loginButton.translatesAutoresizingMaskIntoConstraints = false
+        signInButton.translatesAutoresizingMaskIntoConstraints = false
         
         NSLayoutConstraint.activate([
-            loginButton.topAnchor.constraint(equalTo: passwordTextField.bottomAnchor, constant: 30),
-            loginButton.leadingAnchor.constraint(equalTo: view.layoutMarginsGuide.leadingAnchor, constant: 10),
-            loginButton.trailingAnchor.constraint(equalTo: view.layoutMarginsGuide.trailingAnchor, constant: -10),
-            loginButton.heightAnchor.constraint(equalToConstant: 40),
+            signInButton.topAnchor.constraint(equalTo: passwordTextField.bottomAnchor, constant: 30),
+            signInButton.leadingAnchor.constraint(equalTo: view.layoutMarginsGuide.leadingAnchor, constant: 10),
+            signInButton.trailingAnchor.constraint(equalTo: view.layoutMarginsGuide.trailingAnchor, constant: -10),
+            signInButton.heightAnchor.constraint(equalToConstant: 40),
             
         ])
     }
