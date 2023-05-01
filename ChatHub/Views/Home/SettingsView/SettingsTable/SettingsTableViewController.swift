@@ -24,6 +24,7 @@ class SettingsTableViewController: UITableViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .clear
+        tableView.isScrollEnabled = false
         snapshot = DataSourceSnapshot()
         registerCell()
         configureTableViewDataSource()

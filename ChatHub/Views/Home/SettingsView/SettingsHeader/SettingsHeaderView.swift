@@ -37,10 +37,10 @@ class SettingsHeaderView: UIView {
     func inject(viewModel: SettingsViewModel) {
         self.viewModel = viewModel
         bind()
-        viewModel.refreshUser()
+        bindButton()
     }
     
-    private func bind() {
+    private func bindButton() {
         logoutButton
             .rx
             .tap
@@ -48,20 +48,30 @@ class SettingsHeaderView: UIView {
                 self?.viewModel.buttonLogoutTapped()
             })
             .disposed(by: disposeBag)
-        
+    }
+    
+    private func bind() {
         viewModel
-            .userObservable
-            .subscribe(onNext: { [weak self] in
-                self?.usernameLabel.text = $0.username.lowercased()
-                guard let url = URL(string: $0.profileImageUrl) else { return }
-                self?.avatarImageView.kf.setImage(with: url)
+            .user
+            .drive(onNext: {
+                [weak self] in
+                self?.updateContent(with: $0)
             })
             .disposed(by: disposeBag)
+    }
+    
+    private func updateContent(with data: User?) {
+        guard let data = data else { return }
+        guard let url = URL(string: data.profileImageUrl) else { return }
+        usernameLabel.text = data.username.uppercased()
+        avatarImageView.kf.setImage(
+            with: url,
+            placeholder: Style.avatarPlaceholder)
     }
         
     private func setupStyle() {
         backgroundColor = Style.backgroundColor
-        avatarImageView.image = UIImage(systemName: "person.circle")
+        avatarImageView.image = Style.avatarPlaceholder
         avatarImageView.layer.cornerRadius = 30
         avatarImageView.clipsToBounds = true
         avatarImageView.contentMode = .scaleAspectFill

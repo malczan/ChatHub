@@ -37,8 +37,10 @@ class SettingsViewModel {
         self.outputRelay = outputRelay
     }
     
-    var userObservable: Observable<User> {
-        return userService.user.asObservable()
+    var user: Driver<User?> {
+        return userService
+            .userRelay
+            .asDriver(onErrorDriveWith: Driver.never())
     }
     
     func settings() -> [SettingModel] {
@@ -47,10 +49,6 @@ class SettingsViewModel {
             SettingModel(title: "Update username", icon: "person"),
             SettingModel(title: "Notifications", icon: "bell")
         ]
-    }
-    
-    func refreshUser() {
-        userService.refreshUserInfo()
     }
     
     func selected(cell: SettingModel) {

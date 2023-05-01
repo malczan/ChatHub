@@ -14,6 +14,7 @@ class PhotoPickerView: UIView {
     var viewModel: PhotoPickerViewModel!
     private typealias Style = PhotoPickerStyle
         
+    private let activityIndicatorView = UIActivityIndicatorView(style: .medium)
     private let galleryButton = UIButton()
     private let uploadButton = UIButton()
     private let cancelButton = UIButton()
@@ -26,6 +27,8 @@ class PhotoPickerView: UIView {
         installGalleryButton()
         installUploadButton()
         installCancelButton()
+        installIndicatorView()
+        setupUploadButton()
     }
     
     required init?(coder: NSCoder) {
@@ -79,6 +82,18 @@ class PhotoPickerView: UIView {
             .map { $0 ? Style.buttonColor : Style.buttonColorDisabled }
             .bind(to: uploadButton.rx.backgroundColor)
             .disposed(by: disposeBag)
+        
+        viewModel
+            .uploadRelay
+            .subscribe(onNext: { [weak self] in
+                switch $0 {
+                case .success:
+                    self?.enableInteraction()
+                case .failure:
+                    self?.enableInteraction()
+                    self?.galleryButton.setImage(UIImage(systemName: "photo.circle"), for: .normal)
+                }
+            }).disposed(by: disposeBag)
     }
     
     private func setupStyle() {
@@ -138,5 +153,40 @@ class PhotoPickerView: UIView {
             cancelButton.topAnchor.constraint(equalTo: uploadButton.bottomAnchor, constant: 10),
             cancelButton.heightAnchor.constraint(equalToConstant: 40)
         ])
+    }
+    
+    private func installIndicatorView() {
+        self.addSubview(activityIndicatorView)
+        
+        activityIndicatorView.translatesAutoresizingMaskIntoConstraints = false
+        
+        NSLayoutConstraint.activate([
+            activityIndicatorView.centerYAnchor.constraint(equalTo: uploadButton.centerYAnchor),
+            activityIndicatorView.centerXAnchor.constraint(equalTo: uploadButton.centerXAnchor)
+        ])
+    }
+    
+    private func setupUploadButton() {
+        uploadButton.addTarget(self, action: #selector(uploadButtonTapped), for: .touchUpInside)
+                            
+    }
+    
+    @objc private func uploadButtonTapped() {
+        disableInteraction()
+    }
+    
+    private func disableInteraction() {
+        galleryButton.isEnabled = false
+        cancelButton.isEnabled = false
+        uploadButton.isEnabled = false
+        uploadButton.setTitle("", for: .disabled)
+        activityIndicatorView.startAnimating()
+    }
+    
+    private func enableInteraction() {
+        galleryButton.isEnabled = true
+        uploadButton.isEnabled = true
+        cancelButton.isEnabled = true
+        activityIndicatorView.stopAnimating()
     }
 }
