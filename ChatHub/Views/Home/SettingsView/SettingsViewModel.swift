@@ -37,14 +37,12 @@ class SettingsViewModel {
         self.outputRelay = outputRelay
     }
     
-    var username: String {
-        return userService.user?.username ?? ""
+    var user: Driver<User?> {
+        return userService
+            .userRelay
+            .asDriver(onErrorDriveWith: Driver.never())
     }
     
-    var userPhoto: String {
-        return userService.user?.profileImageUrl ?? ""
-    }
-        
     func settings() -> [SettingModel] {
         return [
             SettingModel(title: "Upload photo", icon: "photo"),

@@ -23,7 +23,7 @@ class PhotoPickerViewModel {
         case hideGallery
     }
     
-    let userService = ConcreteUserService()
+    
     
     typealias Output = PhotoPickerViewModelOutput
     
@@ -32,14 +32,17 @@ class PhotoPickerViewModel {
     let uploadRelay = PublishRelay<Result<Void, Error>>()
     private let userInteractionSubject = PublishSubject<UserInteractionType>()
     private let imageService: ImageService
+    private let userService: UserService
     private let outputRelay: PublishRelay<Output>
     
     private let diposeBag = DisposeBag()
     
     init(outputRelay: PublishRelay<Output>,
-         imageService: ImageService) {
+         imageService: ImageService,
+         userService: UserService) {
         self.outputRelay = outputRelay
         self.imageService = imageService
+        self.userService = userService
     }
     
     var imageDriver: Driver<UIImage> {

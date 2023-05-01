@@ -40,7 +40,7 @@ final class AppCoordinator: Coordinator {
     
     func start() {
         
-        let service = ConcreteUserService()
+        let service = resolver.resolve(UserService.self)!
                 
         if service.activeSession {
             showTabBarView()

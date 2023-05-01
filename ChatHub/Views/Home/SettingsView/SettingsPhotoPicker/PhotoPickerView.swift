@@ -88,14 +88,10 @@ class PhotoPickerView: UIView {
             .subscribe(onNext: { [weak self] in
                 switch $0 {
                 case .success:
-                    self?.uploadButton.isEnabled = true
-                    self?.cancelButton.isEnabled = true
-                    self?.activityIndicatorView.stopAnimating()
+                    self?.enableInteraction()
                 case .failure:
+                    self?.enableInteraction()
                     self?.galleryButton.setImage(UIImage(systemName: "photo.circle"), for: .normal)
-                    self?.uploadButton.isEnabled = true
-                    self?.cancelButton.isEnabled = true
-                    self?.activityIndicatorView.stopAnimating()
                 }
             }).disposed(by: disposeBag)
     }
@@ -174,13 +170,23 @@ class PhotoPickerView: UIView {
         uploadButton.addTarget(self, action: #selector(uploadButtonTapped), for: .touchUpInside)
                             
     }
-                               
-                               
+    
     @objc private func uploadButtonTapped() {
+        disableInteraction()
+    }
+    
+    private func disableInteraction() {
+        galleryButton.isEnabled = false
         cancelButton.isEnabled = false
         uploadButton.isEnabled = false
         uploadButton.setTitle("", for: .disabled)
-        
         activityIndicatorView.startAnimating()
+    }
+    
+    private func enableInteraction() {
+        galleryButton.isEnabled = true
+        uploadButton.isEnabled = true
+        cancelButton.isEnabled = true
+        activityIndicatorView.stopAnimating()
     }
 }

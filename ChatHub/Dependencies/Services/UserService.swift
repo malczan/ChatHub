@@ -14,14 +14,14 @@ import RxRelay
 
 protocol UserService {
     var activeSession: Bool { get }
-    var user: User? { get set }
+    var userRelay: BehaviorRelay<User?> { get set }
     var userSession: FirebaseAuth.User? { get }
     func refreshUserInfo()
 }
 
 final class ConcreteUserService: UserService {
     
-    var user: User?
+    var userRelay = BehaviorRelay<User?>(value: nil)
     let activeSession: Bool
     let userSession: FirebaseAuth.User?
     
@@ -30,12 +30,13 @@ final class ConcreteUserService: UserService {
     init() {
         self.activeSession = (Auth.auth().currentUser != nil)
         self.userSession = Auth.auth().currentUser
+        refreshUserInfo()
     }
     
     func refreshUserInfo() {
         fetchUserInformation()
             .subscribe(onNext: { [weak self] in
-                self?.user = $0
+                self?.userRelay.accept($0)
             })
             .disposed(by: disposeBag)
     }

@@ -121,7 +121,10 @@ final class TabBarCoordinator: Coordinator {
     }
     
     private func showPhotoPicker() {
-        let viewModel = PhotoPickerViewModel(outputRelay: photoPickerOutputRelay, imageService: resolver.resolve(ImageService.self)!)
+        let viewModel = PhotoPickerViewModel(
+            outputRelay: photoPickerOutputRelay,
+            imageService: resolver.resolve(ImageService.self)!,
+            userService: resolver.resolve(UserService.self)!)
         let popUpViewController = PhotoPickerFactory.createPhotoPickerViewController(viewModel: viewModel)
         popUpViewController.modalPresentationStyle = .custom
         self.window.rootViewController?.present(popUpViewController, animated: false)
