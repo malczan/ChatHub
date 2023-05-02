@@ -17,6 +17,7 @@ protocol UserService {
     var userRelay: BehaviorRelay<User?> { get set }
     var userSession: FirebaseAuth.User? { get }
     func refreshUserInfo()
+    func fetchOtherUser()
 }
 
 final class ConcreteUserService: UserService {
@@ -31,12 +32,23 @@ final class ConcreteUserService: UserService {
         self.activeSession = (Auth.auth().currentUser != nil)
         self.userSession = Auth.auth().currentUser
         refreshUserInfo()
+        fetchOtherUser()
     }
     
     func refreshUserInfo() {
         fetchUserInformation()
-            .subscribe(onNext: { [weak self] in
+            .subscribe(onNext: {
+                [weak self] in
                 self?.userRelay.accept($0)
+            })
+            .disposed(by: disposeBag)
+    }
+    
+    func fetchOtherUser() {
+        fetchAllUsers()
+            .subscribe(onNext: {
+                [weak self] in
+                print($0)
             })
             .disposed(by: disposeBag)
     }
@@ -51,6 +63,20 @@ final class ConcreteUserService: UserService {
                 observer.onCompleted()
             }
             
+            return Disposables.create()
+        }
+    }
+    
+    private func fetchAllUsers() -> Observable<[User]> {
+        return Observable.create { observer in
+            Firestore.firestore().collection("users").getDocuments { snapshot, _ in
+                
+                guard let documents = snapshot?.documents else { return }
+                let allUsers = documents.compactMap({ try? $0.data(as: User.self) })
+                
+                observer.onNext(allUsers)
+                observer.onCompleted()
+            }
             return Disposables.create()
         }
     }
