@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import Swinject
 
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     
@@ -18,7 +19,17 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         let window = UIWindow(windowScene: scene)
         self.window = window
         let assembler = AssemblerFactory.make()
-        self.appCoordinator = AppCoordinator(window: window, resolver: assembler.resolver)
+        let servicesContainer = makeServicesContainer(resolver: assembler.resolver)
+        self.appCoordinator = AppCoordinator(window: window, servicesContainer: servicesContainer)
         appCoordinator?.start()
+    }
+}
+
+private extension SceneDelegate {
+    func makeServicesContainer(resolver: Resolver) -> ServicesContainer {
+        return ServicesContainer(
+            authorizationService: resolver.resolve(AuthorizationService.self)!,
+            imageService: resolver.resolve(ImageService.self)!,
+            userService: resolver.resolve(UserService.self)!)
     }
 }

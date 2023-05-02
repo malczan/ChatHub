@@ -20,6 +20,10 @@ protocol UserService {
     func fetchOtherUser()
 }
 
+protocol UserServiceContainer {
+    var userService: UserService { get }
+}
+
 final class ConcreteUserService: UserService {
     
     var userRelay = BehaviorRelay<User?>(value: nil)

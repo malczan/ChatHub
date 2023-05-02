@@ -19,6 +19,10 @@ protocol AuthorizationService {
     func signOutUser() -> Observable<Void>
 }
 
+protocol AuthorizationServiceContainer {
+    var authorizationService: AuthorizationService { get }
+}
+
 final class ConcreteAuthorizationService: AuthorizationService {
     
     func signInUser(withEmail email: String, password: String) -> Observable<Void> {

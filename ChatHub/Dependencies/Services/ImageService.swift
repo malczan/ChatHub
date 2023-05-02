@@ -14,6 +14,10 @@ protocol ImageService {
     func uploadProfileImage(_ image: UIImage) -> Observable<Void>
 }
 
+protocol ImageServiceContainer {
+    var imageService: ImageService { get }
+}
+
 final class ConcreteImageService: ImageService {
     
     private let userService: UserService

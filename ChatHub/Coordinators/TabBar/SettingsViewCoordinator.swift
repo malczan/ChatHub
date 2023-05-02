@@ -20,23 +20,20 @@ final class SettingsViewCoordinator: Coordinator {
 
     private let outputErrorRelay: PublishRelay<Error>
     private let outputRelay: PublishRelay<Output>
-    private let resolver: Resolver
+    private let servicesContainer: ServicesContainer
     
     init(outputErrorRelay: PublishRelay<Error>,
          outputRelay: PublishRelay<Output>,
          navigationController: UINavigationController,
-         resolver: Resolver) {
+         servicesContainer: ServicesContainer) {
         self.outputErrorRelay = outputErrorRelay
         self.outputRelay = outputRelay
         self.navigationController = navigationController
-        self.resolver = resolver
+        self.servicesContainer = servicesContainer
     }
     
     func start() {
-        let authService = resolver.resolve(AuthorizationService.self)!
-        let userService = resolver.resolve(UserService.self)!
-        let viewModel = SettingsViewModel(authService: authService,
-                                          userService: userService,
+        let viewModel = SettingsViewModel(services: servicesContainer,
                                           outputErrorRelay: outputErrorRelay,
                                           outputRelay: outputRelay)
         let settingsViewController = Factory.createSettingsViewController(viewModel: viewModel)

@@ -23,26 +23,24 @@ class PhotoPickerViewModel {
         case hideGallery
     }
     
-    
-    
     typealias Output = PhotoPickerViewModelOutput
+    typealias ServicesContainer =
+    ImageServiceContainer &
+    UserServiceContainer
     
     let inputImage = BehaviorRelay<UIImage>(value: UIImage(systemName: "photo.circle")!)
 
     let uploadRelay = PublishRelay<Result<Void, Error>>()
     private let userInteractionSubject = PublishSubject<UserInteractionType>()
-    private let imageService: ImageService
-    private let userService: UserService
+    private let services: ServicesContainer
     private let outputRelay: PublishRelay<Output>
     
     private let diposeBag = DisposeBag()
     
     init(outputRelay: PublishRelay<Output>,
-         imageService: ImageService,
-         userService: UserService) {
+         services: ServicesContainer) {
         self.outputRelay = outputRelay
-        self.imageService = imageService
-        self.userService = userService
+        self.services = services
     }
     
     var imageDriver: Driver<UIImage> {
@@ -77,11 +75,12 @@ class PhotoPickerViewModel {
 
     private func uploadImage() {
         let image = inputImage.value
-        imageService
+        services
+            .imageService
             .uploadProfileImage(image)
             .subscribe { [weak self] _ in
                 self?.uploadRelay.accept(.success(()))
-                self?.userService.refreshUserInfo()
+                self?.services.userService.refreshUserInfo()
                 self?.outputRelay.accept(.hidePicker)
             } onError: { [weak self] in
                 self?.uploadRelay.accept(.failure($0))

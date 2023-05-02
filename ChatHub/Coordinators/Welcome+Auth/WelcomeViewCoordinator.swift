@@ -18,7 +18,7 @@ final class WelcomeViewCoordinator: Coordinator {
     private(set) var childCoordinators: [Coordinator] = []
     private let navigationController: UINavigationController
     private let window: UIWindow
-    private let resolver: Resolver
+    private let servicesContainer: ServicesContainer
     
     private let appCoordinatorRelay: PublishRelay<AppCoordinatorSignals>
 
@@ -34,11 +34,11 @@ final class WelcomeViewCoordinator: Coordinator {
     init(appCoordinatorRelay: PublishRelay<AppCoordinatorSignals>,
          navigationController: UINavigationController,
          window: UIWindow,
-         resolver: Resolver) {
+         servicesContainer: ServicesContainer) {
         self.appCoordinatorRelay = appCoordinatorRelay
         self.navigationController = navigationController
         self.window = window
-        self.resolver = resolver
+        self.servicesContainer = servicesContainer
         
         bind()
     }
@@ -112,7 +112,7 @@ final class WelcomeViewCoordinator: Coordinator {
             navigationController: navigationController,
             outputRelay: signInRelay,
             outputErrorRelay: authorizationErrorRelay,
-            resolver: resolver)
+            servicesContainer: servicesContainer)
         signInViewCoordinator.start()
     }
     
@@ -121,7 +121,7 @@ final class WelcomeViewCoordinator: Coordinator {
             navigationController: navigationController,
             outputRelay: signUpRelay,
             outputErrorRelay: authorizationErrorRelay,
-            resolver: resolver)
+            servicesContainer: servicesContainer)
         signUpViewCoordinator.start()
     }
     
