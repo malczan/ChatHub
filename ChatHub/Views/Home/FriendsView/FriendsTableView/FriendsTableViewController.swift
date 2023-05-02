@@ -50,7 +50,6 @@ class FriendsTableViewController: UITableViewController {
             .drive(onNext: {
                 [weak self] in
                 self?.createSnapshotSection(with: $0)
-                self?.tableView.isHidden = false
                 self?.activityIndicatorView.stopAnimating()
             }).disposed(by: disposeBag)
     }

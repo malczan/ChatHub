@@ -6,6 +6,8 @@
 //
 
 import UIKit
+import RxCocoa
+import RxSwift
 
 class FriendsTableViewCell: UITableViewCell {
 
@@ -16,6 +18,8 @@ class FriendsTableViewCell: UITableViewCell {
     private let friendNameLabel = UILabel()
     private let firstButton = UIButton()
     private let secondButton = UIButton()
+    
+    private let disposeBag = DisposeBag()
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -43,7 +47,21 @@ class FriendsTableViewCell: UITableViewCell {
     }
     
     private func bind() {
+        firstButton.rx
+            .tap
+            .subscribe(onNext: {
+                [weak self] in
+                print("@@@ first button tapped")
+            })
+            .disposed(by: disposeBag)
         
+        secondButton.rx
+            .tap
+            .subscribe(onNext: {
+                [weak self] in
+                print("@@@ second button tapped")
+            })
+            .disposed(by: disposeBag)
     }
     
     private func setupStyle() {
@@ -55,6 +73,7 @@ class FriendsTableViewCell: UITableViewCell {
         friendAvatarImage.contentMode = .scaleAspectFill
         friendNameLabel.textColor = UIColor(named: "purple")
         friendNameLabel.textColor = .white
+        firstButton.tintColor = UIColor(named: "purple")
     }
 
     private func installAvatarImage() {
@@ -84,11 +103,11 @@ class FriendsTableViewCell: UITableViewCell {
         firstButton.translatesAutoresizingMaskIntoConstraints = false
         self.addSubview(firstButton)
         
-        firstButton.setImage(UIImage(systemName: "message.fill"), for: .normal)
+        
         
         NSLayoutConstraint.activate([
-            firstButton.heightAnchor.constraint(equalToConstant: 20),
-            firstButton.widthAnchor.constraint(equalToConstant: 20),
+            firstButton.heightAnchor.constraint(equalToConstant: 32),
+            firstButton.widthAnchor.constraint(equalToConstant: 32),
             firstButton.trailingAnchor.constraint(equalTo: self.layoutMarginsGuide.trailingAnchor),
             firstButton.centerYAnchor.constraint(equalTo: self.centerYAnchor)
         ])
@@ -98,11 +117,9 @@ class FriendsTableViewCell: UITableViewCell {
         secondButton.translatesAutoresizingMaskIntoConstraints = false
         self.addSubview(secondButton)
         
-        secondButton.setImage(UIImage(systemName: "message.fill"), for: .normal)
-        
         NSLayoutConstraint.activate([
-            secondButton.heightAnchor.constraint(equalToConstant: 20),
-            secondButton.widthAnchor.constraint(equalToConstant: 20),
+            secondButton.heightAnchor.constraint(equalToConstant: 32),
+            secondButton.widthAnchor.constraint(equalToConstant: 32),
             secondButton.trailingAnchor.constraint(equalTo: firstButton.leadingAnchor, constant: -10),
             secondButton.centerYAnchor.constraint(equalTo: self.centerYAnchor)
         ])
@@ -114,6 +131,26 @@ class FriendsTableViewCell: UITableViewCell {
         }
         
         friendNameLabel.text = friendModel.nickname
+
+        switch friendModel.friendStatus {
+        case .stranger:
+            firstButton.setImage(UIImage(systemName: "message.fill"), for: .normal)
+            secondButton.setImage(UIImage(systemName: "person.badge.plus"), for: .normal)
+            secondButton.tintColor = .green
+        case .requestedFriend:
+            firstButton.setImage(UIImage(systemName: "checkmark.circle"), for: .normal)
+            firstButton.tintColor = .green
+            secondButton.setImage(UIImage(systemName: "trash.circle"), for: .normal)
+            secondButton.tintColor = .systemRed
+        case .pendingFriend:
+            firstButton.setImage(UIImage(systemName: "message.fill"), for: .normal)
+            secondButton.setImage(UIImage(systemName: "person.badge.clock"), for: .normal)
+            secondButton.tintColor = .systemYellow
+        case .friend:
+            firstButton.setImage(UIImage(systemName: "message.fill"), for: .normal)
+            secondButton.setImage(UIImage(systemName: "person.badge.minus"), for: .normal)
+            secondButton.tintColor = .systemRed
+        }
         
         guard let imageUrlString = friendModel.photoUrl,
               let imageUrl = URL(string: imageUrlString)

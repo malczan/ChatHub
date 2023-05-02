@@ -13,8 +13,8 @@ struct User: Identifiable, Decodable {
     let username: String
     let email: String
     let profileImageUrl: String?
-    let friends: [String]?
-    let requests: [String]?
-    let pending: [String]?
+    let friends: [String]
+    let requests: [String]
+    let pending: [String]
     
 }

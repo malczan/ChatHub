@@ -38,6 +38,10 @@ final class ConcreteUserService: UserService {
         refreshUserInfo()
     }
     
+    func fetchDetails(userId: String) {
+        
+    }
+    
     func refreshUserInfo() {
         fetchUserInformation()
             .subscribe(onNext: {

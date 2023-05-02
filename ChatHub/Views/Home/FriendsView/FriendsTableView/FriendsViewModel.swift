@@ -41,15 +41,27 @@ final class FriendsViewModel {
     
     private func handleReceived(users: [User]) {
         
-        let friend =
-            users.map { users -> FriendModel in
+        friendsSubject.accept(
+            users.map { user -> FriendModel in
             return FriendModel(
-                nickname: users.username,
-                photoUrl: users.profileImageUrl,
-                friendStatus: .friend)
-        }
-        
-        friendsSubject.accept(friend)
+                nickname: user.username,
+                photoUrl: user.profileImageUrl,
+                friendStatus: checkUserRelationship(user))
+        })
     }
     
+    private func checkUserRelationship(_ user: User) -> FriendModel.FriendsStatus {
+        guard let userId = services.userService.userSession?.uid else {
+            return .stranger
+        }
+        if user.friends.contains(userId) {
+            return .friend
+        } else if user.requests.contains(userId) {
+            return .pendingFriend
+        } else if user.pending.contains(userId) {
+            return .requestedFriend
+        } else {
+            return .stranger
+        }
+    }
 }

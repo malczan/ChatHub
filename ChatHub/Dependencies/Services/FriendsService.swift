@@ -39,12 +39,4 @@ final class ConcreteFriendsService: FriendsService {
         usersRef.document(userUid).updateData(
             ["friendRequests": FieldValue.arrayUnion([uid])])
     }
-    
-    func fetchUserFriends() {
-        
-    }
-    
-    func fetchUserPending() {
-        
-    }
 }
