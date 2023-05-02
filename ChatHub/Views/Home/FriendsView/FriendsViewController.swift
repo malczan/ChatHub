@@ -12,11 +12,15 @@ class FriendsViewController: UIViewController {
     private typealias Style = FriendsViewStyle
     
     private let searchBarTextField = UITextField()
-   
+    private let tableViewContainer = UIView()
+    private var friendsTable: UITableViewController!
+
     override func viewDidLoad() {
         super.viewDidLoad()
         setupUI()
         installSearchBar()
+        installTableViewContainer()
+        installFriendsTableView()
     }
     
     private func setupUI() {
@@ -45,4 +49,36 @@ class FriendsViewController: UIViewController {
             searchBarTextField.heightAnchor.constraint(equalToConstant: 40)
         ])
     }
+    
+    private func installTableViewContainer() {
+        view.addSubview(tableViewContainer)
+        
+        tableViewContainer.translatesAutoresizingMaskIntoConstraints = false
+
+        NSLayoutConstraint.activate([
+            tableViewContainer.topAnchor.constraint(equalTo: searchBarTextField.bottomAnchor, constant: 20),
+            tableViewContainer.leadingAnchor.constraint(equalTo: view.layoutMarginsGuide.leadingAnchor),
+            tableViewContainer.trailingAnchor.constraint(equalTo: view.layoutMarginsGuide.trailingAnchor),
+            tableViewContainer.bottomAnchor.constraint(equalTo: view.bottomAnchor)
+        ])
+    }
+    
+    private func installFriendsTableView() {
+        friendsTable = FriendsTableViewController()
+        
+        self.addChild(friendsTable)
+        friendsTable.view.frame = self.tableViewContainer.frame
+        view.addSubview(friendsTable.view)
+        
+        friendsTable.view.translatesAutoresizingMaskIntoConstraints = false
+
+        NSLayoutConstraint.activate([
+            friendsTable.view.topAnchor.constraint(equalTo: tableViewContainer.topAnchor),
+            friendsTable.view.leadingAnchor.constraint(equalTo: tableViewContainer.leadingAnchor),
+            friendsTable.view.trailingAnchor.constraint(equalTo: tableViewContainer.trailingAnchor),
+            friendsTable.view.bottomAnchor.constraint(equalTo: tableViewContainer.bottomAnchor)
+        ])
+    }
+    
+    
 }
