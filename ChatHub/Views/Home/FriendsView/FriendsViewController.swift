@@ -10,7 +10,9 @@ import UIKit
 class FriendsViewController: UIViewController {
     
     private typealias Style = FriendsViewStyle
+    private typealias Factory = FriendsViewFactory
     
+    var viewModel: FriendsViewModel!
     private let searchBarTextField = UITextField()
     private let tableViewContainer = UIView()
     private var friendsTable: UITableViewController!
@@ -64,7 +66,7 @@ class FriendsViewController: UIViewController {
     }
     
     private func installFriendsTableView() {
-        friendsTable = FriendsTableViewController()
+        friendsTable = Factory.createFriendsTableViewController(with: viewModel)
         
         self.addChild(friendsTable)
         friendsTable.view.frame = self.tableViewContainer.frame

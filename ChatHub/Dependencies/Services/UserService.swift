@@ -17,7 +17,7 @@ protocol UserService {
     var userRelay: BehaviorRelay<User?> { get set }
     var userSession: FirebaseAuth.User? { get }
     func refreshUserInfo()
-    func fetchOtherUser()
+    func fetchAllUsers() -> Observable<[User]>
 }
 
 protocol UserServiceContainer {
@@ -25,7 +25,7 @@ protocol UserServiceContainer {
 }
 
 final class ConcreteUserService: UserService {
-    
+
     var userRelay = BehaviorRelay<User?>(value: nil)
     let activeSession: Bool
     let userSession: FirebaseAuth.User?
@@ -36,7 +36,6 @@ final class ConcreteUserService: UserService {
         self.activeSession = (Auth.auth().currentUser != nil)
         self.userSession = Auth.auth().currentUser
         refreshUserInfo()
-        fetchOtherUser()
     }
     
     func refreshUserInfo() {
@@ -48,15 +47,20 @@ final class ConcreteUserService: UserService {
             .disposed(by: disposeBag)
     }
     
-    func fetchOtherUser() {
-        fetchAllUsers()
-            .subscribe(onNext: {
-                [weak self] in
-                print($0)
-            })
-            .disposed(by: disposeBag)
+    func fetchAllUsers() -> Observable<[User]> {
+        return Observable.create { observer in
+            Firestore.firestore().collection("users").getDocuments { snapshot, _ in
+                
+                guard let documents = snapshot?.documents else { return }
+                let allUsers = documents.compactMap({ try? $0.data(as: User.self) })
+                
+                observer.onNext(allUsers)
+                observer.onCompleted()
+            }
+            return Disposables.create()
+        }
     }
-    
+
     private func fetchUserInformation() -> Observable<User> {
         return Observable.create { observer in
             guard let uid = self.userSession?.uid else { return Disposables.create() }
@@ -67,20 +71,6 @@ final class ConcreteUserService: UserService {
                 observer.onCompleted()
             }
             
-            return Disposables.create()
-        }
-    }
-    
-    private func fetchAllUsers() -> Observable<[User]> {
-        return Observable.create { observer in
-            Firestore.firestore().collection("users").getDocuments { snapshot, _ in
-                
-                guard let documents = snapshot?.documents else { return }
-                let allUsers = documents.compactMap({ try? $0.data(as: User.self) })
-                
-                observer.onNext(allUsers)
-                observer.onCompleted()
-            }
             return Disposables.create()
         }
     }

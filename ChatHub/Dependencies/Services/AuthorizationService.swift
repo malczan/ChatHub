@@ -25,6 +25,10 @@ protocol AuthorizationServiceContainer {
 
 final class ConcreteAuthorizationService: AuthorizationService {
     
+    init() {
+        
+    }
+    
     func signInUser(withEmail email: String, password: String) -> Observable<Void> {
         return Observable.create { observer in
             Auth.auth().signIn(withEmail: email, password: password) { _, error in
@@ -59,7 +63,10 @@ final class ConcreteAuthorizationService: AuthorizationService {
                 
                 let data: [String: Any] = ["username": username,
                                            "email": email,
-                                           "profileImageUrl": ""]
+                                           "profileImageUrl": "",
+                                           "friends": [],
+                                           "requests": [],
+                                           "pending": []]
                 
                 Firestore.firestore().collection("users").document(user.uid).setData(data) { error in
                     guard error == nil else {

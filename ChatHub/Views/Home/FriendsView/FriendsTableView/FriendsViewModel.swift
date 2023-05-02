@@ -6,26 +6,50 @@
 //
 
 import Foundation
+import RxCocoa
+import RxSwift
+import RxRelay
 
 final class FriendsViewModel {
     
-    struct FriendModel: Hashable {
-        let nickname: String
-        let photoUrl: String
-        let friendStatus: FriendsStatus
-        
-        enum FriendsStatus {
-            case friend
-            case pendingFriend
-            case requestedFriend
-            case stranger
-        }
+    typealias ServicesContainer = UserServiceContainer
+    
+    let services: ServicesContainer
+    
+    init(services: ServicesContainer) {
+        self.services = services
+        fetchAllUsers()
     }
     
-    var mockedFriendsList: [FriendModel] {
-        return [FriendModel(nickname: "Malczan", photoUrl: "", friendStatus: .friend),
-                FriendModel(nickname: "Paniut", photoUrl: "", friendStatus: .stranger),
-                FriendModel(nickname: "Krystian", photoUrl: "", friendStatus: .pendingFriend),
-                FriendModel(nickname: "Krzysztof", photoUrl: "", friendStatus: .requestedFriend)]
+    let friendsSubject = BehaviorRelay<[FriendModel]?>(value: nil)
+    private let disposeBag = DisposeBag()
+
+    var friendsDriver: Driver<[FriendModel]?> {
+        return friendsSubject.asDriver(onErrorDriveWith: Driver.never())
     }
+        
+    private func fetchAllUsers() {
+        services
+            .userService
+            .fetchAllUsers()
+            .subscribe(onNext: {
+                [weak self] in
+                self?.handleReceived(users: $0)
+            })
+            .disposed(by: disposeBag)
+    }
+    
+    private func handleReceived(users: [User]) {
+        
+        let friend =
+            users.map { users -> FriendModel in
+            return FriendModel(
+                nickname: users.username,
+                photoUrl: users.profileImageUrl,
+                friendStatus: .friend)
+        }
+        
+        friendsSubject.accept(friend)
+    }
+    
 }

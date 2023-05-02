@@ -55,7 +55,9 @@ final class TabBarCoordinator: Coordinator {
         messegesCoordinator.start()
         
         let friendsNavigationController = TabBarFactory.createFriendsNavigationController()
-        let friendsCoordinator = FriendsViewCoordinator(navigationController: friendsNavigationController)
+        let friendsCoordinator = FriendsViewCoordinator(
+            navigationController: friendsNavigationController,
+            servicesContainer: servicesContainer)
         friendsCoordinator.start()
         
         let settingsNavigationController = TabBarFactory.createSettingsNavigationController()

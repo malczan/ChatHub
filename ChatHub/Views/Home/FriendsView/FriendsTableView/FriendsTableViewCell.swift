@@ -30,14 +30,31 @@ class FriendsTableViewCell: UITableViewCell {
         super.init(coder: aDecoder)
     }
     
+    var friendModel: FriendModel? {
+        didSet {
+            updateContent(with: friendModel)
+        }
+    }
+    
+    var viewModel: FriendsViewModel? {
+        didSet {
+           bind()
+        }
+    }
+    
+    private func bind() {
+        
+    }
+    
     private func setupStyle() {
         self.selectionStyle = .none
         self.backgroundColor = .clear
         friendAvatarImage.image = UIImage(named: "avatar-placeholder")
         friendAvatarImage.layer.cornerRadius = 21
+        friendAvatarImage.clipsToBounds = true
+        friendAvatarImage.contentMode = .scaleAspectFill
         friendNameLabel.textColor = UIColor(named: "purple")
         friendNameLabel.textColor = .white
-        
     }
 
     private func installAvatarImage() {
@@ -56,9 +73,7 @@ class FriendsTableViewCell: UITableViewCell {
     private func installFriendNameLabel() {
         friendNameLabel.translatesAutoresizingMaskIntoConstraints = false
         self.addSubview(friendNameLabel)
-        
-        friendNameLabel.text = "Marcin Marcinowski"
-        
+
         NSLayoutConstraint.activate([
             friendNameLabel.centerYAnchor.constraint(equalTo: friendAvatarImage.centerYAnchor),
             friendNameLabel.leadingAnchor.constraint(equalTo: friendAvatarImage.trailingAnchor, constant: 10)
@@ -93,6 +108,21 @@ class FriendsTableViewCell: UITableViewCell {
         ])
     }
     
-    
-    
+    private func updateContent(with friend: FriendModel?) {
+        guard let friendModel = friendModel  else {
+            return
+        }
+        
+        friendNameLabel.text = friendModel.nickname
+        
+        guard let imageUrlString = friendModel.photoUrl,
+              let imageUrl = URL(string: imageUrlString)
+        else {
+            return
+        }
+        
+        friendAvatarImage.kf.setImage(
+            with: imageUrl,
+            placeholder: UIImage(named: "avatar-placeholder"))
+    }
 }
