@@ -8,17 +8,19 @@
 import UIKit
 
 final class MessegesViewCoordinator: Coordinator {
-        
+    
+    private typealias Factory = MessegesViewFactory
+    
     var childCoordinators: [Coordinator] = []
     private let navigationController: UINavigationController
-
 
     init(navigationController: UINavigationController) {
         self.navigationController = navigationController
     }
     
     func start() {
-        let messegesViewController = MessegesViewController()
+        let viewModel = MessegesViewModel()
+        let messegesViewController = Factory.createMessegesViewController(with: viewModel)
         
         navigationController.setViewControllers([messegesViewController], animated: true)
     }
