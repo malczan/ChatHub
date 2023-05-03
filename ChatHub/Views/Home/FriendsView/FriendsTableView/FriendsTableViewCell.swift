@@ -10,9 +10,6 @@ import RxCocoa
 import RxSwift
 
 class FriendsTableViewCell: UITableViewCell {
-
-//    private typealias Style = MessegesViewStyle
-//    typealias MessegePreviewModel = MessegesViewModel.MessegePreviewModel
     
     private let friendAvatarImage = UIImageView()
     private let friendNameLabel = UILabel()
@@ -51,7 +48,8 @@ class FriendsTableViewCell: UITableViewCell {
             .tap
             .subscribe(onNext: {
                 [weak self] in
-                print("@@@ first button tapped")
+                self?.viewModel?.firstButtonTapped(
+                    self?.friendModel?.friendStatus)
             })
             .disposed(by: disposeBag)
         
@@ -59,7 +57,8 @@ class FriendsTableViewCell: UITableViewCell {
             .tap
             .subscribe(onNext: {
                 [weak self] in
-                print("@@@ second button tapped")
+                self?.viewModel?.secondButtonTapped(
+                    self?.friendModel?.friendStatus)
             })
             .disposed(by: disposeBag)
     }
@@ -101,27 +100,25 @@ class FriendsTableViewCell: UITableViewCell {
     
     private func installFirstButton() {
         firstButton.translatesAutoresizingMaskIntoConstraints = false
-        self.addSubview(firstButton)
-        
-        
+        contentView.addSubview(firstButton)
         
         NSLayoutConstraint.activate([
             firstButton.heightAnchor.constraint(equalToConstant: 32),
             firstButton.widthAnchor.constraint(equalToConstant: 32),
-            firstButton.trailingAnchor.constraint(equalTo: self.layoutMarginsGuide.trailingAnchor),
-            firstButton.centerYAnchor.constraint(equalTo: self.centerYAnchor)
+            firstButton.trailingAnchor.constraint(equalTo: contentView.layoutMarginsGuide.trailingAnchor),
+            firstButton.centerYAnchor.constraint(equalTo: contentView.centerYAnchor)
         ])
     }
     
     private func installSecondButton() {
         secondButton.translatesAutoresizingMaskIntoConstraints = false
-        self.addSubview(secondButton)
+        contentView.addSubview(secondButton)
         
         NSLayoutConstraint.activate([
             secondButton.heightAnchor.constraint(equalToConstant: 32),
             secondButton.widthAnchor.constraint(equalToConstant: 32),
             secondButton.trailingAnchor.constraint(equalTo: firstButton.leadingAnchor, constant: -10),
-            secondButton.centerYAnchor.constraint(equalTo: self.centerYAnchor)
+            secondButton.centerYAnchor.constraint(equalTo: contentView.centerYAnchor)
         ])
     }
     

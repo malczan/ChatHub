@@ -119,6 +119,7 @@ class FriendsTableViewController: UITableViewController {
         dataSource = DataSource(tableView: tableView, cellProvider: { tableView, indexPath, friend -> UITableViewCell? in
             let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath) as! FriendsTableViewCell
             cell.friendModel = friend
+            cell.viewModel = self.viewModel
             return cell
         })
     }

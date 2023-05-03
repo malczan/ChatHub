@@ -13,6 +13,7 @@ import RxRelay
 final class FriendsViewModel {
     
     typealias ServicesContainer = UserServiceContainer
+    typealias FriendStatus = FriendModel.FriendsStatus
     
     let services: ServicesContainer
     
@@ -40,6 +41,36 @@ final class FriendsViewModel {
         return friendsSubject
             .map({ $0?.filter({ $0.friendStatus == .requestedFriend })})
             .asDriver(onErrorDriveWith: Driver.never())
+    }
+    
+    func firstButtonTapped(_ friendStatus: FriendStatus?) {
+        switch friendStatus {
+        case .stranger:
+            print("messege")
+        case .requestedFriend:
+            print("Accept")
+        case .pendingFriend:
+            print("messege")
+        case .friend:
+            print("messege")
+        case .none:
+            break
+        }
+    }
+    
+    func secondButtonTapped(_ friendStatus: FriendStatus?) {
+        switch friendStatus {
+        case .stranger:
+            print("add friend")
+        case .requestedFriend:
+            print("delete request")
+        case .pendingFriend:
+            print("messege")
+        case .friend:
+            print("remove friend")
+        case .none:
+            break
+        }
     }
 
     private func fetchAllUsers() {
