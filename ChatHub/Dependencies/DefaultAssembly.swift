@@ -24,5 +24,9 @@ final class DefaultAssembly: Assembly {
             ConcreteUserService()
         }
         
+        container.register(FriendsService.self) { resolver in
+            let userService = resolver.resolve(UserService.self)!
+            return ConcreteFriendsService(userService: userService)
+        }
     }
 }

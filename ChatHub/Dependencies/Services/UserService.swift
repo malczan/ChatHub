@@ -56,8 +56,8 @@ final class ConcreteUserService: UserService {
             Firestore.firestore().collection("users").getDocuments { snapshot, _ in
                 
                 guard let documents = snapshot?.documents else { return }
-                let allUsers = documents.compactMap({ try? $0.data(as: User.self) })
-                
+                let allUsers = documents.compactMap({ try? $0.data(as: User.self) }).filter({$0.id != self.userSession?.uid})
+
                 observer.onNext(allUsers)
                 observer.onCompleted()
             }

@@ -12,7 +12,10 @@ import RxRelay
 
 final class FriendsViewModel {
     
-    typealias ServicesContainer = UserServiceContainer
+    typealias ServicesContainer =
+    UserServiceContainer &
+    FriendsServiceContainer
+    
     typealias FriendStatus = FriendModel.FriendsStatus
     
     let services: ServicesContainer
@@ -24,6 +27,12 @@ final class FriendsViewModel {
     
     let friendsSubject = BehaviorRelay<[FriendModel]?>(value: nil)
     private let disposeBag = DisposeBag()
+    
+    var strangerDriver: Driver<[FriendModel]?> {
+        return friendsSubject
+            .map({ $0?.filter({ $0.friendStatus == .stranger })})
+            .asDriver(onErrorDriveWith: Driver.never())
+    }
 
     var friendsDriver: Driver<[FriendModel]?> {
         return friendsSubject
@@ -43,34 +52,68 @@ final class FriendsViewModel {
             .asDriver(onErrorDriveWith: Driver.never())
     }
     
-    func firstButtonTapped(_ friendStatus: FriendStatus?) {
-        switch friendStatus {
+    func firstButtonTapped(_ friend: FriendModel?) {
+        guard let friend = friend else {
+            return
+        }
+        
+        switch friend.friendStatus {
         case .stranger:
             print("messege")
         case .requestedFriend:
-            print("Accept")
+            dismissRequest(friend)
         case .pendingFriend:
             print("messege")
         case .friend:
             print("messege")
-        case .none:
-            break
         }
     }
     
-    func secondButtonTapped(_ friendStatus: FriendStatus?) {
-        switch friendStatus {
-        case .stranger:
-            print("add friend")
-        case .requestedFriend:
-            print("delete request")
-        case .pendingFriend:
-            print("messege")
-        case .friend:
-            print("remove friend")
-        case .none:
-            break
+    func secondButtonTapped(_ friend: FriendModel?) {
+        guard let friend = friend else {
+            return
         }
+        
+        switch friend.friendStatus {
+        case .stranger:
+            addFriendship(friend)
+        case .requestedFriend:
+            acceptFriendship(friend)
+        case .pendingFriend:
+            cancelRequest(friend)
+        case .friend:
+            deleteFriendship(friend)
+        }
+    }
+    
+    private func acceptFriendship(_ friend: FriendModel) {
+        services
+            .friendsService
+            .accept(user: friend.user)
+    }
+    
+    private func addFriendship(_ friend: FriendModel) {
+        services
+            .friendsService
+            .add(user: friend.user)
+    }
+    
+    private func deleteFriendship(_ friend: FriendModel) {
+        services
+            .friendsService
+            .remove(user: friend.user)
+    }
+    
+    private func cancelRequest(_ friend: FriendModel) {
+        services
+            .friendsService
+            .cancelRequest(user: friend.user)
+    }
+    
+    private func dismissRequest(_ friend: FriendModel) {
+        services
+            .friendsService
+            .dismiss(user: friend.user)
     }
 
     private func fetchAllUsers() {
@@ -89,8 +132,7 @@ final class FriendsViewModel {
         friendsSubject.accept(
             users.map { user -> FriendModel in
             return FriendModel(
-                nickname: user.username,
-                photoUrl: user.profileImageUrl,
+                user: user,
                 friendStatus: checkUserRelationship(user))
         })
     }

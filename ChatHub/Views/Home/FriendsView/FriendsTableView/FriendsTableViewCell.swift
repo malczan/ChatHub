@@ -49,7 +49,7 @@ class FriendsTableViewCell: UITableViewCell {
             .subscribe(onNext: {
                 [weak self] in
                 self?.viewModel?.firstButtonTapped(
-                    self?.friendModel?.friendStatus)
+                    self?.friendModel)
             })
             .disposed(by: disposeBag)
         
@@ -58,7 +58,7 @@ class FriendsTableViewCell: UITableViewCell {
             .subscribe(onNext: {
                 [weak self] in
                 self?.viewModel?.secondButtonTapped(
-                    self?.friendModel?.friendStatus)
+                    self?.friendModel)
             })
             .disposed(by: disposeBag)
     }
@@ -73,6 +73,10 @@ class FriendsTableViewCell: UITableViewCell {
         friendNameLabel.textColor = UIColor(named: "purple")
         friendNameLabel.textColor = .white
         firstButton.tintColor = UIColor(named: "purple")
+        firstButton.contentVerticalAlignment = .fill
+        firstButton.contentHorizontalAlignment = .fill
+        secondButton.contentVerticalAlignment = .fill
+        secondButton.contentHorizontalAlignment = .fill
     }
 
     private func installAvatarImage() {
@@ -103,8 +107,8 @@ class FriendsTableViewCell: UITableViewCell {
         contentView.addSubview(firstButton)
         
         NSLayoutConstraint.activate([
-            firstButton.heightAnchor.constraint(equalToConstant: 32),
-            firstButton.widthAnchor.constraint(equalToConstant: 32),
+            firstButton.heightAnchor.constraint(equalToConstant: 26),
+            firstButton.widthAnchor.constraint(equalToConstant: 26),
             firstButton.trailingAnchor.constraint(equalTo: contentView.layoutMarginsGuide.trailingAnchor),
             firstButton.centerYAnchor.constraint(equalTo: contentView.centerYAnchor)
         ])
@@ -115,9 +119,9 @@ class FriendsTableViewCell: UITableViewCell {
         contentView.addSubview(secondButton)
         
         NSLayoutConstraint.activate([
-            secondButton.heightAnchor.constraint(equalToConstant: 32),
-            secondButton.widthAnchor.constraint(equalToConstant: 32),
-            secondButton.trailingAnchor.constraint(equalTo: firstButton.leadingAnchor, constant: -10),
+            secondButton.heightAnchor.constraint(equalToConstant: 26),
+            secondButton.widthAnchor.constraint(equalToConstant: 26),
+            secondButton.trailingAnchor.constraint(equalTo: firstButton.leadingAnchor, constant: -5),
             secondButton.centerYAnchor.constraint(equalTo: contentView.centerYAnchor)
         ])
     }
@@ -127,7 +131,7 @@ class FriendsTableViewCell: UITableViewCell {
             return
         }
         
-        friendNameLabel.text = friendModel.nickname
+        friendNameLabel.text = friendModel.user.username
 
         switch friendModel.friendStatus {
         case .stranger:
@@ -135,10 +139,10 @@ class FriendsTableViewCell: UITableViewCell {
             secondButton.setImage(UIImage(systemName: "person.badge.plus"), for: .normal)
             secondButton.tintColor = .green
         case .requestedFriend:
-            firstButton.setImage(UIImage(systemName: "checkmark.circle"), for: .normal)
-            firstButton.tintColor = .green
-            secondButton.setImage(UIImage(systemName: "trash.circle"), for: .normal)
-            secondButton.tintColor = .systemRed
+            firstButton.setImage(UIImage(systemName: "trash.circle"), for: .normal)
+            firstButton.tintColor = .systemRed
+            secondButton.setImage(UIImage(systemName: "checkmark.circle"), for: .normal)
+            secondButton.tintColor = .green
         case .pendingFriend:
             firstButton.setImage(UIImage(systemName: "message.fill"), for: .normal)
             secondButton.setImage(UIImage(systemName: "person.badge.clock"), for: .normal)
@@ -149,7 +153,7 @@ class FriendsTableViewCell: UITableViewCell {
             secondButton.tintColor = .systemRed
         }
         
-        guard let imageUrlString = friendModel.photoUrl,
+        guard let imageUrlString = friendModel.user.profileImageUrl,
               let imageUrl = URL(string: imageUrlString)
         else {
             return

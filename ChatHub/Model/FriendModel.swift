@@ -8,8 +8,7 @@
 import Foundation
 
 struct FriendModel: Hashable {
-    let nickname: String
-    let photoUrl: String?
+    let user: User
     let friendStatus: FriendsStatus
     
     enum FriendsStatus {

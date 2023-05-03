@@ -15,12 +15,14 @@ class FriendsTableViewController: UITableViewController {
         case requests = "Friend Requests"
         case pending = "Pending"
         case friends = "Friends"
+        case stranger = "Stranger"
     }
     
     var viewModel: FriendsViewModel!
     private var snapshot: DataSourceSnapshot!
     private var dataSource: DataSource!
     
+    private typealias Style = FriendsViewStyle
     private typealias DataSource = UITableViewDiffableDataSource<Section, FriendModel>
     private typealias DataSourceSnapshot = NSDiffableDataSourceSnapshot<Section, FriendModel>
     
@@ -76,10 +78,30 @@ class FriendsTableViewController: UITableViewController {
                 self?.createFriendsSnapshotSection($0)
                 self?.activityIndicatorView.stopAnimating()
             }).disposed(by: disposeBag)
+        
+        viewModel
+            .strangerDriver
+            .drive(onNext: {
+                [weak self] in
+                self?.createStrangerSnapshotSection($0)
+                self?.activityIndicatorView.stopAnimating()
+            })
+            .disposed(by: disposeBag)
     }
     
     private func registerCell() {
         tableView.register(FriendsTableViewCell.self, forCellReuseIdentifier: "cell")
+    }
+    
+    private func createStrangerSnapshotSection(_ stranger: [FriendModel]?) {
+        guard let stranger = stranger,
+                  !stranger.isEmpty
+        else {
+            return
+        }
+        self.snapshot.appendSections([.stranger])
+        self.snapshot.appendItems(stranger, toSection: .stranger)
+        dataSource.apply(snapshot, animatingDifferences: true)
     }
     
     private func createRequestsSnapshotSection(_ requests : [FriendModel]?) {
@@ -137,6 +159,8 @@ class FriendsTableViewController: UITableViewController {
     
     override func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
             let label = UILabel(frame: CGRect(x: 0, y: 0, width: 60, height: 20))
+            label.textColor = Style.purpleColor
+            label.font = UIFont.boldSystemFont(ofSize: 16.0)
             label.text = snapshot.sectionIdentifiers[section].rawValue
             return label
     }
