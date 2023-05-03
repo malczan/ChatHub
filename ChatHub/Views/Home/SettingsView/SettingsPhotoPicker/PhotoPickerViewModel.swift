@@ -13,7 +13,6 @@ import Accessibility
 
 enum PhotoPickerViewModelOutput {
     case hidePicker
-    case imageUploaded
 }
 
 class PhotoPickerViewModel {

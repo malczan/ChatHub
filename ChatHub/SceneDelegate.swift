@@ -29,6 +29,7 @@ private extension SceneDelegate {
     func makeServicesContainer(resolver: Resolver) -> ServicesContainer {
         return ServicesContainer(
             authorizationService: resolver.resolve(AuthorizationService.self)!,
+            dataObserverService: resolver.resolve(DataObserverService.self)!,
             friendsService: resolver.resolve(FriendsService.self)!,
             imageService: resolver.resolve(ImageService.self)!,
             userService: resolver.resolve(UserService.self)!)

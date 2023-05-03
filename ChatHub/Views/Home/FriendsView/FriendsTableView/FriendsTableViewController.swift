@@ -12,6 +12,9 @@ import RxSwift
 class FriendsTableViewController: UITableViewController {
     
     private enum Section: String {
+        static var allCases: [Section] {
+                return [.requests, .pending, .friends, .stranger]
+            }
         case requests = "Friend Requests"
         case pending = "Pending"
         case friends = "Friends"
@@ -43,6 +46,11 @@ class FriendsTableViewController: UITableViewController {
         view.backgroundColor = .clear
         tableView.rowHeight = 50
         activityIndicatorView.startAnimating()
+    }
+    
+    private func deleteAllItems() {
+        self.snapshot.deleteAllItems()
+        self.snapshot.deleteSections(Section.allCases)
     }
     
     private func bind() {
@@ -87,6 +95,14 @@ class FriendsTableViewController: UITableViewController {
                 self?.activityIndicatorView.stopAnimating()
             })
             .disposed(by: disposeBag)
+        
+        viewModel
+            .refreshDriver
+            .drive(onNext: {
+                [weak self] in
+                self?.deleteAllItems()
+            })
+            .disposed(by: disposeBag)
     }
     
     private func registerCell() {
@@ -99,7 +115,9 @@ class FriendsTableViewController: UITableViewController {
         else {
             return
         }
-        self.snapshot.appendSections([.stranger])
+        if self.snapshot.indexOfSection(.stranger) == nil {
+            self.snapshot.appendSections([.stranger])
+        }
         self.snapshot.appendItems(stranger, toSection: .stranger)
         dataSource.apply(snapshot, animatingDifferences: true)
     }
@@ -110,7 +128,9 @@ class FriendsTableViewController: UITableViewController {
         else {
             return
         }
-        self.snapshot.appendSections([.requests])
+        if self.snapshot.indexOfSection(.requests) == nil {
+            self.snapshot.appendSections([.requests])
+        }
         self.snapshot.appendItems(requests, toSection: .requests)
         dataSource.apply(snapshot, animatingDifferences: true)
     }
@@ -121,7 +141,9 @@ class FriendsTableViewController: UITableViewController {
         else {
             return
         }
-        self.snapshot.appendSections([.pending])
+        if self.snapshot.indexOfSection(.pending) == nil {
+            self.snapshot.appendSections([.pending])
+        }
         self.snapshot.appendItems(pending, toSection: .pending)
         dataSource.apply(snapshot, animatingDifferences: true)
     }
@@ -132,7 +154,9 @@ class FriendsTableViewController: UITableViewController {
         else {
             return
         }
-        self.snapshot.appendSections([.friends])
+        if self.snapshot.indexOfSection(.friends) == nil {
+            self.snapshot.appendSections([.friends])
+        }
         self.snapshot.appendItems(friends, toSection: .friends)
         dataSource.apply(snapshot, animatingDifferences: true)
     }

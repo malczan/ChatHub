@@ -90,8 +90,6 @@ final class TabBarCoordinator: Coordinator {
                 switch $0 {
                 case .hidePicker:
                     self?.hidePhotoPicker()
-                case .imageUploaded:
-                    print("@@@")
                 }
             })
             .disposed(by: disposeBag)

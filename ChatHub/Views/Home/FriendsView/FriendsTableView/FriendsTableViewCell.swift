@@ -6,8 +6,8 @@
 //
 
 import UIKit
-import RxCocoa
 import RxSwift
+
 
 class FriendsTableViewCell: UITableViewCell {
     
@@ -16,7 +16,7 @@ class FriendsTableViewCell: UITableViewCell {
     private let firstButton = UIButton()
     private let secondButton = UIButton()
     
-    private let disposeBag = DisposeBag()
+    let disposeBag = DisposeBag()
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)

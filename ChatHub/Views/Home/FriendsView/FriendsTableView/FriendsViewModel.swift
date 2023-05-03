@@ -14,6 +14,7 @@ final class FriendsViewModel {
     
     typealias ServicesContainer =
     UserServiceContainer &
+    DataObserverServiceContainer &
     FriendsServiceContainer
     
     typealias FriendStatus = FriendModel.FriendsStatus
@@ -23,31 +24,37 @@ final class FriendsViewModel {
     init(services: ServicesContainer) {
         self.services = services
         fetchAllUsers()
+        observeUpdates()
     }
     
-    let friendsSubject = BehaviorRelay<[FriendModel]?>(value: nil)
+    private let refreshSubject = PublishSubject<Void>()
+    private let friendsRelay = BehaviorRelay<[FriendModel]?>(value: nil)
     private let disposeBag = DisposeBag()
     
+    var refreshDriver: Driver<Void> {
+        return refreshSubject.asDriver(onErrorDriveWith: Driver.never())
+    }
+    
     var strangerDriver: Driver<[FriendModel]?> {
-        return friendsSubject
+        return friendsRelay
             .map({ $0?.filter({ $0.friendStatus == .stranger })})
             .asDriver(onErrorDriveWith: Driver.never())
     }
 
     var friendsDriver: Driver<[FriendModel]?> {
-        return friendsSubject
+        return friendsRelay
             .map({ $0?.filter({ $0.friendStatus == .friend })})
             .asDriver(onErrorDriveWith: Driver.never())
     }
     
     var pendingRequestsDriver: Driver<[FriendModel]?> {
-        return friendsSubject
+        return friendsRelay
             .map({ $0?.filter({ $0.friendStatus == .pendingFriend })})
             .asDriver(onErrorDriveWith: Driver.never())
     }
 
     var friendsRequestsDriver: Driver<[FriendModel]?> {
-        return friendsSubject
+        return friendsRelay
             .map({ $0?.filter({ $0.friendStatus == .requestedFriend })})
             .asDriver(onErrorDriveWith: Driver.never())
     }
@@ -117,6 +124,8 @@ final class FriendsViewModel {
     }
 
     private func fetchAllUsers() {
+        refreshSubject.onNext(())
+        
         services
             .userService
             .fetchAllUsers()
@@ -127,9 +136,22 @@ final class FriendsViewModel {
             .disposed(by: disposeBag)
     }
     
+    func observeUpdates() {
+        services
+            .dataObserverService
+            .dataUpdatedRelay
+            .skip(1)
+            .subscribe(onNext: {
+                [weak self] in
+                self?.fetchAllUsers()
+            })
+            .disposed(by: disposeBag)
+        
+    }
+
     private func handleReceived(users: [User]) {
         
-        friendsSubject.accept(
+        friendsRelay.accept(
             users.map { user -> FriendModel in
             return FriendModel(
                 user: user,
