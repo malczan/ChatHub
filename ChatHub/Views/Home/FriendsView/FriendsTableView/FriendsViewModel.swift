@@ -25,9 +25,23 @@ final class FriendsViewModel {
     private let disposeBag = DisposeBag()
 
     var friendsDriver: Driver<[FriendModel]?> {
-        return friendsSubject.asDriver(onErrorDriveWith: Driver.never())
+        return friendsSubject
+            .map({ $0?.filter({ $0.friendStatus == .friend })})
+            .asDriver(onErrorDriveWith: Driver.never())
     }
-        
+    
+    var pendingRequestsDriver: Driver<[FriendModel]?> {
+        return friendsSubject
+            .map({ $0?.filter({ $0.friendStatus == .pendingFriend })})
+            .asDriver(onErrorDriveWith: Driver.never())
+    }
+
+    var friendsRequestsDriver: Driver<[FriendModel]?> {
+        return friendsSubject
+            .map({ $0?.filter({ $0.friendStatus == .requestedFriend })})
+            .asDriver(onErrorDriveWith: Driver.never())
+    }
+
     private func fetchAllUsers() {
         services
             .userService

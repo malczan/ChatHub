@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import RxCocoa
 
 class FriendsViewController: UIViewController {
     

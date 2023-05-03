@@ -11,12 +11,18 @@ import RxSwift
 
 class FriendsTableViewController: UITableViewController {
     
+    private enum Section: String {
+        case requests = "Friend Requests"
+        case pending = "Pending"
+        case friends = "Friends"
+    }
+    
     var viewModel: FriendsViewModel!
     private var snapshot: DataSourceSnapshot!
     private var dataSource: DataSource!
     
-    private typealias DataSource = UITableViewDiffableDataSource<String, FriendModel>
-    private typealias DataSourceSnapshot = NSDiffableDataSourceSnapshot<String, FriendModel>
+    private typealias DataSource = UITableViewDiffableDataSource<Section, FriendModel>
+    private typealias DataSourceSnapshot = NSDiffableDataSourceSnapshot<Section, FriendModel>
     
     private let activityIndicatorView = UIActivityIndicatorView(style: .large)
     private let disposeBag = DisposeBag()
@@ -46,10 +52,28 @@ class FriendsTableViewController: UITableViewController {
             }).disposed(by: disposeBag)
         
         viewModel
+            .friendsRequestsDriver
+            .drive(onNext: {
+                [weak self] in
+                self?.createRequestsSnapshotSection($0)
+                self?.activityIndicatorView.stopAnimating()
+            })
+            .disposed(by: disposeBag)
+        
+        viewModel
+            .pendingRequestsDriver
+            .drive(onNext: {
+                [weak self] in
+                self?.createPendingSnapshotSection($0)
+                self?.activityIndicatorView.stopAnimating()
+            })
+            .disposed(by: disposeBag)
+        
+        viewModel
             .friendsDriver
             .drive(onNext: {
                 [weak self] in
-                self?.createSnapshotSection(with: $0)
+                self?.createFriendsSnapshotSection($0)
                 self?.activityIndicatorView.stopAnimating()
             }).disposed(by: disposeBag)
     }
@@ -58,17 +82,39 @@ class FriendsTableViewController: UITableViewController {
         tableView.register(FriendsTableViewCell.self, forCellReuseIdentifier: "cell")
     }
     
-    private func createSnapshotSection(with users: [FriendModel]?) {
-        guard let users = users else {
+    private func createRequestsSnapshotSection(_ requests : [FriendModel]?) {
+        guard let requests = requests,
+                  !requests.isEmpty
+        else {
             return
         }
-
-        self.snapshot.appendSections(["Friends"])
-        self.snapshot.appendItems(users, toSection: "Friends")
+        self.snapshot.appendSections([.requests])
+        self.snapshot.appendItems(requests, toSection: .requests)
+        dataSource.apply(snapshot, animatingDifferences: true)
+    }
+    
+    private func createPendingSnapshotSection(_ pending: [FriendModel]?) {
+        guard let pending = pending,
+                  !pending.isEmpty
+        else {
+            return
+        }
+        self.snapshot.appendSections([.pending])
+        self.snapshot.appendItems(pending, toSection: .pending)
+        dataSource.apply(snapshot, animatingDifferences: true)
+    }
+    
+    private func createFriendsSnapshotSection(_ friends: [FriendModel]?) {
+        guard let friends = friends,
+                  !friends.isEmpty
+        else {
+            return
+        }
+        self.snapshot.appendSections([.friends])
+        self.snapshot.appendItems(friends, toSection: .friends)
         dataSource.apply(snapshot, animatingDifferences: true)
     }
 
-    
     private func configureTableViewDataSource() {
         dataSource = DataSource(tableView: tableView, cellProvider: { tableView, indexPath, friend -> UITableViewCell? in
             let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath) as! FriendsTableViewCell
@@ -88,12 +134,9 @@ class FriendsTableViewController: UITableViewController {
         ])
     }
     
-    
-    
-    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) { }
-    override func tableView(_ tableView: UITableView, didDeselectRowAt indexPath: IndexPath) { }
-    
-    override func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
-        return "Section"
+    override func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
+            let label = UILabel(frame: CGRect(x: 0, y: 0, width: 60, height: 20))
+            label.text = snapshot.sectionIdentifiers[section].rawValue
+            return label
     }
 }
