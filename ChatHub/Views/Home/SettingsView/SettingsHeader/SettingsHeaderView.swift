@@ -62,8 +62,12 @@ class SettingsHeaderView: UIView {
     
     private func updateContent(with data: User?) {
         guard let data = data else { return }
-        guard let url = URL(string: data.profileImageUrl) else { return }
-        usernameLabel.text = data.username.uppercased()
+        usernameLabel.text = data.username
+        guard let urlString = data.profileImageUrl,
+              let url = URL(string: urlString)
+        else {
+            return
+        }
         avatarImageView.kf.setImage(
             with: url,
             placeholder: Style.avatarPlaceholder)

@@ -15,6 +15,15 @@ final class DefaultAssembly: Assembly {
             ConcreteAuthorizationService()
         }
         
+        container.register(DataObserverService.self) { _ in
+            ConcreteDataObserverService()
+        }
+        
+        container.register(FriendsService.self) { resolver in
+            let userService = resolver.resolve(UserService.self)!
+            return ConcreteFriendsService(userService: userService)
+        }
+        
         container.register(ImageService.self) { resolver in
             let userService = resolver.resolve(UserService.self)!
             return ConcreteImageService(userService: userService)
@@ -23,6 +32,7 @@ final class DefaultAssembly: Assembly {
         container.register(UserService.self) { _ in
             ConcreteUserService()
         }
+        
         
     }
 }

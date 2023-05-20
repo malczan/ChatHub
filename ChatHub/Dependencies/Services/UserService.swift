@@ -17,10 +17,15 @@ protocol UserService {
     var userRelay: BehaviorRelay<User?> { get set }
     var userSession: FirebaseAuth.User? { get }
     func refreshUserInfo()
+    func fetchAllUsers() -> Observable<[User]>
+}
+
+protocol UserServiceContainer {
+    var userService: UserService { get }
 }
 
 final class ConcreteUserService: UserService {
-    
+
     var userRelay = BehaviorRelay<User?>(value: nil)
     let activeSession: Bool
     let userSession: FirebaseAuth.User?
@@ -33,14 +38,33 @@ final class ConcreteUserService: UserService {
         refreshUserInfo()
     }
     
+    func fetchDetails(userId: String) {
+        
+    }
+    
     func refreshUserInfo() {
         fetchUserInformation()
-            .subscribe(onNext: { [weak self] in
+            .subscribe(onNext: {
+                [weak self] in
                 self?.userRelay.accept($0)
             })
             .disposed(by: disposeBag)
     }
     
+    func fetchAllUsers() -> Observable<[User]> {
+        return Observable.create { observer in
+            Firestore.firestore().collection("users").getDocuments { snapshot, _ in
+                
+                guard let documents = snapshot?.documents else { return }
+                let allUsers = documents.compactMap({ try? $0.data(as: User.self) }).filter({$0.id != self.userSession?.uid})
+
+                observer.onNext(allUsers)
+                observer.onCompleted()
+            }
+            return Disposables.create()
+        }
+    }
+
     private func fetchUserInformation() -> Observable<User> {
         return Observable.create { observer in
             guard let uid = self.userSession?.uid else { return Disposables.create() }

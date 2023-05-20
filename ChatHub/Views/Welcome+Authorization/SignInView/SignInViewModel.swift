@@ -18,20 +18,21 @@ public enum SignInViewModelOutput {
 final class SignInViewModel {
     
     typealias Output = SignInViewModelOutput
+    typealias ServicesContainer = AuthorizationServiceContainer
     
     let passwordRelay = BehaviorSubject<String>(value: "")
     let usernameRelay = BehaviorSubject<String>(value: "")
-        
-    private let authorizationService: AuthorizationService
+
+    private let services: ServicesContainer
     
     private let outputErrorRelay: PublishRelay<Error>
     private let outputRelay: PublishRelay<Output>
     private let disposeBag = DisposeBag()
     
-    init(authorizationService: AuthorizationService,
+    init(services: ServicesContainer,
          outputRelay: PublishRelay<Output>,
          outputErrorRelay: PublishRelay<Error>) {
-        self.authorizationService = authorizationService
+        self.services = services
         self.outputRelay = outputRelay
         self.outputErrorRelay = outputErrorRelay
     }
@@ -43,7 +44,8 @@ final class SignInViewModel {
     }
     
     func signInTapped() {
-        authorizationService
+        services
+            .authorizationService
             .signInUser(
                 withEmail: try! usernameRelay.value(),
                 password: try! passwordRelay.value())

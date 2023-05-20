@@ -23,7 +23,8 @@ final class SignUpViewModel {
     let passwordRelay = BehaviorSubject<String>(value: "")
     let confirmPasswordRelay = BehaviorSubject<String>(value: "")
         
-    private let authorizationService: AuthorizationService
+    typealias ServicesContainer = AuthorizationServiceContainer
+    private let services: ServicesContainer
     
     private let outputErrorRelay: PublishRelay<Error>
     private let outputRelay: PublishRelay<Output>
@@ -31,10 +32,10 @@ final class SignUpViewModel {
     
     private let diposeBag = DisposeBag()
     
-    init(authorizationService: AuthorizationService,
+    init(services: ServicesContainer,
          outputRelay: PublishRelay<Output>,
          outputErrorRelay: PublishRelay<Error>) {
-        self.authorizationService = authorizationService
+        self.services = services
         self.outputRelay = outputRelay
         self.outputErrorRelay = outputErrorRelay
     }
@@ -54,16 +55,18 @@ final class SignUpViewModel {
     }
     
     func signUpTapped() {
-        authorizationService.signUpUser(
-            withUsername: try! usernameRelay.value(),
-            email: try! emailRelay.value(),
-            password: try! passwordRelay.value())
-        .subscribe { [weak self] _ in
-            self?.outputRelay.accept(.signedUp)
-        } onError: { [weak self] in
-            self?.outputErrorRelay.accept($0)
-        }
-        .disposed(by: disposeBag)
+        services
+            .authorizationService
+            .signUpUser(
+                withUsername: try! usernameRelay.value(),
+                email: try! emailRelay.value(),
+                password: try! passwordRelay.value())
+            .subscribe { [weak self] _ in
+                self?.outputRelay.accept(.signedUp)
+            } onError: { [weak self] in
+                self?.outputErrorRelay.accept($0)
+            }
+            .disposed(by: disposeBag)
     }
 
     func arePasswordTheSame() -> Observable<Bool>{

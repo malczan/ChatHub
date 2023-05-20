@@ -18,27 +18,30 @@ enum SettingsViewModelOutput {
 class SettingsViewModel {
     
     typealias Output = SettingsViewModelOutput
+    typealias ServicesContainer =
+    AuthorizationServiceContainer &
+    UserServiceContainer
+    
         
     var userSubject = PublishRelay<User>()
-    private let authService: AuthorizationService
-    private let userService: UserService
+    private let services: ServicesContainer
     
     private let outputErrorRelay: PublishRelay<Error>
     private let outputRelay: PublishRelay<Output>
     private let disposeBag = DisposeBag()
     
-    init(authService: AuthorizationService,
-         userService: UserService,
+    init(services: ServicesContainer,
          outputErrorRelay: PublishRelay<Error>,
          outputRelay: PublishRelay<Output>) {
-        self.authService = authService
-        self.userService = userService
+        self.services = services
         self.outputErrorRelay = outputErrorRelay
         self.outputRelay = outputRelay
+        services.userService.refreshUserInfo()
     }
     
     var user: Driver<User?> {
-        return userService
+        return services
+            .userService
             .userRelay
             .asDriver(onErrorDriveWith: Driver.never())
     }
@@ -55,9 +58,10 @@ class SettingsViewModel {
         outputRelay
             .accept(.updatePhoto)
     }
-
+    
     func buttonLogoutTapped() {
-        authService
+        services
+            .authorizationService
             .signOutUser()
             .subscribe { [weak self] in
                 self?.outputRelay.accept(.signOut)
