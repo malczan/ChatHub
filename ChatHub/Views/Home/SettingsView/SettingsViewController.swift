@@ -75,6 +75,5 @@ class SettingsViewController: UIViewController {
             settingsTable.view.trailingAnchor.constraint(equalTo: tableViewContainer.trailingAnchor),
             settingsTable.view.bottomAnchor.constraint(equalTo: tableViewContainer.bottomAnchor)
         ])
-        
     }
 }

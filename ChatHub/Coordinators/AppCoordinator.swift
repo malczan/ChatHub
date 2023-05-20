@@ -25,24 +25,24 @@ final class AppCoordinator: Coordinator {
     
     private(set) var childCoordinators: [Coordinator] = []
     private let window: UIWindow
-    private let resolver: Resolver
+    private let servicesContainer: ServicesContainer
     
     let navigationController = UINavigationController()
     private let appCoordinatorRelay = PublishRelay<AppCoordinatorSignals>()
     private let disposeBag = DisposeBag()
     
-    init(window: UIWindow, resolver: Resolver) {
+    init(window: UIWindow, servicesContainer: ServicesContainer) {
         navigationController.isNavigationBarHidden = true
         self.window = window
-        self.resolver = resolver
+        self.servicesContainer = servicesContainer
         bind()
     }
     
     func start() {
         
-        let service = resolver.resolve(UserService.self)!
+        let userService = servicesContainer.userService
                 
-        if service.activeSession {
+        if userService.activeSession {
             showTabBarView()
         } else {
             showWelcomeView()
@@ -70,7 +70,7 @@ final class AppCoordinator: Coordinator {
             appCoordinatorRelay: appCoordinatorRelay,
             navigationController: navigationController,
             window: window,
-            resolver: resolver)
+            servicesContainer: servicesContainer)
         
         childCoordinators.append(welcomeViewCoordinator)
 
@@ -82,7 +82,7 @@ final class AppCoordinator: Coordinator {
             appCoordinatorRelay: appCoordinatorRelay,
             navigationController: navigationController,
             window: window,
-            resolver: resolver)
+            servicesContainer: servicesContainer)
         
         childCoordinators.append(tabBarCoordinator)
         

@@ -24,7 +24,7 @@ final class TabBarCoordinator: Coordinator {
     private let appCoordinatorRelay: PublishRelay<AppCoordinatorSignals>
     private let navigationController: UINavigationController
     private let window: UIWindow
-    private let resolver: Resolver
+    private let servicesContainer: ServicesContainer
     
     private let settingsOutputRelay = PublishRelay<SettingsOutput>()
 
@@ -38,11 +38,11 @@ final class TabBarCoordinator: Coordinator {
     init(appCoordinatorRelay: PublishRelay<AppCoordinatorSignals>,
          navigationController: UINavigationController,
          window: UIWindow,
-         resolver: Resolver) {
+         servicesContainer: ServicesContainer) {
         self.navigationController = navigationController
         self.window = window
         self.appCoordinatorRelay = appCoordinatorRelay
-        self.resolver = resolver
+        self.servicesContainer = servicesContainer
         bind()
     }
     
@@ -55,7 +55,9 @@ final class TabBarCoordinator: Coordinator {
         messegesCoordinator.start()
         
         let friendsNavigationController = TabBarFactory.createFriendsNavigationController()
-        let friendsCoordinator = FriendsViewCoordinator(navigationController: friendsNavigationController)
+        let friendsCoordinator = FriendsViewCoordinator(
+            navigationController: friendsNavigationController,
+            servicesContainer: servicesContainer)
         friendsCoordinator.start()
         
         let settingsNavigationController = TabBarFactory.createSettingsNavigationController()
@@ -63,7 +65,7 @@ final class TabBarCoordinator: Coordinator {
             outputErrorRelay: errorRelay,
             outputRelay: settingsOutputRelay,
             navigationController: settingsNavigationController,
-            resolver: resolver)
+            servicesContainer: servicesContainer)
         settingsCoordinator.start()
         
         tabBarViewController.viewControllers = [messgesNavigationController, friendsNavigationController, settingsNavigationController]
@@ -88,8 +90,6 @@ final class TabBarCoordinator: Coordinator {
                 switch $0 {
                 case .hidePicker:
                     self?.hidePhotoPicker()
-                case .imageUploaded:
-                    print("@@@")
                 }
             })
             .disposed(by: disposeBag)
@@ -123,8 +123,7 @@ final class TabBarCoordinator: Coordinator {
     private func showPhotoPicker() {
         let viewModel = PhotoPickerViewModel(
             outputRelay: photoPickerOutputRelay,
-            imageService: resolver.resolve(ImageService.self)!,
-            userService: resolver.resolve(UserService.self)!)
+            services: servicesContainer)
         let popUpViewController = PhotoPickerFactory.createPhotoPickerViewController(viewModel: viewModel)
         popUpViewController.modalPresentationStyle = .custom
         self.window.rootViewController?.present(popUpViewController, animated: false)
