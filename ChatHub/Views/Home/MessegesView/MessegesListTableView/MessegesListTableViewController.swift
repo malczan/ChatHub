@@ -11,14 +11,14 @@ import RxSwift
 
 class MessegesListTableViewController: UITableViewController {
     
-    var viewModel: MessegesViewModel!
+    var viewModel: MessagesViewModel!
     
     private var snapshot: DataSourceSnapshot!
     private var dataSource: DataSource!
     
-    private typealias Style = MessegesViewStyle
+    private typealias Style = MessegasViewStyle
 
-    private typealias MessegeModel = MessegesViewModel.MessegePreviewModel
+    private typealias MessegeModel = MessagesViewModel.MessegePreviewModel
     private typealias DataSource = UITableViewDiffableDataSource<String, MessegeModel>
     private typealias DataSourceSnapshot = NSDiffableDataSourceSnapshot<String, MessegeModel>
     
@@ -45,6 +45,7 @@ class MessegesListTableViewController: UITableViewController {
             .itemSelected
             .subscribe(onNext: {
                 [weak self] _ in
+                self?.viewModel.chatSelected()
             }).disposed(by: disposeBag)
     }
     

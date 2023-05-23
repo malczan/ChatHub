@@ -26,8 +26,10 @@ final class TabBarCoordinator: Coordinator {
     private let window: UIWindow
     private let servicesContainer: ServicesContainer
     
+    private let messegesListOutputRelay = PublishRelay<Void>()
+    private let privateMessageOutputRelay = PublishRelay<Void>()
+    
     private let settingsOutputRelay = PublishRelay<SettingsOutput>()
-
     private let photoPickerOutputRelay = PublishRelay<PhotoPickerOutput>()
     
     private let errorRelay = PublishRelay<Error>()
@@ -51,7 +53,9 @@ final class TabBarCoordinator: Coordinator {
         let tabBarViewController = TabBarFactory.createTabBarViewController()
         
         let messgesNavigationController = TabBarFactory.createMessegesNavigatonController()
-        let messegesCoordinator = MessegesViewCoordinator(navigationController: messgesNavigationController)
+        let messegesCoordinator = MessegesViewCoordinator(
+            navigationController: messgesNavigationController,
+            outputRelay: messegesListOutputRelay)
         messegesCoordinator.start()
         
         let friendsNavigationController = TabBarFactory.createFriendsNavigationController()
@@ -106,6 +110,20 @@ final class TabBarCoordinator: Coordinator {
                 self?.hidePopUpView()
             })
             .disposed(by: disposeBag)
+        
+        messegesListOutputRelay
+            .subscribe(onNext: {
+                [weak self] _ in
+                self?.navigateToPrivateChat()
+            })
+            .disposed(by: disposeBag)
+        
+        privateMessageOutputRelay
+            .subscribe(onNext: {
+                [weak self] _ in
+                self?.goBack()
+            })
+            .disposed(by: disposeBag)
     }
     
     private func showPopUpView(with error: Error) {
@@ -133,5 +151,21 @@ final class TabBarCoordinator: Coordinator {
     private func hidePhotoPicker() {
         window.rootViewController?.dismiss(animated: false)
     }
+    
+    
+    private func navigateToPrivateChat() {
+        
+        let viewModel = PrivateMesssageViewModel(outputRelay: privateMessageOutputRelay)
+        
+        let viewController = PrivateMessageViewFactory
+            .createPrivateMessageViewController(viewModel: viewModel)
+        
+        navigationController.pushViewController(viewController, animated: true)
+    }
+    
+    private func goBack() {
+        navigationController.popViewController(animated: true)
+    }
+    
     
 }

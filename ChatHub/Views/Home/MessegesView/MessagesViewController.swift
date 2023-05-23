@@ -7,12 +7,12 @@
 
 import UIKit
 
-class MessegesViewController: UIViewController {
+class MessagesViewController: UIViewController {
     
-    private typealias Style = MessegesViewStyle
-    private typealias Factory = MessegesViewFactory
+    private typealias Style = MessegasViewStyle
+    private typealias Factory = MessagesViewFactory
     
-    var viewModel: MessegesViewModel!
+    var viewModel: MessagesViewModel!
     private var messegesListTableContainer = UIView()
     private var messegesListTable: UITableViewController!
 

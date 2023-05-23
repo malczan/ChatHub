@@ -7,17 +7,17 @@
 
 import Foundation
 
-enum MessegesViewFactory {
+enum MessagesViewFactory {
     
     static func createMessegesViewController(
-        with viewModel: MessegesViewModel) -> MessegesViewController {
-            let viewController = MessegesViewController()
+        with viewModel: MessagesViewModel) -> MessagesViewController {
+            let viewController = MessagesViewController()
             viewController.viewModel = viewModel
             return viewController
     }
     
     static func createMessegesListTableViewController(
-        with viewModel: MessegesViewModel) -> MessegesListTableViewController {
+        with viewModel: MessagesViewModel) -> MessegesListTableViewController {
             let viewController = MessegesListTableViewController()
             viewController.viewModel = viewModel
             return viewController
