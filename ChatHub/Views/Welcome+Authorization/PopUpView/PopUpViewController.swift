@@ -43,13 +43,13 @@ class PopUpViewController: UIViewController {
 
         popUpView.translatesAutoresizingMaskIntoConstraints = false
         
-        bottomAnchor = popUpView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: 150)
+        bottomAnchor = popUpView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: 200)
         bottomAnchor?.isActive = true
         
         NSLayoutConstraint.activate([
             popUpView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             popUpView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            popUpView.heightAnchor.constraint(equalToConstant: 150)
+            popUpView.heightAnchor.constraint(equalToConstant: 200)
         ])
     }
     
@@ -66,7 +66,7 @@ class PopUpViewController: UIViewController {
         UIView.animate(withDuration: 0.3,
                        delay: 0,
                        options: .curveEaseOut) {
-            self.bottomAnchor?.constant = 150
+            self.bottomAnchor?.constant = 200
             self.view.backgroundColor = .clear
             self.view.layoutIfNeeded()
         } completion: { [weak self] _ in

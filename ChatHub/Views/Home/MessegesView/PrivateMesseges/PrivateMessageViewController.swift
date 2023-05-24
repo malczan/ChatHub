@@ -20,6 +20,7 @@ class PrivateMessageViewController: UIViewController {
         super.viewDidLoad()
         setupUI()
         installHeader()
+        installFooter()
     }
     
     
@@ -40,6 +41,22 @@ class PrivateMessageViewController: UIViewController {
             headerView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             headerView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             headerView.heightAnchor.constraint(equalToConstant: 50)
+        ])
+    }
+    
+    private func installFooter() {
+        let footerView = PrivateMessageFooterView()
+        footerView.inject(viewModel: viewModel)
+        
+        view.addSubview(footerView)
+        
+        footerView.translatesAutoresizingMaskIntoConstraints = false
+        
+        NSLayoutConstraint.activate([
+            footerView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
+            footerView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            footerView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            footerView.heightAnchor.constraint(equalToConstant: 50)
         ])
     }
 

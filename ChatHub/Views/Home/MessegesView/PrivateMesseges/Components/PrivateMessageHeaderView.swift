@@ -72,7 +72,7 @@ class PrivateMessageHeaderView: UIView {
         usernameLabel.textColor = Style.purpleColor
         usernameLabel.text = "Jakub Malczyk"
         
-        goBackButton.backgroundColor = Style.purpleColor
+        goBackButton.tintColor = Style.purpleColor
         goBackButton.setImage(UIImage(systemName: "arrow.backward"), for: .normal)
     }
     
