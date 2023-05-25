@@ -29,6 +29,11 @@ final class DefaultAssembly: Assembly {
             return ConcreteImageService(userService: userService)
         }
         
+        container.register(MessageService.self) { resolver in
+            let userService = resolver.resolve(UserService.self)!
+            return ConcreteMessagesService(userService: userService)
+        }
+        
         container.register(UserService.self) { _ in
             ConcreteUserService()
         }

@@ -11,10 +11,20 @@ import RxSwift
 
 final class PrivateMesssageViewModel {
     
-    private let outputRelay: PublishRelay<Void>
+    typealias ServicesContainer =
+    MessageServiceContainer
     
-    init(outputRelay: PublishRelay<Void>) {
+    private let outputRelay: PublishRelay<Void>
+    private let services: ServicesContainer
+    private let user: User?
+    
+    
+    init(outputRelay: PublishRelay<Void>,
+         services: ServicesContainer,
+         user: User?) {
         self.outputRelay = outputRelay
+        self.services = services
+        self.user = user
     }
     
     func goBackTapped() {

@@ -32,6 +32,7 @@ private extension SceneDelegate {
             dataObserverService: resolver.resolve(DataObserverService.self)!,
             friendsService: resolver.resolve(FriendsService.self)!,
             imageService: resolver.resolve(ImageService.self)!,
+            messageService: resolver.resolve(MessageService.self)!,
             userService: resolver.resolve(UserService.self)!)
     }
 }
