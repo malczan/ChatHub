@@ -10,7 +10,7 @@ import RxSwift
 
 class PrivateMessageFooterView: UIView {
 
-    private typealias Style = MessegasViewStyle
+    private typealias Style = MessagesViewStyle
     
     var viewModel: PrivateMesssageViewModel!
     private let disposeBag = DisposeBag()

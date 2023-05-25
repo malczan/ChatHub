@@ -9,7 +9,7 @@ import UIKit
 
 class MessagesViewController: UIViewController {
     
-    private typealias Style = MessegasViewStyle
+    private typealias Style = MessagesViewStyle
     private typealias Factory = MessagesViewFactory
     
     var viewModel: MessagesViewModel!

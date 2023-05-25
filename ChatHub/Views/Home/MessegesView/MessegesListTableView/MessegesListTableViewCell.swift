@@ -9,7 +9,7 @@ import UIKit
 
 class MessegesListTableViewCell: UITableViewCell {
     
-    private typealias Style = MessegasViewStyle
+    private typealias Style = MessagesViewStyle
      typealias MessegePreviewModel = MessagesViewModel.MessegePreviewModel
     
     private let messegeAvatarImage = UIImageView()
@@ -30,7 +30,7 @@ class MessegesListTableViewCell: UITableViewCell {
 
     private func setupStyle() {
         self.selectionStyle = .none
-        self.backgroundColor = MessegasViewStyle.backgroundColor
+        self.backgroundColor = MessagesViewStyle.backgroundColor
         messegeAvatarImage.image = UIImage(named: "avatar-placeholder")
         messegeAvatarImage.layer.cornerRadius = 18
         messegeNameLabel.textColor = Style.purpleColor

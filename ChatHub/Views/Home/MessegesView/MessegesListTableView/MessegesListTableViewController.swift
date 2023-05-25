@@ -16,7 +16,7 @@ class MessegesListTableViewController: UITableViewController {
     private var snapshot: DataSourceSnapshot!
     private var dataSource: DataSource!
     
-    private typealias Style = MessegasViewStyle
+    private typealias Style = MessagesViewStyle
 
     private typealias MessegeModel = MessagesViewModel.MessegePreviewModel
     private typealias DataSource = UITableViewDiffableDataSource<String, MessegeModel>

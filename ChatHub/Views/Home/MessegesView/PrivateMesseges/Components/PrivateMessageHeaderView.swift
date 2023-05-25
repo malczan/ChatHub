@@ -6,11 +6,12 @@
 //
 
 import UIKit
+import Kingfisher
 import RxSwift
 
 class PrivateMessageHeaderView: UIView {
 
-    private typealias Style = MessegasViewStyle
+    private typealias Style = MessagesViewStyle
     
     var viewModel: PrivateMesssageViewModel!
     private let disposeBag = DisposeBag()
@@ -35,6 +36,7 @@ class PrivateMessageHeaderView: UIView {
     func inject(viewModel: PrivateMesssageViewModel) {
         self.viewModel = viewModel
         bindButton()
+        updateUserData()
     }
     
     private func bindButton() {
@@ -48,19 +50,18 @@ class PrivateMessageHeaderView: UIView {
             .disposed(by: disposeBag)
     }
     
-//
-//    private func updateContent(with data: User?) {
-//        guard let data = data else { return }
-//        usernameLabel.text = data.username
-//        guard let urlString = data.profileImageUrl,
-//              let url = URL(string: urlString)
-//        else {
-//            return
-//        }
-//        avatarImageView.kf.setImage(
-//            with: url,
-//            placeholder: Style.avatarPlaceholder)
-//    }
+    private func updateUserData() {
+        usernameLabel.text =  viewModel.headerTitle
+        
+        guard let urlString = viewModel.headerAvatarUrl,
+              let url = URL(string: urlString)
+        else {
+            return
+        }
+        avatarImageView.kf.setImage(
+            with: url,
+            placeholder: Style.avatarPlaceholder)
+    }
         
     private func setupStyle() {
         backgroundColor = Style.backgroundColor

@@ -28,7 +28,7 @@ final class TabBarCoordinator: Coordinator {
     
     private let messegesListOutputRelay = PublishRelay<Void>()
     private let privateMessageOutputRelay = PublishRelay<Void>()
-    
+    private let friendsOutputRelay =  PublishRelay<User>()
     private let settingsOutputRelay = PublishRelay<SettingsOutput>()
     private let photoPickerOutputRelay = PublishRelay<PhotoPickerOutput>()
     
@@ -61,7 +61,8 @@ final class TabBarCoordinator: Coordinator {
         let friendsNavigationController = TabBarFactory.createFriendsNavigationController()
         let friendsCoordinator = FriendsViewCoordinator(
             navigationController: friendsNavigationController,
-            servicesContainer: servicesContainer)
+            servicesContainer: servicesContainer,
+            outputRelay: friendsOutputRelay)
         friendsCoordinator.start()
         
         let settingsNavigationController = TabBarFactory.createSettingsNavigationController()
@@ -124,6 +125,13 @@ final class TabBarCoordinator: Coordinator {
                 self?.goBack()
             })
             .disposed(by: disposeBag)
+        
+        friendsOutputRelay
+            .subscribe(onNext: {
+                [weak self] in
+                self?.navigateToPrivateChat(with: $0)
+            })
+            .disposed(by: disposeBag)
     }
     
     private func showPopUpView(with error: Error) {
@@ -154,6 +162,10 @@ final class TabBarCoordinator: Coordinator {
     
     
     private func navigateToPrivateChat(with user: User?) {
+        
+        guard let user = user else {
+            return
+        }
         
         let viewModel = PrivateMesssageViewModel(
             outputRelay: privateMessageOutputRelay,

@@ -7,7 +7,7 @@
 
 import UIKit
 
-enum MessegasViewStyle {
+enum MessagesViewStyle {
     static let avatarPlaceholder = UIImage(named: "avatar-placeholder")
     
     static let backgroundColor = UIColor(named: "backgroundColor")

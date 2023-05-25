@@ -19,10 +19,13 @@ final class FriendsViewModel {
     
     typealias FriendStatus = FriendModel.FriendsStatus
     
-    let services: ServicesContainer
+    private let services: ServicesContainer
+    private let outputRelay: PublishRelay<User>
     
-    init(services: ServicesContainer) {
+    init(services: ServicesContainer,
+         outputRelay: PublishRelay<User>) {
         self.services = services
+        self.outputRelay = outputRelay
         fetchAllUsers()
         observeUpdates()
     }
@@ -66,13 +69,13 @@ final class FriendsViewModel {
         
         switch friend.friendStatus {
         case .stranger:
-            print("messege")
+            outputRelay.accept(friend.user)
         case .requestedFriend:
             dismissRequest(friend)
         case .pendingFriend:
-            print("messege")
+            outputRelay.accept(friend.user)
         case .friend:
-            print("messege")
+            outputRelay.accept(friend.user)
         }
     }
     
