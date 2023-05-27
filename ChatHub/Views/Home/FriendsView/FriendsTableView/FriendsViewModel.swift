@@ -142,7 +142,7 @@ final class FriendsViewModel {
     func observeUpdates() {
         services
             .dataObserverService
-            .dataUpdatedRelay
+            .userDataUpdatedRelay
             .skip(1)
             .subscribe(onNext: {
                 [weak self] in

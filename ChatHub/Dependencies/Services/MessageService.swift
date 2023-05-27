@@ -8,10 +8,13 @@
 import Foundation
 import FirebaseFirestore
 import RxSwift
+import RxRelay
 
 protocol MessageService {
+    var newMessageRelay: BehaviorRelay<[Message]?> { get }
     func sendMessage(to user: User, text: String)
     func fetchMessages(from user: User) -> Observable<[Message?]>
+    func observeMessages(from user: User)
 }
 
 protocol MessageServiceContainer {
@@ -20,6 +23,7 @@ protocol MessageServiceContainer {
 
 final class ConcreteMessagesService: MessageService {
     
+    let newMessageRelay = BehaviorRelay<[Message]?>(value: nil)
     private let userService: UserService
     
     init(userService: UserService) {
@@ -64,6 +68,26 @@ final class ConcreteMessagesService: MessageService {
             
             return Disposables.create()
         }
+    }
+    
+    func observeMessages(from user: User) {
         
+        guard let userId = userService.userSession?.uid else {
+            return
+        }
+        
+        Firestore
+            .firestore()
+            .collection("messages")
+            .document(userId)
+            .collection("6EleCeRb0rZK2qvg8B2bUe6Tj0R2")
+            .addSnapshotListener {
+            [weak self] snapshot, _ in
+                guard let changes = snapshot?.documentChanges.filter({ $0.type == .added }) else {
+                    return
+                }
+                let newMessages = changes.compactMap { try? $0.document.data(as: Message.self )}
+                self?.newMessageRelay.accept(newMessages)
+        }
     }
 }

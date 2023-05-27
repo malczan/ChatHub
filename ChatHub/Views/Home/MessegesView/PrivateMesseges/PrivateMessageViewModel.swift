@@ -24,7 +24,7 @@ final class PrivateMesssageViewModel {
     private let user: User
     
     private let messagesRelay = BehaviorRelay<[MessageModel]?>(value: nil)
-    private let newMessageRelay = PublishRelay<MessageModel>()
+    private let newMessageRelay = PublishRelay<[MessageModel]>()
     
     init(outputRelay: PublishRelay<Void>,
          services: ServicesContainer,
@@ -33,17 +33,19 @@ final class PrivateMesssageViewModel {
         self.services = services
         self.user = user
         fetchMessages()
+        observeMessages(from: user)
     }
     
     var messageDriver: Driver<[MessageModel]?> {
         return messagesRelay.asDriver(onErrorDriveWith: Driver.never())
     }
     
-    var newMessageDriver: Driver<MessageModel> {
+    var newMessageDriver: Driver<[MessageModel]> {
         return newMessageRelay.asDriver(onErrorDriveWith: Driver.never())
     }
     
     struct MessageModel: Hashable {
+        let id: String?
         let message: String?
         let fromCurrentUser: Bool
     }
@@ -64,41 +66,64 @@ final class PrivateMesssageViewModel {
         guard let message = message else {
             return
         }
-
+        
         services.messageService.sendMessage(
             to: user,
             text: message)
-        
-        newMessageSend(text: message)
     }
     
     private func fetchMessages() {
         services.messageService
             .fetchMessages(from: user)
             .subscribe(onNext: {
-            [weak self] in
+                [weak self] in
                 self?.handleReceived(messages: $0)
-        })
-        .disposed(by: disposeBag)
+            })
+            .disposed(by: disposeBag)
+    }
+    
+    private func observeMessages(from user: User) {
+        services.messageService
+            .observeMessages(from: user)
+        
+        services
+            .messageService
+            .newMessageRelay
+            .skip(2)
+            .subscribe(onNext: {
+                [weak self] in
+                self?.newMessageAppear(messages: $0)
+            })
+            .disposed(by: disposeBag)
     }
     
     private func handleReceived(messages: [Message?]) {
         guard let userId = services.userService.userSession?.uid else {
             return
         }
-    
+        
         messagesRelay.accept(messages
             .map { message -> MessageModel in
                 return MessageModel(
+                    id: message?.id,
                     message: message?.text,
                     fromCurrentUser: message?.fromId == userId ? true : false)
-        })
+            })
     }
     
-    private func newMessageSend(text: String) {
-        newMessageRelay.accept(MessageModel(
-            message: text,
-            fromCurrentUser: true))
-    }
     
+    private func newMessageAppear(messages: [Message]?) {
+        guard let userId = services.userService.userSession?.uid,
+              let messages = messages else {
+            return
+        }
+        
+        newMessageRelay.accept(messages
+            .map { message -> MessageModel in
+                return MessageModel(
+                    id: message.id,
+                    message: message.text,
+                    fromCurrentUser: message.fromId == userId ? true : false)
+            })
+    }
 }
