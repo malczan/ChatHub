@@ -11,6 +11,7 @@ import RxSwift
 class PrivateMessageViewController: UIViewController {
     
     typealias Style = MessagesViewStyle
+    typealias Factory = PrivateMessageViewFactory
     
     var viewModel: PrivateMesssageViewModel!
 
@@ -36,8 +37,8 @@ class PrivateMessageViewController: UIViewController {
     }
     
     private func installHeader() {
-        headerView = PrivateMessageHeaderView()
-        headerView.inject(viewModel: viewModel)
+        headerView = Factory
+            .createHeader(viewModel: viewModel)
         
         view.addSubview(headerView)
         
@@ -65,8 +66,8 @@ class PrivateMessageViewController: UIViewController {
     }
     
     private func installChatTableView() {
-        chatTableViewController = PrivateMessageTableViewController()
-        chatTableViewController.inject(viewModel: viewModel)
+        chatTableViewController = Factory
+            .createTableViewController(viewModel: viewModel)
         
         self.addChild(chatTableViewController)
         chatTableViewController.view.frame = self.chatContainer.frame
@@ -83,8 +84,8 @@ class PrivateMessageViewController: UIViewController {
     }
     
     private func installFooter() {
-        footerView = PrivateMessageFooterView()
-        footerView.inject(viewModel: viewModel)
+        footerView = Factory
+            .createFooter(viewModel: viewModel)
         
         view.addSubview(footerView)
         

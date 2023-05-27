@@ -44,12 +44,7 @@ class PrivateMessageTableViewCell: UITableViewCell {
         case false:
             setupReceivedMessage()
         }
-        
-        
     }
-    
-    
-    
     private func setupStyle() {
         backgroundColor = Style.backgroundColor
         messageBackroundView.backgroundColor = UIColor(named: "purple")
