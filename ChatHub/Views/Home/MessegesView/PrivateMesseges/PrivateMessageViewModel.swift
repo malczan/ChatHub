@@ -24,6 +24,7 @@ final class PrivateMesssageViewModel {
     private let user: User
     
     private let messagesRelay = BehaviorRelay<[MessageModel]?>(value: nil)
+    private let newMessageRelay = PublishRelay<MessageModel>()
     
     init(outputRelay: PublishRelay<Void>,
          services: ServicesContainer,
@@ -31,11 +32,15 @@ final class PrivateMesssageViewModel {
         self.outputRelay = outputRelay
         self.services = services
         self.user = user
-        viewDidLoad()
+        fetchMessages()
     }
     
     var messageDriver: Driver<[MessageModel]?> {
         return messagesRelay.asDriver(onErrorDriveWith: Driver.never())
+    }
+    
+    var newMessageDriver: Driver<MessageModel> {
+        return newMessageRelay.asDriver(onErrorDriveWith: Driver.never())
     }
     
     struct MessageModel: Hashable {
@@ -62,10 +67,12 @@ final class PrivateMesssageViewModel {
 
         services.messageService.sendMessage(
             to: user,
-            text: message )
+            text: message)
+        
+        newMessageSend(text: message)
     }
     
-    func viewDidLoad() {
+    private func fetchMessages() {
         services.messageService
             .fetchMessages(from: user)
             .subscribe(onNext: {
@@ -75,7 +82,7 @@ final class PrivateMesssageViewModel {
         .disposed(by: disposeBag)
     }
     
-    func handleReceived(messages: [Message?]) {
+    private func handleReceived(messages: [Message?]) {
         guard let userId = services.userService.userSession?.uid else {
             return
         }
@@ -86,6 +93,12 @@ final class PrivateMesssageViewModel {
                     message: message?.text,
                     fromCurrentUser: message?.fromId == userId ? true : false)
         })
+    }
+    
+    private func newMessageSend(text: String) {
+        newMessageRelay.accept(MessageModel(
+            message: text,
+            fromCurrentUser: true))
     }
     
 }

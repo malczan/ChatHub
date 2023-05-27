@@ -36,11 +36,21 @@ class PrivateMessageTableViewController: UITableViewController {
     }
     
     private func bind() {
-        viewModel.messageDriver.drive(onNext: {
+        viewModel
+            .messageDriver
+            .drive(onNext: {
             [weak self] messages in
             self?.applySnapshot(messages: messages)
         })
         .disposed(by: disposeBag)
+        
+        viewModel
+            .newMessageDriver
+            .drive(onNext: {
+                [weak self] message in
+                self?.updateSnaphot(with: message)
+            })
+            .disposed(by: disposeBag)
     }
     
     private func setupStyle() {
@@ -59,6 +69,9 @@ class PrivateMessageTableViewController: UITableViewController {
         self.snapshot.appendSections([0])
         messages.forEach({ self.snapshot.appendItems([$0], toSection: 0) })
         dataSource.apply(snapshot, animatingDifferences: false)
+        let indexPath = dataSource.indexPath(for: messages.last!)
+        tableView.reloadData()
+        tableView.scrollToRow(at: indexPath!, at: .bottom, animated: false)
     }
     
     private func configureTableViewDataSource() {
@@ -68,6 +81,15 @@ class PrivateMessageTableViewController: UITableViewController {
             return cell
         })
     }
+    
+    private func updateSnaphot(with message: MessageModel) {
+        snapshot.appendItems([message], toSection: 0)
+        dataSource.apply(snapshot, animatingDifferences: true)
+        let indexPath = dataSource.indexPath(for: message)
+        tableView.reloadData()
+        tableView.scrollToRow(at: indexPath!, at: .bottom, animated: true)
+    }
+    
     
     
 }
