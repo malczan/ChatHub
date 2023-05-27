@@ -7,9 +7,11 @@
 
 import Foundation
 import FirebaseFirestore
+import RxSwift
 
 protocol MessageService {
     func sendMessage(to user: User, text: String)
+    func fetchMessages(from user: User) -> Observable<[Message?]>
 }
 
 protocol MessageServiceContainer {
@@ -39,5 +41,29 @@ final class ConcreteMessagesService: MessageService {
                                    "timestamp": Timestamp(date: Date())]
         userRef.setData(data)
         friendRef.document(messageId).setData(data)
+    }
+    
+    func fetchMessages(from user: User) -> Observable<[Message?]> {
+        return Observable.create { observer in
+            guard let userId = self.userService.userSession?.uid else { return Disposables.create() }
+            guard let friendId = user.id else { return Disposables.create() }
+            
+            Firestore
+                .firestore()
+                .collection("messages")
+                .document(userId)
+                .collection(friendId)
+                .order(by: "timestamp", descending: false)
+                .getDocuments {
+                    snapshot, error in
+                    guard let documents = snapshot?.documents else { return }
+                    let messages = documents.compactMap { try? $0.data(as: Message.self)}
+                    observer.onNext(messages)
+                    observer.onCompleted()
+                }
+            
+            return Disposables.create()
+        }
+        
     }
 }

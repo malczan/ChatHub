@@ -16,14 +16,13 @@ class PrivateMessageFooterView: UIView {
     private let disposeBag = DisposeBag()
 
     private let messageTextField = UITextField()
-    private let sendButton = UIButton()
+     let sendButton = UIButton()
     
     override init(frame: CGRect) {
         super.init(frame: frame)
         setupStyle()
         installSendButton()
         installMessageTextField()
-        bindButton()
     }
     
     required init?(coder: NSCoder) {
@@ -39,27 +38,16 @@ class PrivateMessageFooterView: UIView {
         sendButton
             .rx
             .tap
+            .throttle(.seconds(1), latest: false, scheduler: MainScheduler.instance)
             .subscribe(onNext: {
-                [weak self] in
-                self?.viewModel.goBackTapped()
+                [unowned self] in
+                self.viewModel.send(message: self.messageTextField.text)
+                self.messageTextField.text = ""
             })
             .disposed(by: disposeBag)
+
     }
-    
-//
-//    private func updateContent(with data: User?) {
-//        guard let data = data else { return }
-//        usernameLabel.text = data.username
-//        guard let urlString = data.profileImageUrl,
-//              let url = URL(string: urlString)
-//        else {
-//            return
-//        }
-//        avatarImageView.kf.setImage(
-//            with: url,
-//            placeholder: Style.avatarPlaceholder)
-//    }
-        
+
     private func setupStyle() {
         backgroundColor = Style.backgroundColor
         

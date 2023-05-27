@@ -16,7 +16,7 @@ class PrivateMessageViewController: UIViewController {
 
     private var headerView: PrivateMessageHeaderView!
     private var chatContainer = UIView()
-    private var chatTableViewController: UITableViewController!
+    private var chatTableViewController: PrivateMessageTableViewController!
     private let disposeBag = DisposeBag()
     private var footerView: PrivateMessageFooterView!
     private var footerConstraint = NSLayoutConstraint()
@@ -66,6 +66,7 @@ class PrivateMessageViewController: UIViewController {
     
     private func installChatTableView() {
         chatTableViewController = PrivateMessageTableViewController()
+        chatTableViewController.inject(viewModel: viewModel)
         
         self.addChild(chatTableViewController)
         chatTableViewController.view.frame = self.chatContainer.frame
