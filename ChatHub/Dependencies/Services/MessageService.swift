@@ -14,6 +14,7 @@ protocol MessageService {
     var newMessageRelay: BehaviorRelay<[Message]?> { get }
     func sendMessage(to user: User, text: String)
     func fetchMessages(from user: User) -> Observable<[Message?]>
+    func fetchRecentSearches() -> Observable<[Message?]>
     func observeMessages(from user: User)
 }
 
@@ -36,6 +37,9 @@ final class ConcreteMessagesService: MessageService {
         let userRef = Firestore.firestore().collection("messages").document(userId).collection(friendId).document()
         let friendRef = Firestore.firestore().collection("messages").document(friendId).collection(userId)
         
+        let recentUserRef = Firestore.firestore().collection("messages").document(userId).collection("recent-messages").document(friendId)
+        let recentFriendRef = Firestore.firestore().collection("messages").document(friendId).collection("recent-messages").document(userId)
+        
         let messageId = userRef.documentID
         
         let data: [String: Any] = ["text": text,
@@ -45,6 +49,10 @@ final class ConcreteMessagesService: MessageService {
                                    "timestamp": Timestamp(date: Date())]
         userRef.setData(data)
         friendRef.document(messageId).setData(data)
+        
+        recentUserRef.setData(data)
+        recentFriendRef.setData(data)
+        
     }
     
     func fetchMessages(from user: User) -> Observable<[Message?]> {
@@ -72,7 +80,8 @@ final class ConcreteMessagesService: MessageService {
     
     func observeMessages(from user: User) {
         
-        guard let userId = userService.userSession?.uid else {
+        guard let userId = userService.userSession?.uid,
+              let friendId = user.id else {
             return
         }
         
@@ -80,7 +89,7 @@ final class ConcreteMessagesService: MessageService {
             .firestore()
             .collection("messages")
             .document(userId)
-            .collection("6EleCeRb0rZK2qvg8B2bUe6Tj0R2")
+            .collection(friendId)
             .addSnapshotListener {
             [weak self] snapshot, _ in
                 guard let changes = snapshot?.documentChanges.filter({ $0.type == .added }) else {
@@ -90,4 +99,27 @@ final class ConcreteMessagesService: MessageService {
                 self?.newMessageRelay.accept(newMessages)
         }
     }
+    
+    func fetchRecentSearches() -> Observable<[Message?]> {
+        return Observable.create { observer in
+            guard let userId = self.userService.userSession?.uid else { return Disposables.create() }
+            
+            Firestore
+                .firestore()
+                .collection("messages")
+                .document(userId)
+                .collection("recent-messages")
+                .order(by: "timestamp", descending: false)
+                .getDocuments {
+                    snapshot, error in
+                    guard let documents = snapshot?.documents else { return }
+                    let messages = documents.compactMap { try? $0.data(as: Message.self)}
+                    observer.onNext(messages)
+                    observer.onCompleted()
+                }
+            
+            return Disposables.create()
+        }
+    }
 }
+    

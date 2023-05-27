@@ -19,7 +19,7 @@ enum MessagesViewFactory {
     static func createMessegesListTableViewController(
         with viewModel: MessagesViewModel) -> MessegesListTableViewController {
             let viewController = MessegesListTableViewController()
-            viewController.viewModel = viewModel
+            viewController.inject(viewModel: viewModel)
             return viewController
     }
 }

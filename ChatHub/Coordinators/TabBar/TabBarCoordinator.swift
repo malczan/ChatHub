@@ -55,7 +55,8 @@ final class TabBarCoordinator: Coordinator {
         let messgesNavigationController = TabBarFactory.createMessegesNavigatonController()
         let messegesCoordinator = MessegesViewCoordinator(
             navigationController: messgesNavigationController,
-            outputRelay: messegesListOutputRelay)
+            outputRelay: messegesListOutputRelay,
+            servicesContainer: servicesContainer)
         messegesCoordinator.start()
         
         let friendsNavigationController = TabBarFactory.createFriendsNavigationController()

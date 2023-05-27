@@ -79,7 +79,7 @@ class PhotoPickerViewModel {
             .uploadProfileImage(image)
             .subscribe { [weak self] _ in
                 self?.uploadRelay.accept(.success(()))
-                self?.services.userService.refreshUserInfo()
+                self?.services.userService.refreshUserInfo(with: self?.services.userService.userSession?.uid)
                 self?.outputRelay.accept(.hidePicker)
             } onError: { [weak self] in
                 self?.uploadRelay.accept(.failure($0))

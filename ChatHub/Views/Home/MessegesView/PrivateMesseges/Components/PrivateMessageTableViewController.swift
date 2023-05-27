@@ -59,7 +59,8 @@ class PrivateMessageTableViewController: UITableViewController {
     }
     
     private func registerCell() {
-        tableView.register(PrivateMessageTableViewCell.self, forCellReuseIdentifier: "cell")
+        tableView.register(PrivateSentMessageCell.self, forCellReuseIdentifier: "SentMessageCell")
+        tableView.register(PrivateReceivedMessageCell.self, forCellReuseIdentifier: "ReceivedMessageCell")
     }
     
     private func applySnapshot(messages: [MessageModel]?) {
@@ -79,9 +80,17 @@ class PrivateMessageTableViewController: UITableViewController {
     
     private func configureTableViewDataSource() {
         dataSource = DataSource(tableView: tableView, cellProvider: { tableView, indexPath, messageModel -> UITableViewCell? in
-            let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath) as! PrivateMessageTableViewCell
-            cell.model = messageModel
-            return cell
+            switch messageModel.fromCurrentUser {
+            case true:
+                let cell = tableView.dequeueReusableCell(withIdentifier: "SentMessageCell", for: indexPath) as! PrivateSentMessageCell
+                cell.model = messageModel
+                return cell
+            case false:
+                let cell = tableView.dequeueReusableCell(withIdentifier: "ReceivedMessageCell", for: indexPath) as! PrivateReceivedMessageCell
+                cell.model = messageModel
+                return cell
+            }
+            
         })
     }
     

@@ -7,7 +7,7 @@
 
 import UIKit
 
-class PrivateMessageTableViewCell: UITableViewCell {
+class PrivateSentMessageCell: UITableViewCell {
     
     typealias Style = MessagesViewStyle
     typealias MessageModel = PrivateMesssageViewModel.MessageModel
@@ -30,6 +30,7 @@ class PrivateMessageTableViewCell: UITableViewCell {
             updateContext(with: model)
         }
     }
+
     
     private func updateContext(with model: MessageModel?) {
         guard let model = model else {
@@ -37,18 +38,9 @@ class PrivateMessageTableViewCell: UITableViewCell {
         }
 
         messageLabel.text = model.message
-        messageBackroundView.backgroundColor = model
-            .fromCurrentUser ?
-                UIColor(named: "lightPurple") :
-                UIColor(named: "purple")
-        
-        switch model.fromCurrentUser {
-        case true:
-            setupSentMessage()
-        case false:
-            setupReceivedMessage()
-        }
+        messageBackroundView.backgroundColor = UIColor(named: "purple")
     }
+    
     private func setupStyle() {
         backgroundColor = Style.backgroundColor
         
@@ -64,24 +56,9 @@ class PrivateMessageTableViewCell: UITableViewCell {
         
         messageLabel.translatesAutoresizingMaskIntoConstraints = false
         messageBackroundView.translatesAutoresizingMaskIntoConstraints = false
-    }
-    
-    private func setupReceivedMessage() {
+        
         NSLayoutConstraint.activate([
-            messageLabel.topAnchor.constraint(equalTo: topAnchor, constant: 28),
-            messageLabel.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 28),
-            messageLabel.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -28),
-            messageLabel.widthAnchor.constraint(equalToConstant: 250),
-            
-            messageBackroundView.topAnchor.constraint(equalTo: messageLabel.topAnchor, constant: -14),
-            messageBackroundView.leadingAnchor.constraint(equalTo: messageLabel.leadingAnchor, constant: -14),
-            messageBackroundView.bottomAnchor.constraint(equalTo: messageLabel.bottomAnchor, constant: 14),
-            messageBackroundView.trailingAnchor.constraint(equalTo: messageLabel.trailingAnchor, constant: 14)
-        ])
-    }
-    
-    private func setupSentMessage() {
-        NSLayoutConstraint.activate([
+                        
             messageLabel.topAnchor.constraint(equalTo: topAnchor, constant: 28),
             messageLabel.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -28),
             messageLabel.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -28),
@@ -93,5 +70,5 @@ class PrivateMessageTableViewCell: UITableViewCell {
             messageBackroundView.trailingAnchor.constraint(equalTo: messageLabel.trailingAnchor, constant: 14)
         ])
     }
-    
 }
+

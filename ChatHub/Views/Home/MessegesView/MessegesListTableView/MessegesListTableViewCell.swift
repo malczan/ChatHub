@@ -6,15 +6,21 @@
 //
 
 import UIKit
+import Kingfisher
+import RxSwift
 
 class MessegesListTableViewCell: UITableViewCell {
     
     private typealias Style = MessagesViewStyle
-     typealias MessegePreviewModel = MessagesViewModel.MessegePreviewModel
+     typealias MessegePreviewModel = MessagesViewModel.MessegePreview
+    
+    var viewModel: MessagesViewModel!
     
     private let messegeAvatarImage = UIImageView()
     private let messegeNameLabel = UILabel()
     private let messegePreviewLabel = UILabel()
+    
+    private let disposeBag = DisposeBag()
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -33,24 +39,58 @@ class MessegesListTableViewCell: UITableViewCell {
         self.backgroundColor = MessagesViewStyle.backgroundColor
         messegeAvatarImage.image = UIImage(named: "avatar-placeholder")
         messegeAvatarImage.layer.cornerRadius = 18
+        messegeAvatarImage.clipsToBounds = true
+        messegeAvatarImage.contentMode = .scaleAspectFill
         messegeNameLabel.textColor = Style.purpleColor
         messegePreviewLabel.textColor = .white
 
     }
-    
+
     var messegePreviewModel: MessegePreviewModel? {
         didSet {
             updateContext(with: messegePreviewModel)
         }
     }
     
+    func inject(viewModel: MessagesViewModel) {
+        self.viewModel = viewModel
+    }
+    
     func updateContext(with message: MessegePreviewModel?) {
         guard let message = message else {
             return
         }
-        
-        messegeNameLabel.text = message.senderName
-        messegePreviewLabel.text = message.messegePreview
+        viewModel
+            .getUserInfo(with: message.userId!)
+            .subscribe(onNext: {
+                [weak self] in
+                self?.updateMessagePreview(with: $0, message: message)
+            })
+            .disposed(by: disposeBag)
+    }
+    
+    private func updateMessagePreview(with user: User, message: MessegePreviewModel) {
+        messegeNameLabel.font = message
+            .sendByCurrentUser ?
+                UIFont.systemFont(ofSize: 18) :
+                UIFont.boldSystemFont(ofSize: 18)
+        messegePreviewLabel.font = message
+            .sendByCurrentUser ?
+                UIFont.systemFont(ofSize: 18) :
+                UIFont.boldSystemFont(ofSize: 18)
+        messegePreviewLabel.text = message
+            .sendByCurrentUser ?
+                "You: \(message.message ?? "")" :
+                message.message
+        messegeNameLabel.text = user.username
+        guard let urlString = user.profileImageUrl,
+              let url = URL(string: urlString)
+        else {
+            return
+        }
+        messegeAvatarImage.kf.setImage(
+            with: url,
+            placeholder: Style.avatarPlaceholder)
     }
     
     private func installAvatarImage() {

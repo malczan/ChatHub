@@ -106,7 +106,7 @@ final class PrivateMesssageViewModel {
         messagesRelay.accept(messages
             .map { message -> MessageModel in
                 return MessageModel(
-                    id: message?.id,
+                    id: UUID().uuidString,
                     message: message?.text,
                     fromCurrentUser: message?.fromId == userId ? true : false)
             })
@@ -122,7 +122,7 @@ final class PrivateMesssageViewModel {
         newMessageRelay.accept(messages
             .map { message -> MessageModel in
                 return MessageModel(
-                    id: message.id,
+                    id: UUID().uuidString,
                     message: message.text,
                     fromCurrentUser: message.fromId == userId ? true : false)
             })

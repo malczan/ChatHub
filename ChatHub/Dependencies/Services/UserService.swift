@@ -16,7 +16,8 @@ protocol UserService {
     var activeSession: Bool { get }
     var userRelay: BehaviorRelay<User?> { get set }
     var userSession: FirebaseAuth.User? { get }
-    func refreshUserInfo()
+    func refreshUserInfo(with id: String?)
+    func fetchExactUser(id: String?) -> Observable<User>
     func fetchAllUsers() -> Observable<[User]>
 }
 
@@ -35,20 +36,20 @@ final class ConcreteUserService: UserService {
     init() {
         self.activeSession = (Auth.auth().currentUser != nil)
         self.userSession = Auth.auth().currentUser
-        refreshUserInfo()
+        refreshUserInfo(with: userSession?.uid)
     }
-    
-    func fetchDetails(userId: String) {
-        
-    }
-    
-    func refreshUserInfo() {
-        fetchUserInformation()
+
+    func refreshUserInfo(with id: String?) {
+        fetchUserInformation(id)
             .subscribe(onNext: {
                 [weak self] in
                 self?.userRelay.accept($0)
             })
             .disposed(by: disposeBag)
+    }
+    
+    func fetchExactUser(id: String?) -> Observable<User> {
+        return fetchUserInformation(id)
     }
     
     func fetchAllUsers() -> Observable<[User]> {
@@ -65,11 +66,11 @@ final class ConcreteUserService: UserService {
         }
     }
 
-    private func fetchUserInformation() -> Observable<User> {
+    private func fetchUserInformation(_ id: String?) -> Observable<User> {
         return Observable.create { observer in
-            guard let uid = self.userSession?.uid else { return Disposables.create() }
+            guard let id = id else { return Disposables.create() }
             
-            Firestore.firestore().collection("users").document(uid).getDocument { snapshot, _ in
+            Firestore.firestore().collection("users").document(id).getDocument { snapshot, _ in
                 guard let user = try? snapshot?.data(as: User.self) else { return }
                 observer.onNext(user)
                 observer.onCompleted()

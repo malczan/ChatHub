@@ -17,15 +17,20 @@ final class MessegesViewCoordinator: Coordinator {
     private let navigationController: UINavigationController
     private let outputRelay: PublishRelay<Void>
     private let disposeBag = DisposeBag()
+    private let servicesContainer: ServicesContainer
 
     init(navigationController: UINavigationController,
-         outputRelay: PublishRelay<Void>) {
+         outputRelay: PublishRelay<Void>,
+         servicesContainer: ServicesContainer) {
         self.navigationController = navigationController
         self.outputRelay = outputRelay
+        self.servicesContainer = servicesContainer
     }
     
     func start() {
-        let viewModel = MessagesViewModel(outputRelay: outputRelay)
+        let viewModel = MessagesViewModel(
+            services: servicesContainer,
+            outputRelay: outputRelay)
         let messegesViewController = Factory.createMessegesViewController(with: viewModel)
         
         navigationController.setViewControllers([messegesViewController], animated: true)
