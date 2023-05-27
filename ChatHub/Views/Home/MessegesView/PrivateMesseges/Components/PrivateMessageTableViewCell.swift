@@ -37,6 +37,10 @@ class PrivateMessageTableViewCell: UITableViewCell {
         }
 
         messageLabel.text = model.message
+        messageBackroundView.backgroundColor = model
+            .fromCurrentUser ?
+                UIColor(named: "lightPurple") :
+                UIColor(named: "purple")
         
         switch model.fromCurrentUser {
         case true:
@@ -47,8 +51,8 @@ class PrivateMessageTableViewCell: UITableViewCell {
     }
     private func setupStyle() {
         backgroundColor = Style.backgroundColor
-        messageBackroundView.backgroundColor = UIColor(named: "purple")
         
+        messageLabel.font = UIFont.systemFont(ofSize: 16)
         messageLabel.numberOfLines = 0
         messageBackroundView.layer.cornerRadius = 8
         selectionStyle = .none
@@ -64,29 +68,29 @@ class PrivateMessageTableViewCell: UITableViewCell {
     
     private func setupReceivedMessage() {
         NSLayoutConstraint.activate([
-            messageLabel.topAnchor.constraint(equalTo: topAnchor, constant: 32),
-            messageLabel.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 32),
-            messageLabel.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -32),
+            messageLabel.topAnchor.constraint(equalTo: topAnchor, constant: 28),
+            messageLabel.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 28),
+            messageLabel.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -28),
             messageLabel.widthAnchor.constraint(equalToConstant: 250),
             
-            messageBackroundView.topAnchor.constraint(equalTo: messageLabel.topAnchor, constant: -16),
-            messageBackroundView.leadingAnchor.constraint(equalTo: messageLabel.leadingAnchor, constant: -16),
-            messageBackroundView.bottomAnchor.constraint(equalTo: messageLabel.bottomAnchor, constant: 16),
-            messageBackroundView.trailingAnchor.constraint(equalTo: messageLabel.trailingAnchor, constant: 16)
+            messageBackroundView.topAnchor.constraint(equalTo: messageLabel.topAnchor, constant: -14),
+            messageBackroundView.leadingAnchor.constraint(equalTo: messageLabel.leadingAnchor, constant: -14),
+            messageBackroundView.bottomAnchor.constraint(equalTo: messageLabel.bottomAnchor, constant: 14),
+            messageBackroundView.trailingAnchor.constraint(equalTo: messageLabel.trailingAnchor, constant: 14)
         ])
     }
     
     private func setupSentMessage() {
         NSLayoutConstraint.activate([
-            messageLabel.topAnchor.constraint(equalTo: topAnchor, constant: 32),
-            messageLabel.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -32),
-            messageLabel.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -32),
+            messageLabel.topAnchor.constraint(equalTo: topAnchor, constant: 28),
+            messageLabel.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -28),
+            messageLabel.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -28),
             messageLabel.widthAnchor.constraint(lessThanOrEqualToConstant: 250),
             
-            messageBackroundView.topAnchor.constraint(equalTo: messageLabel.topAnchor, constant: -16),
-            messageBackroundView.leadingAnchor.constraint(equalTo: messageLabel.leadingAnchor, constant: -16),
-            messageBackroundView.bottomAnchor.constraint(equalTo: messageLabel.bottomAnchor, constant: 16),
-            messageBackroundView.trailingAnchor.constraint(equalTo: messageLabel.trailingAnchor, constant: 16)
+            messageBackroundView.topAnchor.constraint(equalTo: messageLabel.topAnchor, constant: -14),
+            messageBackroundView.leadingAnchor.constraint(equalTo: messageLabel.leadingAnchor, constant: -14),
+            messageBackroundView.bottomAnchor.constraint(equalTo: messageLabel.bottomAnchor, constant: 14),
+            messageBackroundView.trailingAnchor.constraint(equalTo: messageLabel.trailingAnchor, constant: 14)
         ])
     }
     

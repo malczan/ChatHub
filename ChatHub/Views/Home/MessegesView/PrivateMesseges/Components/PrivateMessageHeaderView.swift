@@ -66,15 +66,21 @@ class PrivateMessageHeaderView: UIView {
     private func setupStyle() {
         backgroundColor = Style.backgroundColor
         avatarImageView.image = Style.avatarPlaceholder
-        avatarImageView.layer.cornerRadius = 16
+        avatarImageView.layer.cornerRadius = 21
         avatarImageView.clipsToBounds = true
         avatarImageView.contentMode = .scaleAspectFill
+        
 
         usernameLabel.textColor = Style.purpleColor
         usernameLabel.text = "Jakub Malczyk"
+        usernameLabel.font = UIFont.boldSystemFont(ofSize: 20)
         
         goBackButton.tintColor = Style.purpleColor
         goBackButton.setImage(UIImage(systemName: "arrow.backward"), for: .normal)
+        goBackButton.clipsToBounds = true
+        goBackButton.contentMode = .scaleAspectFit
+        goBackButton.contentHorizontalAlignment = .fill
+        goBackButton.contentVerticalAlignment = .fill
     }
     
     private func installUsernameLabel() {
@@ -95,6 +101,8 @@ class PrivateMessageHeaderView: UIView {
         NSLayoutConstraint.activate([
             goBackButton.centerYAnchor.constraint(equalTo: usernameLabel.centerYAnchor),
             goBackButton.leadingAnchor.constraint(equalTo: self.layoutMarginsGuide.leadingAnchor),
+            goBackButton.heightAnchor.constraint(equalToConstant: 32),
+            goBackButton.widthAnchor.constraint(equalToConstant: 32),
         ])
     }
     
@@ -106,8 +114,8 @@ class PrivateMessageHeaderView: UIView {
         NSLayoutConstraint.activate([
             avatarImageView.centerYAnchor.constraint(equalTo: usernameLabel.centerYAnchor),
             avatarImageView.trailingAnchor.constraint(equalTo: self.layoutMarginsGuide.trailingAnchor),
-            avatarImageView.heightAnchor.constraint(equalToConstant: 32),
-            avatarImageView.widthAnchor.constraint(equalToConstant: 32),
+            avatarImageView.heightAnchor.constraint(equalToConstant: 42),
+            avatarImageView.widthAnchor.constraint(equalToConstant: 42),
         ])
     }
     

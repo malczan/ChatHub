@@ -15,7 +15,7 @@ class PrivateMessageFooterView: UIView {
     var viewModel: PrivateMesssageViewModel!
     private let disposeBag = DisposeBag()
 
-    private let messageTextField = UITextField()
+    private let messageTextField = TextField()
      let sendButton = UIButton()
     
     override init(frame: CGRect) {
@@ -56,8 +56,12 @@ class PrivateMessageFooterView: UIView {
         sendButton.contentMode = .scaleAspectFill
         sendButton.contentHorizontalAlignment = .fill
         sendButton.contentVerticalAlignment = .fill
+        
         messageTextField.layer.cornerRadius = 12
         messageTextField.backgroundColor = Style.lightPurpleColor?.withAlphaComponent(0.5)
+        messageTextField.attributedPlaceholder = Style.textFieldPlaceholderAttr
+        messageTextField.tintColor = Style.whiteColor
+        messageTextField.textColor = Style.whiteColor
         
     }
     
@@ -87,4 +91,21 @@ class PrivateMessageFooterView: UIView {
         ])
     }
   
+}
+
+class TextField: UITextField {
+
+    let padding = UIEdgeInsets(top: 0, left: 5, bottom: 0, right: 5)
+
+    override open func textRect(forBounds bounds: CGRect) -> CGRect {
+        return bounds.inset(by: padding)
+    }
+
+    override open func placeholderRect(forBounds bounds: CGRect) -> CGRect {
+        return bounds.inset(by: padding)
+    }
+
+    override open func editingRect(forBounds bounds: CGRect) -> CGRect {
+        return bounds.inset(by: padding)
+    }
 }

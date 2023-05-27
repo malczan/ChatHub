@@ -63,7 +63,8 @@ final class PrivateMesssageViewModel {
     }
     
     func send(message: String?) {
-        guard let message = message else {
+        guard let message = message,
+              message != "" else {
             return
         }
         
