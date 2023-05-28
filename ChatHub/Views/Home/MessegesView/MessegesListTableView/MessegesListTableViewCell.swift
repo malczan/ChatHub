@@ -124,7 +124,7 @@ class MessegesListTableViewCell: UITableViewCell {
         NSLayoutConstraint.activate([
             messegePreviewLabel.centerYAnchor.constraint(equalTo: messegeAvatarImage.centerYAnchor),
             messegePreviewLabel.leadingAnchor.constraint(equalTo: messegeAvatarImage.trailingAnchor, constant: 10),
-            messegePreviewLabel.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: -200)
+            messegePreviewLabel.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: -150)
             
         ])
     }

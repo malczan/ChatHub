@@ -21,19 +21,19 @@ final class PrivateMesssageViewModel {
     
     private let outputRelay: PublishRelay<Void>
     private let services: ServicesContainer
-    private let user: User
+    private let userId: String
     
     private let messagesRelay = BehaviorRelay<[MessageModel]?>(value: nil)
     private let newMessageRelay = PublishRelay<[MessageModel]>()
     
     init(outputRelay: PublishRelay<Void>,
          services: ServicesContainer,
-         user: User) {
+         userId: String) {
         self.outputRelay = outputRelay
         self.services = services
-        self.user = user
+        self.userId = userId
         fetchMessages()
-        observeMessages(from: user)
+        observeMessages(from: userId)
     }
     
     var messageDriver: Driver<[MessageModel]?> {
@@ -50,12 +50,11 @@ final class PrivateMesssageViewModel {
         let fromCurrentUser: Bool
     }
     
-    var headerTitle: String {
-        return user.username
-    }
-    
-    var headerAvatarUrl: String? {
-        return user.profileImageUrl
+    var userDriver: Driver<User> {
+        return services
+            .userService
+            .fetchExactUser(id: userId)
+            .asDriver(onErrorDriveWith: Driver.never())
     }
     
     func goBackTapped() {
@@ -69,13 +68,13 @@ final class PrivateMesssageViewModel {
         }
         
         services.messageService.sendMessage(
-            to: user,
+            to: userId,
             text: message)
     }
     
     private func fetchMessages() {
         services.messageService
-            .fetchMessages(from: user)
+            .fetchMessages(from: userId)
             .subscribe(onNext: {
                 [weak self] in
                 self?.handleReceived(messages: $0)
@@ -83,7 +82,7 @@ final class PrivateMesssageViewModel {
             .disposed(by: disposeBag)
     }
     
-    private func observeMessages(from user: User) {
+    private func observeMessages(from user: String) {
         services.messageService
             .observeMessages(from: user)
         
@@ -91,6 +90,7 @@ final class PrivateMesssageViewModel {
             .messageService
             .newMessageRelay
             .skip(2)
+            .distinctUntilChanged()
             .subscribe(onNext: {
                 [weak self] in
                 self?.newMessageAppear(messages: $0)

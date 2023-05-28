@@ -26,7 +26,6 @@ class PrivateMessageHeaderView: UIView {
         installUsernameLabel()
         installAvatarImage()
         installGoBackButton()
-        bindButton()
     }
     
     required init?(coder: NSCoder) {
@@ -35,11 +34,10 @@ class PrivateMessageHeaderView: UIView {
     
     func inject(viewModel: PrivateMesssageViewModel) {
         self.viewModel = viewModel
-        bindButton()
-        updateUserData()
+        bind()
     }
     
-    private func bindButton() {
+    private func bind() {
         goBackButton
             .rx
             .tap
@@ -48,12 +46,19 @@ class PrivateMessageHeaderView: UIView {
                 self?.viewModel.goBackTapped()
             })
             .disposed(by: disposeBag)
+        
+        viewModel
+            .userDriver
+            .drive(onNext: {
+                [weak self] user in
+                self?.updateUserData(with: user)
+            })
+            .disposed(by: disposeBag)
     }
     
-    private func updateUserData() {
-        usernameLabel.text =  viewModel.headerTitle
-        
-        guard let urlString = viewModel.headerAvatarUrl,
+    private func updateUserData(with user: User) {
+        self.usernameLabel.text =  user.username
+        guard let urlString = user.profileImageUrl,
               let url = URL(string: urlString)
         else {
             return
@@ -61,6 +66,7 @@ class PrivateMessageHeaderView: UIView {
         avatarImageView.kf.setImage(
             with: url,
             placeholder: Style.avatarPlaceholder)
+    
     }
         
     private func setupStyle() {

@@ -18,12 +18,12 @@ final class MessagesViewModel {
     UserServiceContainer
     
     private let services: ServicesContainer
-    private let outputRelay: PublishRelay<Void>
+    private let outputRelay: PublishRelay<String?>
     private let disposeBag = DisposeBag()
     private let recentMessagesRelay = BehaviorRelay<[MessegePreview]?>(value: nil)
     
     init(services: ServicesContainer,
-         outputRelay: PublishRelay<Void>) {
+         outputRelay: PublishRelay<String?>) {
         self.outputRelay = outputRelay
         self.services = services
         fetchRecentMessages()
@@ -42,8 +42,8 @@ final class MessagesViewModel {
     }
     
     
-    func chatSelected() {
-        outputRelay.accept(())
+    func selectedChat(with userId: String?) {
+        outputRelay.accept(userId)
     }
     
     func getUserInfo(with id: String) -> Observable<User> {

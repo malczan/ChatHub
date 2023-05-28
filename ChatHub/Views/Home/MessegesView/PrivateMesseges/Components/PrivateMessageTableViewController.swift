@@ -95,11 +95,13 @@ class PrivateMessageTableViewController: UITableViewController {
     }
     
     private func updateSnaphot(with messages: [MessageModel]) {
-        snapshot.appendItems(messages, toSection: 0)
-        dataSource.apply(snapshot, animatingDifferences: true)
-        guard let lastMessage = messages.last else {
+        guard let lastMessage = messages.last,
+              snapshot.numberOfSections > 0 else {
             return
         }
+        
+        snapshot.appendItems(messages, toSection: 0)
+        dataSource.apply(snapshot, animatingDifferences: true)
         let indexPath = dataSource.indexPath(for: lastMessage)
         tableView.reloadData()
         tableView.scrollToRow(at: indexPath!, at: .bottom, animated: true)

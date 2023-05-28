@@ -47,8 +47,9 @@ class MessegesListTableViewController: UITableViewController {
             .rx
             .itemSelected
             .subscribe(onNext: {
-                [weak self] _ in
-                self?.viewModel.chatSelected()
+                [weak self] in
+                guard let cell = self?.dataSource.itemIdentifier(for: $0) else { return }
+                self?.viewModel.selectedChat(with: cell.userId)
             }).disposed(by: disposeBag)
         
         viewModel

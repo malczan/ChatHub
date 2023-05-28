@@ -15,12 +15,12 @@ final class FriendsViewCoordinator: Coordinator {
     var childCoordinators: [Coordinator] = []
     private let navigationController: UINavigationController
     private let servicesContainer: ServicesContainer
-    private let outputRelay:  PublishRelay<User>
+    private let outputRelay:  PublishRelay<String?>
 
 
     init(navigationController: UINavigationController,
          servicesContainer: ServicesContainer,
-         outputRelay:  PublishRelay<User>) {
+         outputRelay:  PublishRelay<String?>) {
         self.navigationController = navigationController
         self.servicesContainer = servicesContainer
         self.outputRelay = outputRelay

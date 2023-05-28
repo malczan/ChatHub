@@ -38,7 +38,6 @@ class PrivateMessageFooterView: UIView {
         sendButton
             .rx
             .tap
-            .throttle(.seconds(1), latest: false, scheduler: MainScheduler.instance)
             .subscribe(onNext: {
                 [unowned self] in
                 self.viewModel.send(message: self.messageTextField.text)

@@ -15,12 +15,12 @@ final class MessegesViewCoordinator: Coordinator {
     
     var childCoordinators: [Coordinator] = []
     private let navigationController: UINavigationController
-    private let outputRelay: PublishRelay<Void>
+    private let outputRelay: PublishRelay<String?>
     private let disposeBag = DisposeBag()
     private let servicesContainer: ServicesContainer
 
     init(navigationController: UINavigationController,
-         outputRelay: PublishRelay<Void>,
+         outputRelay: PublishRelay<String?>,
          servicesContainer: ServicesContainer) {
         self.navigationController = navigationController
         self.outputRelay = outputRelay

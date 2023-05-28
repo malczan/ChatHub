@@ -12,10 +12,10 @@ import RxRelay
 
 protocol MessageService {
     var newMessageRelay: BehaviorRelay<[Message]?> { get }
-    func sendMessage(to user: User, text: String)
-    func fetchMessages(from user: User) -> Observable<[Message?]>
+    func sendMessage(to friendId: String, text: String)
+    func fetchMessages(from friendId: String) -> Observable<[Message?]>
     func fetchRecentSearches() -> Observable<[Message?]>
-    func observeMessages(from user: User)
+    func observeMessages(from friendId: String?)
 }
 
 protocol MessageServiceContainer {
@@ -31,9 +31,8 @@ final class ConcreteMessagesService: MessageService {
         self.userService = userService
     }
     
-    func sendMessage(to user: User, text: String) {
+    func sendMessage(to friendId: String, text: String) {
         guard let userId = userService.userSession?.uid else { return }
-        guard let friendId = user.id else { return }
         let userRef = Firestore.firestore().collection("messages").document(userId).collection(friendId).document()
         let friendRef = Firestore.firestore().collection("messages").document(friendId).collection(userId)
         
@@ -55,10 +54,9 @@ final class ConcreteMessagesService: MessageService {
         
     }
     
-    func fetchMessages(from user: User) -> Observable<[Message?]> {
+    func fetchMessages(from friendId: String) -> Observable<[Message?]> {
         return Observable.create { observer in
             guard let userId = self.userService.userSession?.uid else { return Disposables.create() }
-            guard let friendId = user.id else { return Disposables.create() }
             
             Firestore
                 .firestore()
@@ -78,10 +76,10 @@ final class ConcreteMessagesService: MessageService {
         }
     }
     
-    func observeMessages(from user: User) {
+    func observeMessages(from friendId: String?) {
         
         guard let userId = userService.userSession?.uid,
-              let friendId = user.id else {
+              let friendId = friendId else {
             return
         }
         
