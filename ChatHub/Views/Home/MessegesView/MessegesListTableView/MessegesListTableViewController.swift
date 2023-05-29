@@ -70,12 +70,19 @@ class MessegesListTableViewController: UITableViewController {
             return
         }
 
-        self.snapshot.appendSections(["All messeges"])
-        messeges.forEach({ self.snapshot.appendItems([$0], toSection: "All messeges")})
-        dataSource.apply(snapshot, animatingDifferences: false)
+        messeges.forEach { message in
+            if let id = snapshot.itemIdentifiers.first(where: { $0.userId == message.userId }) {
+                self.snapshot.deleteItems([id])
+                self.snapshot.appendItems([message], toSection: "All messeges")
+            } else {
+                self.snapshot.appendItems([message], toSection: "All messeges")
+            }}
+            
+        dataSource.apply(snapshot, animatingDifferences: true)
     }
     
     private func configureTableViewDataSource() {
+        self.snapshot.appendSections(["All messeges"])
         dataSource = DataSource(tableView: tableView, cellProvider: { tableView, indexPath, messege -> UITableViewCell? in
             let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath) as! MessegesListTableViewCell
             cell.inject(viewModel: self.viewModel)
@@ -83,7 +90,4 @@ class MessegesListTableViewController: UITableViewController {
             return cell
         })
     }
-    
-    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) { }
-    override func tableView(_ tableView: UITableView, didDeselectRowAt indexPath: IndexPath) { }
 }

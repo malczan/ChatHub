@@ -27,6 +27,7 @@ final class MessagesViewModel {
         self.outputRelay = outputRelay
         self.services = services
         fetchRecentMessages()
+        observeRecentMessages()
     }
     
     var recentMessagesDriver: Driver<[MessegePreview]?> {
@@ -74,5 +75,16 @@ final class MessagesViewModel {
                     timestamp: message?.timestamp,
                     sendByCurrentUser: message?.fromId == userService.userSession?.uid ? true : false)
             })
+    }
+    
+    private func observeRecentMessages() {
+        services
+            .messageService
+            .newRecentMessageRelay
+            .subscribe(onNext: {
+            [weak self] _ in
+                self?.fetchRecentMessages()
+        })
+        .disposed(by: disposeBag)
     }
 }
