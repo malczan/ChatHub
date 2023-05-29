@@ -9,7 +9,7 @@ import UIKit
 import RxRelay
 import RxSwift
 
-final class MessegesViewCoordinator: Coordinator {
+final class MessagesViewCoordinator: Coordinator {
     
     private typealias Factory = MessagesViewFactory
     

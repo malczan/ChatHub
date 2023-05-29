@@ -9,7 +9,7 @@ import UIKit
 import RxCocoa
 import RxSwift
 
-class MessegesListTableViewController: UITableViewController {
+class MessagesListTableViewController: UITableViewController {
     
     var viewModel: MessagesViewModel!
     
@@ -62,7 +62,7 @@ class MessegesListTableViewController: UITableViewController {
     }
     
     private func registerCell() {
-        tableView.register(MessegesListTableViewCell.self, forCellReuseIdentifier: "cell")
+        tableView.register(MessagesListTableViewCell.self, forCellReuseIdentifier: "cell")
     }
     
     private func applySettingsForSnapshot(messeges: [MessegeModel]?) {
@@ -84,7 +84,7 @@ class MessegesListTableViewController: UITableViewController {
     private func configureTableViewDataSource() {
         self.snapshot.appendSections(["All messeges"])
         dataSource = DataSource(tableView: tableView, cellProvider: { tableView, indexPath, messege -> UITableViewCell? in
-            let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath) as! MessegesListTableViewCell
+            let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath) as! MessagesListTableViewCell
             cell.inject(viewModel: self.viewModel)
             cell.messegePreviewModel = messege
             return cell

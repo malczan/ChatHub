@@ -9,7 +9,7 @@ import UIKit
 import Kingfisher
 import RxSwift
 
-class MessegesListTableViewCell: UITableViewCell {
+class MessagesListTableViewCell: UITableViewCell {
     
     private typealias Style = MessagesViewStyle
      typealias MessegePreviewModel = MessagesViewModel.MessegePreview
