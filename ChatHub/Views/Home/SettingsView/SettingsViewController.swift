@@ -10,6 +10,7 @@ import Firebase
 
 class SettingsViewController: UIViewController {
     
+    private typealias Style = SettingsStyle
     private typealias TableFactory = SettingsTableFactory
     
     var viewModel: SettingsViewModel!
@@ -19,11 +20,15 @@ class SettingsViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = UIColor(named: "backgroundColor")
+        setupUI()
         installHeaderView()
         installTableContainer()
         installSettingsTableView()
         
+    }
+    
+    private func setupUI() {
+        view.backgroundColor = Style.backgroundColor
     }
     
     private func installHeaderView() {

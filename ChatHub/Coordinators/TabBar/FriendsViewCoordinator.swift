@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import RxRelay
 
 final class FriendsViewCoordinator: Coordinator {
 
@@ -14,17 +15,22 @@ final class FriendsViewCoordinator: Coordinator {
     var childCoordinators: [Coordinator] = []
     private let navigationController: UINavigationController
     private let servicesContainer: ServicesContainer
+    private let outputRelay:  PublishRelay<String?>
 
 
     init(navigationController: UINavigationController,
-         servicesContainer: ServicesContainer) {
+         servicesContainer: ServicesContainer,
+         outputRelay:  PublishRelay<String?>) {
         self.navigationController = navigationController
         self.servicesContainer = servicesContainer
+        self.outputRelay = outputRelay
     }
     
     func start() {
         
-        let viewModel = FriendsViewModel(services: servicesContainer)
+        let viewModel = FriendsViewModel(
+            services: servicesContainer,
+            outputRelay: outputRelay)
         let friendsViewController = Factory.createFriendsViewController(with: viewModel)
         
         navigationController.setViewControllers([friendsViewController], animated: true)

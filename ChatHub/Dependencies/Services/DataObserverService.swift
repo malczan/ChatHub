@@ -12,7 +12,7 @@ import RxRelay
 import RxSwift
 
 protocol DataObserverService {
-    var dataUpdatedRelay: BehaviorRelay<Void> { get }
+    var userDataUpdatedRelay: BehaviorRelay<Void> { get }
 }
 
 protocol DataObserverServiceContainer {
@@ -21,24 +21,35 @@ protocol DataObserverServiceContainer {
 
 final class ConcreteDataObserverService: DataObserverService {
     
-    let dataUpdatedRelay = BehaviorRelay<Void>(value: Void())
+    let userDataUpdatedRelay = BehaviorRelay<Void>(value: Void())
+    let messagesDataUpdatedRelay = BehaviorRelay<Void>(value: Void())
+    
+    private let userService: UserService
     private let disposeBag = DisposeBag()
     
     
-    init() {
-        fetchDataChanges()
+    init(userService: UserService) {
+        self.userService = userService
+        fetchUserDataChanges()
     }
     
-    private let usersRef = Firestore.firestore().collection("users")
-    
-    private func fetchDataChanges() {
-        usersRef.addSnapshotListener {
+    private func fetchUserDataChanges() {
+        
+        guard let userId = userService.userSession?.uid else {
+            return
+        }
+        
+        Firestore
+            .firestore()
+            .collection("users")
+            .document(userId)
+            .addSnapshotListener {
             [weak self] snapshot, _ in
             switch snapshot {
             case (.none):
                 break
             case .some(_):
-                self?.dataUpdatedRelay.accept(())
+                self?.userDataUpdatedRelay.accept(())
             }
         }
     }

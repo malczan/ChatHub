@@ -36,7 +36,7 @@ class SettingsViewModel {
         self.services = services
         self.outputErrorRelay = outputErrorRelay
         self.outputRelay = outputRelay
-        services.userService.refreshUserInfo()
+        services.userService.refreshUserInfo(with: services.userService.userSession?.uid)
     }
     
     var user: Driver<User?> {
